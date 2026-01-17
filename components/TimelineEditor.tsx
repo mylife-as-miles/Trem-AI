@@ -126,29 +126,29 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-black text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
+        <div className="flex flex-col h-full bg-background-light dark:bg-black text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
             {/* Header */}
-            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-white/10 bg-black z-20">
+            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black z-20">
                 <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">
                         <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
                     </div>
                     <nav className="flex items-center text-sm font-mono tracking-tight hidden md:flex">
-                        <span className="text-gray-500">nike-commercial</span>
-                        <span className="mx-2 text-gray-700">/</span>
-                        <span className="text-gray-500">timelines</span>
-                        <span className="mx-2 text-gray-700">/</span>
-                        <span className="text-white font-bold bg-white/5 px-2 py-1 rounded border border-white/10">main_edit</span>
+                        <span className="text-slate-500">nike-commercial</span>
+                        <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
+                        <span className="text-slate-500">timelines</span>
+                        <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
+                        <span className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-white/5 px-2 py-1 rounded border border-slate-200 dark:border-white/10">main_edit</span>
                     </nav>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center -space-x-2 mr-4 hidden sm:flex">
                         <img
                             alt="User"
-                            className="w-8 h-8 rounded-full border-2 border-black"
+                            className="w-8 h-8 rounded-full border-2 border-white dark:border-black"
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOTDE_X3JwToSHTjUFVUtEmOhsNZj6RL934lNVNkkJ_7-dUJZEIfrP-BB4R4yKz6DimrwF9peEsyj_o_qTyGoJMJOIY6497yHymfN_9F7STpDS1WU4VhqLtB4lv5rUS9pq_am9pw4b9Oa84Xtx6eWZ8hdpz0VKq6xB3s-x830O9tK35zH4IDI59VYtVh53_FTHTGcjhnrq1u24Z-SHawNiXKPLY7e3aK6NGBtwHSbiXSaWb5DZhnQiVdO59VHXuxa09qplRDAhcE"
                         />
-                        <div className="w-8 h-8 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[10px] text-white">AI</div>
+                        <div className="w-8 h-8 rounded-full border-2 border-white dark:border-black bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] text-slate-600 dark:text-white">AI</div>
                     </div>
                     <button
                         onClick={() => onNavigate && onNavigate('diff')}
@@ -167,13 +167,13 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             <div className="flex-1 flex overflow-hidden relative">
 
                 {/* Left Sidebar: Instruction Stack */}
-                <aside className={`w-80 flex-shrink-0 flex flex-col border-r border-white/10 bg-black absolute top-0 bottom-0 left-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'instructions' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-                    <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                        <h2 className="font-display font-bold text-lg text-white">Instruction Stack</h2>
+                <aside className={`w-80 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-black absolute top-0 bottom-0 left-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'instructions' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+                    <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                        <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white">Instruction Stack</h2>
                         <span className="text-[10px] font-mono text-primary uppercase border border-primary/30 px-1.5 py-0.5 rounded bg-primary/5">OTIO v2.1</span>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                        <div className="text-xs font-mono text-gray-500 uppercase mb-2 ml-1">Sequence A</div>
+                        <div className="text-xs font-mono text-slate-500 dark:text-gray-500 uppercase mb-2 ml-1">Sequence A</div>
 
                         <DndContext
                             sensors={sensors}
@@ -190,19 +190,20 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                             </SortableContext>
                         </DndContext>
 
-                        <div className="h-10 border-2 border-dashed border-white/5 rounded-lg flex items-center justify-center text-gray-600 text-xs font-mono">
+                        <div className="h-10 border-2 border-dashed border-slate-200 dark:border-white/5 rounded-lg flex items-center justify-center text-slate-400 dark:text-gray-600 text-xs font-mono">
                             Drop clips here
                         </div>
                     </div>
-                    <div className="p-3 border-t border-white/10 bg-black text-[10px] font-mono text-gray-600 flex justify-between">
+                    <div className="p-3 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-black text-[10px] font-mono text-slate-500 dark:text-gray-600 flex justify-between">
                         <span>TOTAL: 00:12:57</span>
                         <span>{clips.length} CLIPS</span>
                     </div>
                 </aside>
 
                 {/* Center: Viewer & Timeline */}
-                <main className="flex-1 flex flex-col relative bg-black border-r border-white/10 z-0 min-w-0">
-                    <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-900/50 via-black to-black">
+                <main className="flex-1 flex flex-col relative bg-zinc-900 border-r border-slate-200 dark:border-white/10 z-0 min-w-0">
+                    {/* Viewer kept dark for standard video editing look */}
+                    <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black">
                         <div className="relative w-full aspect-video bg-black border border-white/10 rounded-lg shadow-2xl overflow-hidden group max-h-[60vh]">
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10 pointer-events-none"></div>
                             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
@@ -221,26 +222,26 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    <div className="h-40 md:h-32 bg-black border-t border-white/10 p-4 flex flex-col justify-between">
+                    <div className="h-40 md:h-32 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 p-4 flex flex-col justify-between">
                         {/* Timeline Bar */}
                         <div className="w-full h-8 flex items-center gap-2 md:gap-4 group">
                             <span className="text-xs font-mono text-primary w-12 md:w-16 text-right">00:00:12</span>
-                            <div className="flex-1 h-1.5 bg-zinc-800 rounded-full relative cursor-pointer overflow-visible">
+                            <div className="flex-1 h-1.5 bg-slate-200 dark:bg-zinc-800 rounded-full relative cursor-pointer overflow-visible">
                                 <div className="absolute left-0 top-0 h-full bg-primary w-1/3 rounded-full shadow-[0_0_10px_theme('colors.primary')]"></div>
-                                <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-transform duration-200 z-10"></div>
-                                <div className="hidden md:block absolute left-1/3 bottom-4 -translate-x-1/2 bg-zinc-800 text-white text-[10px] font-mono px-2 py-1 rounded border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-transform duration-200 z-10 border border-slate-200 dark:border-none"></div>
+                                <div className="hidden md:block absolute left-1/3 bottom-4 -translate-x-1/2 bg-white dark:bg-zinc-800 text-slate-800 dark:text-white text-[10px] font-mono px-2 py-1 rounded border border-slate-200 dark:border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
                                     Shot_01_Sprint
                                 </div>
                             </div>
-                            <span className="text-xs font-mono text-gray-500 w-12 md:w-16">00:01:30</span>
+                            <span className="text-xs font-mono text-slate-400 dark:text-gray-500 w-12 md:w-16">00:01:30</span>
                         </div>
 
                         {/* Controls */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="flex items-center gap-1 justify-center w-full md:w-auto">
-                                <button className="p-2 text-gray-400 hover:text-white transition-colors"><span className="material-icons-outlined">skip_previous</span></button>
-                                <button className="p-2 text-white hover:text-primary transition-colors"><span className="material-icons-outlined text-3xl">play_circle_filled</span></button>
-                                <button className="p-2 text-gray-400 hover:text-white transition-colors"><span class="material-icons-outlined">skip_next</span></button>
+                                <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span className="material-icons-outlined">skip_previous</span></button>
+                                <button className="p-2 text-slate-900 dark:text-white hover:text-primary transition-colors"><span className="material-icons-outlined text-3xl">play_circle_filled</span></button>
+                                <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span class="material-icons-outlined">skip_next</span></button>
                             </div>
 
                             <div className="flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-md px-4 py-2 w-full max-w-md mx-4 hidden sm:flex">
@@ -251,42 +252,42 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center text-[10px] uppercase font-mono tracking-wider mb-1">
                                         <span className="text-primary font-bold">Proxy Render</span>
-                                        <span className="text-gray-400">78%</span>
+                                        <span className="text-slate-400 dark:text-gray-400">78%</span>
                                     </div>
-                                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                    <div className="w-full h-1 bg-slate-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                                         <div className="h-full bg-primary w-[78%] shadow-[0_0_10px_theme('colors.primary')]"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 text-gray-400 hidden md:flex">
-                                <button className="p-2 hover:text-white"><span className="material-icons-outlined text-lg">volume_up</span></button>
-                                <button className="p-2 hover:text-white"><span className="material-icons-outlined text-lg">fullscreen</span></button>
+                            <div className="flex items-center gap-2 text-slate-400 dark:text-gray-400 hidden md:flex">
+                                <button className="p-2 hover:text-slate-900 dark:hover:text-white"><span className="material-icons-outlined text-lg">volume_up</span></button>
+                                <button className="p-2 hover:text-slate-900 dark:hover:text-white"><span className="material-icons-outlined text-lg">fullscreen</span></button>
                             </div>
                         </div>
                     </div>
                 </main>
 
                 {/* Right Sidebar: AI Co-pilot */}
-                <aside className={`w-80 flex-shrink-0 flex flex-col bg-black border-l border-white/10 absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
-                    <div className="p-4 border-b border-white/10 flex items-center justify-between bg-black z-10">
+                <aside className={`w-80 flex-shrink-0 flex flex-col bg-gray-50 dark:bg-black border-l border-slate-200 dark:border-white/10 absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
+                    <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-black z-10">
                         <div className="flex items-center gap-2">
                             <span className="material-icons-outlined text-primary">smart_toy</span>
-                            <h2 className="font-display font-bold text-white">AI Co-pilot</h2>
+                            <h2 className="font-display font-bold text-slate-900 dark:text-white">AI Co-pilot</h2>
                         </div>
-                        <button className="text-gray-500 hover:text-white"><span className="material-icons-outlined">history</span></button>
+                        <button className="text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white"><span className="material-icons-outlined">history</span></button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-6 flex flex-col">
                         <div className="text-center">
-                            <span className="text-[10px] text-zinc-700 font-mono bg-zinc-900/50 px-2 py-1 rounded">Today, 10:23 AM</span>
+                            <span className="text-[10px] text-slate-500 dark:text-zinc-700 font-mono bg-slate-200 dark:bg-zinc-900/50 px-2 py-1 rounded">Today, 10:23 AM</span>
                         </div>
 
                         <div className="flex flex-col items-end gap-1 ml-4 animate-fade-in-up">
-                            <div className="bg-zinc-800 text-gray-100 text-sm p-3 rounded-2xl rounded-tr-sm border border-white/10 shadow-sm max-w-full">
+                            <div className="bg-white border border-slate-200 dark:bg-zinc-800 dark:border-white/10 text-slate-800 dark:text-gray-100 text-sm p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-full">
                                 Swap the second clip for a close-up
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-[9px] text-gray-600 font-mono uppercase">User</span>
+                                <span className="text-[9px] text-slate-400 dark:text-gray-600 font-mono uppercase">User</span>
                             </div>
                         </div>
 
@@ -296,13 +297,13 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                     <span className="material-icons-outlined text-[14px] text-white">auto_awesome</span>
                                 </div>
                                 <div className="flex-1">
-                                    <div className="bg-primary/5 text-gray-200 text-sm p-3 rounded-2xl rounded-tl-sm border border-primary/20 backdrop-blur-sm shadow-[0_0_20px_-5px_rgba(168,85,247,0.15)]">
+                                    <div className="bg-white dark:bg-primary/5 text-slate-700 dark:text-gray-200 text-sm p-3 rounded-2xl rounded-tl-sm border border-slate-200 dark:border-primary/20 backdrop-blur-sm shadow-sm dark:shadow-[0_0_20px_-5px_rgba(168,85,247,0.15)]">
                                         <p className="mb-3 leading-relaxed">I'm on it. I've identified <span className="text-primary font-mono text-xs bg-primary/10 px-1 rounded">Shot_02_CloseUp</span> as the best candidate.</p>
-                                        <div className="bg-black/40 rounded border border-primary/30 p-2.5 flex items-center gap-3">
+                                        <div className="bg-slate-50 dark:bg-black/40 rounded border border-slate-200 dark:border-primary/30 p-2.5 flex items-center gap-3">
                                             <span className="material-icons-outlined text-primary animate-spin text-lg">sync</span>
                                             <div>
-                                                <div className="text-xs font-bold text-white mb-0.5">Updating OTIO instructions...</div>
-                                                <div className="text-[10px] font-mono text-gray-400">Re-rendering proxy (Layer 3)</div>
+                                                <div className="text-xs font-bold text-slate-800 dark:text-white mb-0.5">Updating OTIO instructions...</div>
+                                                <div className="text-[10px] font-mono text-slate-500 dark:text-gray-400">Re-rendering proxy (Layer 3)</div>
                                             </div>
                                         </div>
                                     </div>
@@ -311,23 +312,23 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    <div className="p-4 border-t border-white/10 bg-black">
+                    <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-black">
                         <div className="relative group">
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-purple-900 rounded-lg blur opacity-20 group-focus-within:opacity-50 transition duration-500"></div>
-                            <div className="relative flex items-center bg-zinc-900 rounded-lg border border-white/10 focus-within:border-primary/50 transition-colors">
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-purple-900 rounded-lg blur opacity-20 group-focus-within:opacity-50 transition duration-500 hidden dark:block"></div>
+                            <div className="relative flex items-center bg-slate-50 dark:bg-zinc-900 rounded-lg border border-slate-200 dark:border-white/10 focus-within:border-primary/50 transition-colors">
                                 <input
-                                    className="w-full bg-transparent border-none text-sm text-white focus:ring-0 py-3 pl-3 pr-10 font-mono placeholder-zinc-600 focus:outline-none"
+                                    className="w-full bg-transparent border-none text-sm text-slate-800 dark:text-white focus:ring-0 py-3 pl-3 pr-10 font-mono placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none"
                                     placeholder="Command agents..."
                                     type="text"
                                 />
-                                <button className="absolute right-2 p-1.5 text-primary hover:text-white hover:bg-primary/20 rounded transition-all">
+                                <button className="absolute right-2 p-1.5 text-primary hover:text-slate-900 dark:hover:text-white hover:bg-primary/10 dark:hover:bg-primary/20 rounded transition-all">
                                     <span className="material-icons-outlined text-lg">send</span>
                                 </button>
                             </div>
                         </div>
                         <div className="flex justify-between mt-2 px-1">
-                            <span className="text-[10px] text-zinc-600 font-mono">Model: Trem-v4-Turbo</span>
-                            <span className="text-[10px] text-zinc-600 font-mono">Context: 4k Tokens</span>
+                            <span className="text-[10px] text-slate-400 dark:text-zinc-600 font-mono">Model: Trem-v4-Turbo</span>
+                            <span className="text-[10px] text-slate-400 dark:text-zinc-600 font-mono">Context: 4k Tokens</span>
                         </div>
                     </div>
                 </aside>
