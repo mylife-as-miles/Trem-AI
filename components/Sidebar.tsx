@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -7,30 +7,36 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
     <>
       {/* Mobile Overlay is handled in App.tsx, but we ensure z-index here */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 w-72 flex-shrink-0 flex flex-col 
+          fixed inset-y-0 left-0 z-40 flex-shrink-0 flex flex-col 
           border-r border-slate-200 dark:border-white/10 
           bg-surface-light dark:bg-surface-dark 
-          transition-transform duration-300 ease-in-out
+          transition-all duration-300 ease-in-out
           lg:translate-x-0 lg:static lg:inset-auto
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isCollapsed ? 'w-20' : 'w-72'}
         `}
       >
         {/* Header */}
-        <div className="h-16 flex items-center px-4 justify-between border-b border-slate-100 dark:border-white/10">
+        <div className={`h-16 flex items-center justify-between border-b border-slate-100 dark:border-white/10 ${isCollapsed ? 'px-2 justify-center' : 'px-4'}`}>
           <button
             onClick={() => onNavigate('dashboard')}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className={`flex items-center gap-2 hover:opacity-80 transition-opacity ${isCollapsed ? 'justify-center' : ''}`}
           >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)] flex-shrink-0">
               <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
             </div>
-            <span className="font-display font-bold text-xl tracking-tight dark:text-white text-slate-900">Trem</span>
+            {!isCollapsed && (
+              <span className="font-display font-bold text-xl tracking-tight dark:text-white text-slate-900 transition-opacity duration-200">Trem</span>
+            )}
           </button>
+
           {/* Mobile Close Button */}
           <button
             onClick={onClose}
@@ -38,14 +44,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
           >
             <span className="material-icons-outlined">close</span>
           </button>
-          {/* Desktop Collapse Icon (Visual only for now) */}
-          <button className="hidden lg:block p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
-            <span className="material-icons-outlined text-lg">dock</span>
-          </button>
+
+          {/* Desktop Collapse Icon */}
+          {!isCollapsed && (
+            <button
+              onClick={() => setIsCollapsed(true)}
+              className="hidden lg:block p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+            >
+              <span className="material-icons-outlined text-lg">first_page</span>
+            </button>
+          )}
         </div>
 
         {/* Search */}
-        <div className="p-4">
+        <div className={`p-4 ${isCollapsed ? 'hidden' : 'block'}`}>
           <div className="relative group">
             <span className="absolute left-3 top-2.5 text-slate-400 group-focus-within:text-primary transition-colors material-icons-outlined text-sm">search</span>
             <input
@@ -58,28 +70,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex-1 overflow-y-auto px-3 space-y-6">
+        <div className={`flex-1 overflow-y-auto px-3 space-y-6 ${isCollapsed ? 'py-4 px-2 no-scrollbar' : ''}`}>
 
           {/* Active Processing */}
           <div>
-            <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 mt-2 font-bold">Active Processing</h3>
+            {!isCollapsed && (
+              <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 mt-2 font-bold whitespace-nowrap overflow-hidden">Active Processing</h3>
+            )}
             <ul className="space-y-1">
               <li>
-                <button onClick={() => onNavigate('repo')} className="w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                <button onClick={() => onNavigate('repo')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 shadow-[0_0_10px_rgba(168,85,247,0.1)] ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Ingest: 4k_Raw_Footage_A" : ""}>
                   <span className="material-icons-outlined text-sm animate-pulse">data_usage</span>
-                  <span className="truncate">Ingest: 4k_Raw_Footage_A</span>
+                  {!isCollapsed && <span className="truncate">Ingest: 4k_Raw_Footage_A</span>}
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('timeline')} className="w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group">
+                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Edit: nike-commercial" : ""}>
                   <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">edit</span>
-                  <span className="truncate">Edit: nike-commercial</span>
+                  {!isCollapsed && <span className="truncate">Edit: nike-commercial</span>}
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('repo')} className="w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group">
+                <button onClick={() => onNavigate('repo')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Render: Social_Cut_v3" : ""}>
                   <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">movie_filter</span>
-                  <span className="truncate">Render: Social_Cut_v3</span>
+                  {!isCollapsed && <span className="truncate">Render: Social_Cut_v3</span>}
                 </button>
               </li>
             </ul>
@@ -87,38 +101,49 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
 
           {/* Video Repos */}
           <div>
-            <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 font-bold">Video Repos</h3>
+            {!isCollapsed && (
+              <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 font-bold whitespace-nowrap overflow-hidden">Video Repos</h3>
+            )}
             <ul className="space-y-1">
               {['client/nike-commercial', 'internal/podcast-ep-42', 'events/techcrunch-2023'].map((repo, i) => (
                 <li key={i}>
                   <button
                     onClick={() => onNavigate('repo')}
-                    className="w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group"
+                    className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? repo : ""}
                   >
                     <span className="material-icons-outlined text-sm text-purple-400/70 group-hover:text-primary transition-colors">folder</span>
-                    <span className="truncate">{repo}</span>
+                    {!isCollapsed && <span className="truncate">{repo}</span>}
                   </button>
                 </li>
               ))}
               <li>
-                <button onClick={() => onNavigate('repo')} className="w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group">
+                <button onClick={() => onNavigate('repo')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "archive/legacy-b-roll" : ""}>
                   <span className="material-icons-outlined text-sm text-purple-400/70 group-hover:text-primary transition-colors">cloud_queue</span>
-                  <span className="truncate">archive/legacy-b-roll</span>
+                  {!isCollapsed && <span className="truncate">archive/legacy-b-roll</span>}
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Deployed Agents */}
-
         </div>
 
         {/* Footer Action */}
-        <div className="p-4 border-t border-slate-200 dark:border-white/10">
-          <button className="flex items-center gap-2 text-sm text-slate-500 dark:text-gray-400 hover:text-primary transition-colors w-full group">
-            <span className="material-icons-outlined text-lg group-hover:text-primary">add_circle_outline</span>
-            <span>New Video Repository</span>
-          </button>
+        <div className={`p-4 border-t border-slate-200 dark:border-white/10 ${isCollapsed ? 'justify-center flex px-2' : ''}`}>
+          <div className="flex flex-col gap-4 w-full">
+            {isCollapsed && (
+              <button
+                onClick={() => setIsCollapsed(false)}
+                className="p-2 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors flex justify-center hover:bg-slate-100 dark:hover:bg-white/5"
+              >
+                <span className="material-icons-outlined text-lg">last_page</span>
+              </button>
+            )}
+
+            <button className={`flex items-center gap-2 text-sm text-slate-500 dark:text-gray-400 hover:text-primary transition-colors group ${isCollapsed ? 'justify-center' : 'w-full'}`} title={isCollapsed ? "New Video Repository" : ""}>
+              <span className="material-icons-outlined text-lg group-hover:text-primary">add_circle_outline</span>
+              {!isCollapsed && <span>New Video Repository</span>}
+            </button>
+          </div>
         </div>
       </aside>
     </>

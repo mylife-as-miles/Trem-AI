@@ -206,7 +206,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                                         </div>
                                     </div>
                                     <div className="bg-white dark:glass-panel p-6 rounded-2xl rounded-tl-none border border-slate-200 dark:border-primary/20 relative shadow-sm dark:shadow-none">
-                                        <div className="absolute -left-2 top-0 w-4 h-4 bg-transparent border-t border-l border-slate-200 dark:border-primary/20 [clip-path:polygon(0_0,100%_0,100%_100%)] bg-white dark:bg-transparent"></div>
+                                        <div className="absolute -left-2 top-0 w-4 h-4 bg-transparent border-t border-l border-slate-200 dark:border-primary/20 [clip-path:polygon(0_0,100%_0,100%_100%)] bg-white dark:bg-black"></div>
                                         <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base font-light">
                                             I analyzed the creative brief for <span className="text-slate-900 dark:text-white font-medium">"high energy"</span>. Based on the bpm of the audio track, the original <span className="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1 py-0.5 rounded font-mono text-xs">Shot_03 (Walking)</span> dragged the pacing down.
                                         </p>
@@ -220,7 +220,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
 
                         {/* Floating Action Bar */}
                         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50">
-                            <div className="bg-white/90 dark:bg-surface-card/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-1.5 rounded-full flex items-center gap-2 shadow-2xl pl-2">
+                            <div className="bg-white/90 dark:bg-zinc-800/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-1.5 rounded-full flex items-center gap-2 shadow-2xl pl-2">
                                 <div className="px-3 text-xs font-mono text-slate-500">
                                     Agent_GPT4 is online
                                 </div>
