@@ -8,13 +8,14 @@ import TaskFeed from './components/TaskFeed';
 import VideoRepoOverview from './components/VideoRepoOverview';
 
 import TimelineEditor from './components/TimelineEditor';
+import CompareDiffView from './components/CompareDiffView';
 
-type ViewState = 'dashboard' | 'repo' | 'timeline';
+type ViewState = 'dashboard' | 'repo' | 'timeline' | 'diff';
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewState>('timeline'); // Default to timeline for user request check
+  const [currentView, setCurrentView] = useState<ViewState>('diff'); // Default to diff for user request check
 
   useEffect(() => {
     if (darkMode) {
@@ -35,6 +36,9 @@ const App: React.FC = () => {
   // The design provided has its own header.
   if (currentView === 'timeline') {
     return <TimelineEditor />;
+  }
+  if (currentView === 'diff') {
+    return <CompareDiffView />;
   }
 
   return (
