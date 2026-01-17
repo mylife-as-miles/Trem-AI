@@ -7,12 +7,14 @@ import StatusGrid from './components/StatusGrid';
 import TaskFeed from './components/TaskFeed';
 import VideoRepoOverview from './components/VideoRepoOverview';
 
-type ViewState = 'dashboard' | 'repo';
+import TimelineEditor from './components/TimelineEditor';
+
+type ViewState = 'dashboard' | 'repo' | 'timeline';
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewState>('dashboard');
+  const [currentView, setCurrentView] = useState<ViewState>('timeline'); // Default to timeline for user request check
 
   useEffect(() => {
     if (darkMode) {
@@ -29,30 +31,36 @@ const App: React.FC = () => {
     }
   };
 
+  // If we are in timeline view, we want a full screen experience without the default shell?
+  // The design provided has its own header.
+  if (currentView === 'timeline') {
+    return <TimelineEditor />;
+  }
+
   return (
     <div className="flex h-screen bg-background-light dark:bg-black text-slate-800 dark:text-white font-sans overflow-hidden transition-colors duration-200">
-      
+
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
         onNavigate={handleNavigate}
       />
-      
+
       <main className="flex-1 flex flex-col relative z-0 bg-background-light dark:bg-black w-full">
         {currentView === 'dashboard' ? (
           <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
         ) : (
           <RepoHeader onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
         )}
-        
+
         <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-10 scroll-smooth">
           {currentView === 'dashboard' ? (
             <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
@@ -62,16 +70,16 @@ const App: React.FC = () => {
               <div className="h-20"></div> {/* Spacer for bottom scroll */}
             </div>
           ) : (
-             <div className="pb-20">
-               <VideoRepoOverview />
-             </div>
+            <div className="pb-20">
+              <VideoRepoOverview />
+            </div>
           )}
         </div>
       </main>
 
       {/* Floating Theme Toggle */}
       <div className="fixed bottom-6 right-6 z-50">
-        <button 
+        <button
           className="p-3 bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-full shadow-lg text-slate-600 dark:text-white hover:text-primary transition-colors hover:shadow-[0_0_15px_rgba(168,85,247,0.5)]"
           onClick={() => setDarkMode(!darkMode)}
         >
