@@ -9,13 +9,14 @@ import VideoRepoOverview from './components/VideoRepoOverview';
 
 import TimelineEditor from './components/TimelineEditor';
 import CompareDiffView from './components/CompareDiffView';
+import AssetLibrary from './components/AssetLibrary';
 
-type ViewState = 'dashboard' | 'repo' | 'timeline' | 'diff';
+type ViewState = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets';
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewState>('diff'); // Default to diff for user request check
+  const [currentView, setCurrentView] = useState<ViewState>('assets'); // Default to assets for user request check
 
   useEffect(() => {
     if (darkMode) {
@@ -39,6 +40,9 @@ const App: React.FC = () => {
   }
   if (currentView === 'diff') {
     return <CompareDiffView />;
+  }
+  if (currentView === 'assets') {
+    return <AssetLibrary />;
   }
 
   return (
