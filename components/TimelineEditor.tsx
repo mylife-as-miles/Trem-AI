@@ -1,7 +1,124 @@
-import React, { useState } from 'react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+interface Clip {
+    id: string;
+    name: string;
+    duration: string;
+    description: string;
+    type: string;
+    resolution?: string;
+    icon: string;
+    colorClass: string;
+    gradientClass: string;
+    isAiEdit?: boolean;
+}
+
+const SortableClip = ({ clip }: { clip: Clip }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: clip.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`clip-card glass-panel rounded-lg p-3 cursor-move group relative mb-3 ${clip.isAiEdit ? 'border-l-2 border-l-primary' : ''}`}>
+            {clip.isAiEdit && (
+                <div className="absolute -right-1 -top-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_5px_rgba(168,85,247,0.8)] z-10"></div>
+            )}
+            <div className={`absolute left-0 top-0 bottom-0 w-1 ${clip.colorClass} rounded-l-lg opacity-50 group-hover:opacity-100 transition-opacity`}></div>
+            <div className="flex gap-3">
+                <div className="w-16 h-12 bg-zinc-800 rounded border border-white/10 flex-shrink-0 overflow-hidden relative">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${clip.gradientClass}`}></div>
+                    <span className="material-icons-outlined absolute inset-0 m-auto text-white/20 text-lg flex items-center justify-center">{clip.icon}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                        <h3 className="text-sm font-bold text-gray-200 truncate">{clip.name}</h3>
+                        <span className="text-[10px] font-mono text-primary">{clip.duration}</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 truncate leading-tight">{clip.description}</p>
+                </div>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+                {clip.isAiEdit ? (
+                    <span className="px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-[9px] font-mono text-purple-300 flex items-center gap-1">
+                        <span className="material-icons-outlined text-[10px]">auto_fix_high</span> AI Edit
+                    </span>
+                ) : (
+                    <>
+                        <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-[9px] font-mono text-gray-400">{clip.type}</span>
+                        {clip.resolution && <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-[9px] font-mono text-gray-400">{clip.resolution}</span>}
+                    </>
+                )}
+            </div>
+        </div>
+    );
+};
 
 const TimelineEditor: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'timeline' | 'instructions' | 'copilot'>('timeline');
+    const [clips, setClips] = useState<Clip[]>([
+        {
+            id: '1',
+            name: 'Shot_01_Sprint',
+            duration: '05:00s',
+            description: 'Man running on track, low angle',
+            type: 'RAW',
+            resolution: '4K',
+            icon: 'movie',
+            colorClass: 'bg-primary',
+            gradientClass: 'from-purple-900/40 to-black',
+        },
+        {
+            id: '2',
+            name: 'Shot_02_CloseUp',
+            duration: '03:12s',
+            description: 'Face details, sweat beads',
+            type: 'LOG',
+            icon: 'face',
+            colorClass: 'bg-purple-400',
+            gradientClass: 'from-blue-900/40 to-black',
+        },
+        {
+            id: '3',
+            name: 'Shot_03_FinishLine',
+            duration: '04:45s',
+            description: 'Crossing the line, slow mo',
+            type: 'LOG',
+            icon: 'flag',
+            colorClass: 'bg-green-500', // Adjusted from UI but keeping distinct
+            gradientClass: 'from-green-900/40 to-black',
+            isAiEdit: true,
+        }
+    ]);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setClips((items) => {
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    };
 
     return (
         <div className="flex flex-col h-full bg-black text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
@@ -50,71 +167,20 @@ const TimelineEditor: React.FC = () => {
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
                         <div className="text-xs font-mono text-gray-500 uppercase mb-2 ml-1">Sequence A</div>
 
-                        {/* Clip 1 */}
-                        <div className="clip-card glass-panel rounded-lg p-3 cursor-move group relative">
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="flex gap-3">
-                                <div className="w-16 h-12 bg-zinc-800 rounded border border-white/10 flex-shrink-0 overflow-hidden relative">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 to-black"></div>
-                                    <span className="material-icons-outlined absolute inset-0 m-auto text-white/20 text-lg flex items-center justify-center">movie</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between mb-0.5">
-                                        <h3 className="text-sm font-bold text-gray-200 truncate">Shot_01_Sprint</h3>
-                                        <span className="text-[10px] font-mono text-primary">05:00s</span>
-                                    </div>
-                                    <p className="text-[11px] text-gray-500 truncate leading-tight">Man running on track, low angle</p>
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-center gap-2">
-                                <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-[9px] font-mono text-gray-400">RAW</span>
-                                <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-[9px] font-mono text-gray-400">4K</span>
-                            </div>
-                        </div>
-
-                        {/* Clip 2 */}
-                        <div className="clip-card glass-panel rounded-lg p-3 cursor-move group relative">
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-400 rounded-l-lg opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="flex gap-3">
-                                <div className="w-16 h-12 bg-zinc-800 rounded border border-white/10 flex-shrink-0 overflow-hidden relative">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-black"></div>
-                                    <span className="material-icons-outlined absolute inset-0 m-auto text-white/20 text-lg flex items-center justify-center">face</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between mb-0.5">
-                                        <h3 className="text-sm font-bold text-gray-200 truncate">Shot_02_CloseUp</h3>
-                                        <span className="text-[10px] font-mono text-primary">03:12s</span>
-                                    </div>
-                                    <p className="text-[11px] text-gray-500 truncate leading-tight">Face details, sweat beads</p>
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-center gap-2">
-                                <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/5 text-[9px] font-mono text-gray-400">LOG</span>
-                            </div>
-                        </div>
-
-                        {/* Clip 3 */}
-                        <div className="clip-card glass-panel rounded-lg p-3 cursor-move group relative border-l-2 border-l-primary">
-                            <div className="absolute -right-1 -top-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_5px_rgba(168,85,247,0.8)] z-10"></div>
-                            <div className="flex gap-3">
-                                <div className="w-16 h-12 bg-zinc-800 rounded border border-white/10 flex-shrink-0 overflow-hidden relative">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-green-900/40 to-black"></div>
-                                    <span className="material-icons-outlined absolute inset-0 m-auto text-white/20 text-lg flex items-center justify-center">flag</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between mb-0.5">
-                                        <h3 className="text-sm font-bold text-gray-200 truncate">Shot_03_FinishLine</h3>
-                                        <span className="text-[10px] font-mono text-primary">04:45s</span>
-                                    </div>
-                                    <p className="text-[11px] text-gray-500 truncate leading-tight">Crossing the line, slow mo</p>
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-center gap-2">
-                                <span className="px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-[9px] font-mono text-purple-300 flex items-center gap-1">
-                                    <span className="material-icons-outlined text-[10px]">auto_fix_high</span> AI Edit
-                                </span>
-                            </div>
-                        </div>
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={clips}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {clips.map((clip) => (
+                                    <SortableClip key={clip.id} clip={clip} />
+                                ))}
+                            </SortableContext>
+                        </DndContext>
 
                         <div className="h-10 border-2 border-dashed border-white/5 rounded-lg flex items-center justify-center text-gray-600 text-xs font-mono">
                             Drop clips here
@@ -122,7 +188,7 @@ const TimelineEditor: React.FC = () => {
                     </div>
                     <div className="p-3 border-t border-white/10 bg-black text-[10px] font-mono text-gray-600 flex justify-between">
                         <span>TOTAL: 00:12:57</span>
-                        <span>3 CLIPS</span>
+                        <span>{clips.length} CLIPS</span>
                     </div>
                 </aside>
 
