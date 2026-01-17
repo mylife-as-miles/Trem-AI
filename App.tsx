@@ -16,7 +16,7 @@ type ViewState = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets';
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewState>('assets'); // Default to assets for user request check
+  const [currentView, setCurrentView] = useState<ViewState>('dashboard'); // Default to dashboard for the flow
 
   useEffect(() => {
     if (darkMode) {
@@ -36,10 +36,10 @@ const App: React.FC = () => {
   // If we are in timeline view, we want a full screen experience without the default shell?
   // The design provided has its own header.
   if (currentView === 'timeline') {
-    return <TimelineEditor />;
+    return <TimelineEditor onNavigate={handleNavigate} />;
   }
   if (currentView === 'diff') {
-    return <CompareDiffView />;
+    return <CompareDiffView onNavigate={handleNavigate} />;
   }
   if (currentView === 'assets') {
     return <AssetLibrary />;
@@ -72,7 +72,7 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-10 scroll-smooth">
           {currentView === 'dashboard' ? (
             <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
-              <Orchestrator />
+              <Orchestrator onNavigate={handleNavigate} />
               <StatusGrid />
               <TaskFeed />
               <div className="h-20"></div> {/* Spacer for bottom scroll */}

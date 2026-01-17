@@ -1,6 +1,10 @@
 import React, { useState, useRef } from 'react';
 
-const CompareDiffView: React.FC = () => {
+interface CompareDiffViewProps {
+    onNavigate?: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets') => void;
+}
+
+const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
     // For the slider interaction
     const [sliderPosition, setSliderPosition] = useState(50);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -73,7 +77,10 @@ const CompareDiffView: React.FC = () => {
                     <button className="px-4 py-2 rounded-md border border-white/10 hover:border-white/20 hover:bg-white/5 text-slate-300 transition-colors text-xs font-bold tracking-wide uppercase">
                         Reject
                     </button>
-                    <button className="px-4 py-2 rounded-md bg-primary hover:bg-primary_hover text-white text-xs font-bold shadow-neon transition-all tracking-wide uppercase flex items-center gap-2">
+                    <button
+                        onClick={() => onNavigate && onNavigate('repo')}
+                        className="px-4 py-2 rounded-md bg-primary hover:bg-primary_hover text-white text-xs font-bold shadow-neon transition-all tracking-wide uppercase flex items-center gap-2"
+                    >
                         <span className="material-icons-outlined text-sm">merge</span>
                         Merge into Main
                     </button>

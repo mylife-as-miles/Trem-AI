@@ -64,7 +64,11 @@ const SortableClip = ({ clip }: { clip: Clip }) => {
     );
 };
 
-const TimelineEditor: React.FC = () => {
+interface TimelineEditorProps {
+    onNavigate?: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets') => void;
+}
+
+const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
     const [activeTab, setActiveTab] = useState<'timeline' | 'instructions' | 'copilot'>('timeline');
     const [clips, setClips] = useState<Clip[]>([
         {
@@ -145,8 +149,11 @@ const TimelineEditor: React.FC = () => {
                         />
                         <div className="w-8 h-8 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[10px] text-white">AI</div>
                     </div>
-                    <button className="hidden sm:block px-4 py-2 rounded-md border border-primary/40 text-primary text-xs font-bold font-display uppercase tracking-wider hover:bg-primary/10 transition-colors">
-                        Commit Changes
+                    <button
+                        onClick={() => onNavigate && onNavigate('diff')}
+                        className="hidden sm:block px-4 py-2 rounded-md border border-primary/40 text-primary text-xs font-bold font-display uppercase tracking-wider hover:bg-primary/10 transition-colors"
+                    >
+                        Compare & Commit
                     </button>
                     <button className="px-4 py-2 rounded-md bg-primary text-white text-xs font-bold font-display uppercase tracking-wider shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:bg-primary_hover transition-colors flex items-center gap-2">
                         <span className="material-icons-outlined text-sm">ios_share</span>
