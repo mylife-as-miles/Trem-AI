@@ -39,7 +39,7 @@ const CompareDiffView: React.FC = () => {
 
 
     return (
-        <div className="flex flex-col h-full bg-background-dark text-slate-200 font-sans overflow-hidden selection:bg-primary selection:text-white transition-colors duration-200">
+        <div className="flex flex-col h-screen bg-background-dark text-slate-200 font-sans overflow-hidden selection:bg-primary selection:text-white transition-colors duration-200">
             {/* Header */}
             <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-white/5 bg-background-dark/95 backdrop-blur-sm z-30">
                 <div className="flex items-center gap-4">
