@@ -110,23 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
           </div>
 
           {/* Deployed Agents */}
-          <div>
-            <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 font-bold">Deployed Agents</h3>
-            <ul className="space-y-1">
-              <li>
-                <button className="w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group">
-                  <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
-                  <span className="truncate">Highlighter_GPT4</span>
-                </button>
-              </li>
-              <li>
-                <button className="w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]"></div>
-                  <span className="truncate">Audio_Cleaner_v2</span>
-                </button>
-              </li>
-            </ul>
-          </div>
+
         </div>
 
         {/* Footer Action */}

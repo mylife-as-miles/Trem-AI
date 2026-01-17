@@ -43,30 +43,30 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
 
 
     return (
-        <div className="flex flex-col h-screen bg-background-dark text-slate-200 font-sans overflow-hidden selection:bg-primary selection:text-white transition-colors duration-200">
+        <div className="flex flex-col h-screen bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 font-sans overflow-hidden selection:bg-primary selection:text-white transition-colors duration-200">
             {/* Header */}
-            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-white/5 bg-background-dark/95 backdrop-blur-sm z-30">
+            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/5 bg-white/95 dark:bg-background-dark/95 backdrop-blur-sm z-30">
                 <div className="flex items-center gap-4">
-                    <nav className="flex items-center gap-2 text-slate-400">
+                    <nav className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <span className="material-icons-outlined text-lg">movie</span>
-                        <span className="text-sm font-mono hover:text-white cursor-pointer transition-colors">client</span>
-                        <span className="text-slate-600">/</span>
-                        <span className="text-white font-medium font-mono text-base tracking-tight hover:underline cursor-pointer">nike-commercial</span>
+                        <span className="text-sm font-mono hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors">client</span>
+                        <span className="text-slate-400 dark:text-slate-600">/</span>
+                        <span className="text-slate-900 dark:text-white font-medium font-mono text-base tracking-tight hover:underline cursor-pointer">nike-commercial</span>
                     </nav>
-                    <div className="h-4 w-px bg-white/10 mx-2"></div>
+                    <div className="h-4 w-px bg-slate-300 dark:bg-white/10 mx-2"></div>
                     <div className="flex items-center gap-2 text-sm">
                         <span className="text-slate-500">Pull Request</span>
-                        <span className="text-slate-300">#42</span>
+                        <span className="text-slate-700 dark:text-slate-300">#42</span>
                     </div>
                 </div>
 
                 {/* Branch Indicators (Center) */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center gap-3 font-mono text-xs">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-surface-card border border-white/10 text-slate-400">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-slate-100 dark:bg-surface-card border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400">
                         <span className="material-icons-outlined text-sm">call_split</span>
                         main
                     </div>
-                    <span className="material-icons-outlined text-slate-600 text-sm">arrow_back</span>
+                    <span className="material-icons-outlined text-slate-400 dark:text-slate-600 text-sm">arrow_back</span>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-primary/10 border border-primary/20 text-primary">
                         <span className="material-icons-outlined text-sm">call_split</span>
                         faster-cut
@@ -74,7 +74,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <button className="px-4 py-2 rounded-md border border-white/10 hover:border-white/20 hover:bg-white/5 text-slate-300 transition-colors text-xs font-bold tracking-wide uppercase">
+                    <button className="px-4 py-2 rounded-md border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-500 dark:text-slate-300 transition-colors text-xs font-bold tracking-wide uppercase">
                         Reject
                     </button>
                     <button
@@ -153,36 +153,36 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                 <div className="h-[45%] flex w-full">
 
                     {/* Changes List */}
-                    <div className="w-1/3 min-w-[320px] max-w-md border-r border-white/10 bg-surface-dark/95 flex flex-col">
-                        <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
-                            <h3 className="font-display font-medium text-sm text-white tracking-wide">Changes</h3>
+                    <div className="w-1/3 min-w-[320px] max-w-md border-r border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark/95 flex flex-col">
+                        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/5 flex items-center justify-between">
+                            <h3 className="font-display font-medium text-sm text-slate-900 dark:text-white tracking-wide">Changes</h3>
                             <span className="text-xs font-mono text-slate-500">3 diffs</span>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-sm">
-                            <div className="group p-3 rounded-lg border border-red-500/10 bg-red-500/5 hover:bg-red-500/10 transition-all cursor-pointer">
+                            <div className="group p-3 rounded-lg border border-red-500/10 bg-red-50 dark:bg-red-500/5 hover:bg-red-100 dark:hover:bg-red-500/10 transition-all cursor-pointer">
                                 <div className="flex items-start gap-3">
                                     <span className="material-symbols-outlined text-red-500 text-lg mt-0.5">remove_circle</span>
                                     <div>
-                                        <div className="text-red-400 font-medium">Deleted: Shot_03</div>
-                                        <div className="text-red-400/60 text-xs mt-1">(Walking Sequence)</div>
+                                        <div className="text-red-600 dark:text-red-400 font-medium">Deleted: Shot_03</div>
+                                        <div className="text-red-500/60 dark:text-red-400/60 text-xs mt-1">(Walking Sequence)</div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="group p-3 rounded-lg border border-emerald-500/10 bg-emerald-500/5 hover:bg-emerald-500/10 transition-all cursor-pointer">
+                            <div className="group p-3 rounded-lg border border-emerald-500/10 bg-emerald-50 dark:bg-emerald-500/5 hover:bg-emerald-100 dark:hover:bg-emerald-500/10 transition-all cursor-pointer">
                                 <div className="flex items-start gap-3">
                                     <span className="material-symbols-outlined text-emerald-500 text-lg mt-0.5">add_circle</span>
                                     <div>
-                                        <div className="text-emerald-400 font-medium">Added: Shot_05</div>
-                                        <div className="text-emerald-400/60 text-xs mt-1">(Running) @ 00:15</div>
+                                        <div className="text-emerald-600 dark:text-emerald-400 font-medium">Added: Shot_05</div>
+                                        <div className="text-emerald-500/60 dark:text-emerald-400/60 text-xs mt-1">(Running) @ 00:15</div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="group p-3 rounded-lg border border-amber-500/10 bg-amber-500/5 hover:bg-amber-500/10 transition-all cursor-pointer">
+                            <div className="group p-3 rounded-lg border border-amber-500/10 bg-amber-50 dark:bg-amber-500/5 hover:bg-amber-100 dark:hover:bg-amber-500/10 transition-all cursor-pointer">
                                 <div className="flex items-start gap-3">
                                     <span className="material-symbols-outlined text-amber-500 text-lg mt-0.5">change_history</span>
                                     <div>
-                                        <div className="text-amber-400 font-medium">Modified: Shot_02</div>
-                                        <div className="text-amber-400/60 text-xs mt-1">Trimmed -2.5s to sync beat</div>
+                                        <div className="text-amber-600 dark:text-amber-400 font-medium">Modified: Shot_02</div>
+                                        <div className="text-amber-500/60 dark:text-amber-400/60 text-xs mt-1">Trimmed -2.5s to sync beat</div>
                                     </div>
                                 </div>
                             </div>
@@ -190,11 +190,11 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                     </div>
 
                     {/* Agent Reasoning */}
-                    <div className="flex-1 bg-background-dark relative flex flex-col">
-                        <div className="px-8 py-4 border-b border-white/5">
+                    <div className="flex-1 bg-gray-50 dark:bg-background-dark relative flex flex-col">
+                        <div className="px-8 py-4 border-b border-slate-200 dark:border-white/5">
                             <div className="flex items-center gap-2">
                                 <span className="material-icons-outlined text-primary text-sm">psychology</span>
-                                <h3 className="font-display font-medium text-sm text-white tracking-wide">Agent Reasoning</h3>
+                                <h3 className="font-display font-medium text-sm text-slate-900 dark:text-white tracking-wide">Agent Reasoning</h3>
                             </div>
                         </div>
                         <div className="flex-1 p-8 overflow-y-auto">
@@ -205,13 +205,13 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                                             <span className="material-icons-outlined text-white text-lg">smart_toy</span>
                                         </div>
                                     </div>
-                                    <div className="glass-panel p-6 rounded-2xl rounded-tl-none border border-primary/20 relative">
-                                        <div className="absolute -left-2 top-0 w-4 h-4 bg-transparent border-t border-l border-primary/20 [clip-path:polygon(0_0,100%_0,100%_100%)]"></div>
-                                        <p className="text-slate-300 leading-relaxed text-sm md:text-base font-light">
-                                            I analyzed the creative brief for <span className="text-white font-medium">"high energy"</span>. Based on the bpm of the audio track, the original <span className="text-red-400 bg-red-500/10 px-1 py-0.5 rounded font-mono text-xs">Shot_03 (Walking)</span> dragged the pacing down.
+                                    <div className="bg-white dark:glass-panel p-6 rounded-2xl rounded-tl-none border border-slate-200 dark:border-primary/20 relative shadow-sm dark:shadow-none">
+                                        <div className="absolute -left-2 top-0 w-4 h-4 bg-transparent border-t border-l border-slate-200 dark:border-primary/20 [clip-path:polygon(0_0,100%_0,100%_100%)] bg-white dark:bg-transparent"></div>
+                                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base font-light">
+                                            I analyzed the creative brief for <span className="text-slate-900 dark:text-white font-medium">"high energy"</span>. Based on the bpm of the audio track, the original <span className="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1 py-0.5 rounded font-mono text-xs">Shot_03 (Walking)</span> dragged the pacing down.
                                         </p>
-                                        <p className="text-slate-300 leading-relaxed text-sm md:text-base font-light mt-4">
-                                            I shortened the intro to increase energy and swapped it for <span className="text-emerald-400 bg-emerald-500/10 px-1 py-0.5 rounded font-mono text-xs">Shot_05 (Running)</span>, which contains a high-intensity run that better matches the "red shoes" prompt and the beat drop at 00:15.
+                                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base font-light mt-4">
+                                            I shortened the intro to increase energy and swapped it for <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1 py-0.5 rounded font-mono text-xs">Shot_05 (Running)</span>, which contains a high-intensity run that better matches the "red shoes" prompt and the beat drop at 00:15.
                                         </p>
                                     </div>
                                 </div>
@@ -220,19 +220,19 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
 
                         {/* Floating Action Bar */}
                         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50">
-                            <div className="bg-surface-card/80 backdrop-blur-xl border border-white/10 p-1.5 rounded-full flex items-center gap-2 shadow-2xl pl-2">
+                            <div className="bg-white/90 dark:bg-surface-card/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-1.5 rounded-full flex items-center gap-2 shadow-2xl pl-2">
                                 <div className="px-3 text-xs font-mono text-slate-500">
                                     Agent_GPT4 is online
                                 </div>
-                                <div className="h-4 w-px bg-white/10"></div>
-                                <button className="px-4 py-2 rounded-full hover:bg-white/5 text-slate-300 hover:text-white transition-colors text-xs font-medium border border-transparent hover:border-white/10">
+                                <div className="h-4 w-px bg-slate-200 dark:bg-white/10"></div>
+                                <button className="px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors text-xs font-medium border border-transparent hover:border-slate-200 dark:hover:border-white/10">
                                     Reject Changes
                                 </button>
                                 <button className="px-4 py-2 rounded-full bg-primary hover:bg-primary_hover text-white text-xs font-bold transition-all shadow-lg flex items-center gap-2">
                                     Merge into Main
                                 </button>
-                                <div className="h-4 w-px bg-white/10"></div>
-                                <button className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-primary transition-colors tooltip" title="Open Command">
+                                <div className="h-4 w-px bg-slate-200 dark:bg-white/10"></div>
+                                <button className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-center text-primary transition-colors tooltip" title="Open Command">
                                     <span className="material-icons-outlined text-lg">chat_bubble</span>
                                 </button>
                             </div>
