@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigate: (view: 'dashboard' | 'repo' | 'timeline') => void;
+  onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings') => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
@@ -129,19 +129,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
 
         {/* Footer Action */}
         <div className={`p-4 border-t border-slate-200 dark:border-white/10 ${isCollapsed ? 'justify-center flex px-2' : ''}`}>
-          <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-col gap-2 w-full">
             {isCollapsed && (
               <button
                 onClick={() => setIsCollapsed(false)}
-                className="p-2 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors flex justify-center hover:bg-slate-100 dark:hover:bg-white/5"
+                className="p-2 mb-2 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors flex justify-center hover:bg-slate-100 dark:hover:bg-white/5"
               >
                 <span className="material-icons-outlined text-lg">last_page</span>
               </button>
             )}
 
-            <button className={`flex items-center gap-2 text-sm text-slate-500 dark:text-gray-400 hover:text-primary transition-colors group ${isCollapsed ? 'justify-center' : 'w-full'}`} title={isCollapsed ? "New Video Repository" : ""}>
+            <button className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md text-slate-500 dark:text-gray-400 hover:text-primary transition-colors group ${isCollapsed ? 'justify-center' : 'w-full'}`} title={isCollapsed ? "New Video Repository" : ""}>
               <span className="material-icons-outlined text-lg group-hover:text-primary">add_circle_outline</span>
-              {!isCollapsed && <span>New Video Repository</span>}
+              {!isCollapsed && <span>New Repo</span>}
             </button>
           </div>
         </div>

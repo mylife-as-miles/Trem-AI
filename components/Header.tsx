@@ -2,14 +2,15 @@ import React from 'react';
 
 interface HeaderProps {
   onMenuClick: () => void;
+  onSettingsClick?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+const Header: React.FC<HeaderProps> = ({ onMenuClick, onSettingsClick }) => {
   return (
     <header className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-slate-200 dark:border-white/10 bg-background-light/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-10">
       <div className="flex items-center gap-3">
         {/* Mobile Menu Button */}
-        <button 
+        <button
           onClick={onMenuClick}
           className="lg:hidden p-1 -ml-1 text-slate-500 dark:text-gray-400 hover:text-slate-800 dark:hover:text-white transition-colors"
         >
@@ -22,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <span className="material-icons-outlined text-[10px] flex-shrink-0">expand_more</span>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-4">
         <div className="hidden sm:flex items-center -space-x-2">
           <img alt="User" className="w-8 h-8 rounded-full border-2 border-background-light dark:border-black" src="https://picsum.photos/100/100?random=1" />
@@ -30,7 +31,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <div className="w-8 h-8 rounded-full border-2 border-background-light dark:border-black bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] text-slate-500 dark:text-white font-medium">+2</div>
         </div>
         <div className="hidden sm:block h-4 w-px bg-slate-300 dark:bg-white/10 mx-2"></div>
-        <button className="hidden sm:block text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+        <button
+          onClick={onSettingsClick}
+          className="hidden sm:block text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+        >
           <span className="material-icons-outlined">settings</span>
         </button>
         <button className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors relative">

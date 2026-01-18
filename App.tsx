@@ -10,8 +10,9 @@ import VideoRepoOverview from './components/VideoRepoOverview';
 import TimelineEditor from './components/TimelineEditor';
 import CompareDiffView from './components/CompareDiffView';
 import AssetLibrary from './components/AssetLibrary';
+import SettingsView from './components/SettingsView';
 
-type ViewState = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets';
+type ViewState = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings';
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(true);
@@ -44,6 +45,9 @@ const App: React.FC = () => {
   if (currentView === 'assets') {
     return <AssetLibrary />;
   }
+  if (currentView === 'settings') {
+    return <SettingsView onNavigate={handleNavigate} />;
+  }
 
   return (
     <div className="flex h-screen bg-background-light dark:bg-black text-slate-800 dark:text-white font-sans overflow-hidden transition-colors duration-200">
@@ -64,9 +68,15 @@ const App: React.FC = () => {
 
       <main className="flex-1 flex flex-col relative z-0 bg-background-light dark:bg-black w-full">
         {currentView === 'dashboard' ? (
-          <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+          <Header
+            onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            onSettingsClick={() => handleNavigate('settings')}
+          />
         ) : (
-          <RepoHeader onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+          <RepoHeader
+            onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            onSettingsClick={() => handleNavigate('settings')}
+          />
         )}
 
         <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-10 scroll-smooth">
