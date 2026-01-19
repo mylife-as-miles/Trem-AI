@@ -1,6 +1,10 @@
-import React from 'react';
-import { ArrowUpRight, Menu } from 'lucide-react';
+import React, { useLayoutEffect, useRef } from 'react';
+import { ArrowUpRight, Menu, Zap } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ThreeScene from './ThreeScene';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Logo = () => (
     <div className="flex items-center gap-2 font-semibold text-foreground z-50 pointer-events-auto select-none group cursor-pointer">
@@ -54,8 +58,78 @@ const SpecLabel = ({ label, value, sub, align = 'left', index = 0 }: { label: st
 );
 
 const Hero: React.FC = () => {
+    const componentRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        let ctx = gsap.context(() => {
+            // Initial Reveal Animation
+            const tl = gsap.timeline();
+
+            tl.from(".nav-item", {
+                y: -20,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out"
+            })
+                .from(".hero-tag", {
+                    x: 20,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "power3.out"
+                }, "-=0.6")
+                .from(".hero-title-line", {
+                    y: 100,
+                    opacity: 0,
+                    duration: 1,
+                    stagger: 0.15,
+                    ease: "power4.out"
+                }, "-=0.4")
+                .from(".hero-desc", {
+                    y: 20,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "power3.out"
+                }, "-=0.6")
+                .from(".hero-btn", {
+                    scale: 0.9,
+                    opacity: 0,
+                    duration: 0.6,
+                    ease: "back.out(1.7)"
+                }, "-=0.4");
+
+            // Scroll Triggers
+            gsap.from("#details-section h2", {
+                scrollTrigger: {
+                    trigger: "#details-section",
+                    start: "top 80%",
+                },
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out"
+            });
+
+            gsap.from(".stat-card", {
+                scrollTrigger: {
+                    trigger: "#details-section",
+                    start: "top 70%",
+                },
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power3.out"
+            });
+
+        }, componentRef);
+
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <div className="relative w-full min-h-screen bg-background overflow-x-hidden font-sans text-foreground selection:bg-primary selection:text-white">
+        <div ref={componentRef} className="relative w-full min-h-screen bg-background overflow-x-hidden font-sans text-foreground selection:bg-primary selection:text-white">
+            <div className="bg-noise"></div>
 
             {/* --- GLOBAL FIXED BACKGROUNDS --- */}
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -72,7 +146,7 @@ const Hero: React.FC = () => {
                 {/* --- SECTION 1: HERO --- */}
                 <div id="hero-section" className="relative flex flex-col min-h-[100dvh] w-full pointer-events-none px-4 sm:px-8 md:px-12 lg:px-24 pb-10">
                     <nav className="flex justify-between items-center py-6 md:py-10 pointer-events-auto">
-                        <div className="flex items-center gap-4 md:gap-12">
+                        <div className="flex items-center gap-4 md:gap-12 nav-item">
                             <button className="group relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300 text-foreground">
                                 <Menu className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
                             </button>
@@ -90,9 +164,12 @@ const Hero: React.FC = () => {
                     <main className="flex-1 flex flex-col justify-center max-w-7xl w-full mx-auto pointer-events-auto mt-12 md:mt-0 relative">
 
                         {/* Floating Tag */}
-                        <div className="absolute top-0 right-0 hidden lg:flex flex-col items-end gap-2 text-right opacity-60">
-                            <span className="font-mono text-xs uppercase tracking-widest text-secondary">Render Pipeline</span>
-                            <span className="font-serif italic text-2xl text-primary">Active</span>
+                        <div className="absolute top-0 right-0 hidden lg:flex flex-col items-end gap-2 text-right opacity-80 hero-tag mix-blend-difference">
+                            <span className="font-mono text-xs uppercase tracking-widest text-secondary flex items-center gap-2">
+                                <Zap size={12} className="text-primary fill-primary animate-pulse" />
+                                Render Pipeline
+                            </span>
+                            <span className="font-serif italic text-2xl text-foreground">Active</span>
                         </div>
 
                         <div className="mb-6 md:mb-10 flex flex-wrap items-center gap-3 text-foreground/80 font-medium text-xs md:text-sm tracking-wide uppercase">
@@ -101,13 +178,13 @@ const Hero: React.FC = () => {
                             <span className="px-3 py-1 rounded-full border border-white/10 bg-transparent">Cloud Native</span>
                         </div>
 
-                        <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-foreground tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em]">
-                            Edit video <br />
-                            <div className="flex flex-wrap items-baseline gap-2 md:gap-6">
+                        <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-foreground tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em] relative z-20">
+                            <div className="hero-title-line">Edit video</div>
+                            <div className="flex flex-wrap items-baseline gap-2 md:gap-6 hero-title-line">
                                 <span className="text-[5vw] sm:text-[4vw] lg:text-4xl font-mono font-normal text-secondary tracking-normal align-middle max-w-[200px] leading-tight hidden md:inline-block">
                                     / at the speed <br /> of thought
                                 </span>
-                                <span className="relative font-serif italic font-semibold text-[13vw] sm:text-[10vw] lg:text-[8.5rem]">thought<span className="text-primary">.</span></span>
+                                <span className="relative font-serif italic font-semibold text-[13vw] sm:text-[10vw] lg:text-[9.5rem] text-glow mix-blend-screen">thought<span className="text-primary">.</span></span>
                             </div>
                         </h1>
 
@@ -116,8 +193,8 @@ const Hero: React.FC = () => {
                                 The first asynchronous video engine. Render, clip, and effect in parallel without freezing your flow.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
-                                <button className="group relative flex items-center justify-between bg-primary text-white rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-white transition-all duration-500 cursor-pointer shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] active:scale-95 overflow-hidden">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto hero-btn">
+                                <button className="group relative flex items-center justify-between bg-primary text-white rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-white transition-all duration-500 cursor-pointer shadow-[0_0_40px_rgba(168,85,247,0.3)] hover:shadow-[0_0_60px_rgba(168,85,247,0.5)] active:scale-95 overflow-hidden">
                                     <span className="relative z-10 text-base sm:text-lg font-medium tracking-wide">Start Editing</span>
                                     <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-white">
                                         <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -168,7 +245,7 @@ const Hero: React.FC = () => {
                                 { label: "FPS", val: "240" },
                                 { label: "Format", val: "RAW" }
                             ].map((item, i) => (
-                                <div key={i} className="flex flex-col items-center border-l border-white/10 first:border-l-0 md:first:border-l">
+                                <div key={i} className="stat-card flex flex-col items-center border-l border-white/10 first:border-l-0 md:first:border-l">
                                     <span className="text-2xl md:text-3xl font-bold text-foreground tabular-nums">{item.val}</span>
                                     <span className="text-[10px] uppercase tracking-widest text-secondary font-mono mt-1">{item.label}</span>
                                 </div>
