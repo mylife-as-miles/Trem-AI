@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // --- Types ---
 import TopNavigation from './TopNavigation';
+import SimpleMarkdown from './SimpleMarkdown';
 
 export interface RepoData {
   name: string;
@@ -256,14 +257,29 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                   <span className="material-icons-outlined text-lg">edit</span>
                 </button>
               </div>
-              <div className="flex-1 flex flex-col justify-center relative z-10">
-                <p className="font-display text-3xl md:text-3xl lg:text-4xl font-bold leading-[1.3] text-slate-900 dark:text-white selection:bg-primary/30 whitespace-pre-wrap">
+
+              <div className="flex-1 flex flex-col relative z-10 overflow-y-auto pr-2 custom-scrollbar">
+                <SimpleMarkdown className="text-slate-900 dark:text-white leading-relaxed">
                   {repoData?.brief || (
-                    <>
-                      High-energy 30s spot for Instagram. Use the <span className="text-primary">Urban LUT</span>. Focus on <span className="text-red-500 font-normal italic">red shoes</span>.
-                    </>
+                    `# High-Energy 30s Spot
+
+**Client:** Nike  
+**Campaign:** Urban Flow Q3  
+**Tone:** Energetic, Raw, Authentic
+
+## Objectives
+*   Highlight the **red shoes** in every scene.
+*   Use the \`Urban_LUT_v2\` for color grading.
+*   Sync cuts to the beat of *Tech_House_01.mp3*.
+
+## Required Shots
+1.  Close-up of laces tying
+2.  Wide shot running through subway
+3.  Slow-motion jump (120fps)
+
+> "Motion is the key emotion here. Keep it moving." - *Creative Director*`
                   )}
-                </p>
+                </SimpleMarkdown>
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
                 {['#social-media', '#high-contrast', '#vertical'].map(tag => (

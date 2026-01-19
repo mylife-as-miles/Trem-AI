@@ -169,7 +169,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                     />
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="block text-sm font-mono text-primary font-bold uppercase tracking-wider">Creative Brief (Readme)</label>
+                                    <label className="block text-sm font-mono text-primary font-bold uppercase tracking-wider">
+                                        Creative Brief (Readme)
+                                        <span className="text-[10px] text-slate-400 dark:text-gray-500 font-normal ml-2 lowercase normal-case opacity-70 border border-slate-300 dark:border-white/10 px-1 rounded">Markdown supported</span>
+                                    </label>
                                     <textarea
                                         value={repoBrief}
                                         onChange={(e) => setRepoBrief(e.target.value)}
