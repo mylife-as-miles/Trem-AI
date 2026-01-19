@@ -206,20 +206,93 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         </section>
 
                         {/* Step 3: Commit */}
+                        {/* Step 3: Commit */}
                         {isIngestionComplete && (
-                            <section className="bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 rounded-2xl p-6 animate-fade-in-up">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-xl font-bold font-display text-slate-900 dark:text-white">Ready to Commit</h3>
-                                        <p className="text-primary/80 font-mono text-sm mt-1">Generated {selectedAssets.length} metadata files • Trem Locked</p>
+                            <section className="animate-fade-in-up space-y-6">
+                                <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden">
+                                    <div className="p-6 border-b border-slate-200 dark:border-white/10 flex justify-between items-center bg-slate-50 dark:bg-white/5">
+                                        <h3 className="text-lg font-bold font-display text-slate-900 dark:text-white">Commit Assets</h3>
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                                            <span className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-400">Staged Changes</span>
+                                        </div>
                                     </div>
-                                    <button
-                                        onClick={handleCommit}
-                                        className="bg-primary hover:bg-primary_hover text-white px-8 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-all flex items-center gap-3 transform hover:-translate-y-1 active:scale-95"
-                                    >
-                                        <span className="material-icons-outlined">check_circle</span>
-                                        Initialize Repository
-                                    </button>
+                                    <div className="p-6 space-y-6">
+
+                                        {/* Commit Message Input */}
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-mono uppercase text-slate-500 dark:text-gray-400 font-bold">Commit Message</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    defaultValue="Add raw footage and AI index"
+                                                    className="flex-1 bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-lg px-4 py-2 font-mono text-sm text-slate-700 dark:text-gray-300 focus:outline-none focus:border-primary transition-colors"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Staged Stats Grid */}
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                                <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">New Media Assets</div>
+                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">{selectedAssets.length} <span className="text-sm font-normal text-slate-400">files</span></div>
+                                            </div>
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                                <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Total Duration</div>
+                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">14:22 <span className="text-sm font-normal text-slate-400">mm:ss</span></div>
+                                            </div>
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                                <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Detected Scenes</div>
+                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">42 <span className="text-sm font-normal text-slate-400">cuts</span></div>
+                                            </div>
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                                <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Dialogue Lines</div>
+                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">128 <span className="text-sm font-normal text-slate-400">lines</span></div>
+                                            </div>
+                                        </div>
+
+                                        {/* Hashes & Metadata */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-2">
+                                                <label className="text-xs font-mono uppercase text-slate-500 dark:text-gray-400 font-bold">Generated Hashes & Metadata</label>
+                                                <span className="text-[10px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">TREM-HASH-V2</span>
+                                            </div>
+                                            <div className="font-mono text-xs text-slate-600 dark:text-gray-400 space-y-1 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                                                {selectedAssets.map((asset, i) => (
+                                                    <div key={asset.id} className="flex items-center justify-between group hover:bg-slate-50 dark:hover:bg-white/5 p-1 rounded transition-colors">
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="text-emerald-500 dark:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity justify-self-start">+</span>
+                                                            <span className="w-48 truncate">{asset.name}</span>
+                                                            <span className="text-slate-400 dark:text-gray-600">→</span>
+                                                            <span className="text-slate-500 dark:text-gray-500">meta/{asset.id}.json</span>
+                                                        </div>
+                                                        <span className="text-slate-400 dark:text-gray-600 text-[10px]">
+                                                            {`8f${i}a${asset.id.substring(0, 4)}...`}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                                <div className="flex items-center justify-between group hover:bg-slate-50 dark:hover:bg-white/5 p-1 rounded transition-colors border-t border-dashed border-slate-200 dark:border-white/10 mt-2 pt-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-emerald-500 dark:text-emerald-400">+</span>
+                                                        <span className="font-bold text-slate-700 dark:text-slate-300">trem.lock</span>
+                                                    </div>
+                                                    <span className="text-slate-400 dark:text-gray-600 text-[10px]">
+                                                        locking semantic baseline
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div className="p-6 bg-slate-50 dark:bg-black/20 border-t border-slate-200 dark:border-white/10 flex justify-end">
+                                        <button
+                                            onClick={handleCommit}
+                                            className="bg-primary hover:bg-primary_hover text-white px-6 py-3 rounded-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center gap-2 transform active:scale-95"
+                                        >
+                                            <span className="material-icons-outlined">check</span>
+                                            Commit & Initialize Repo
+                                        </button>
+                                    </div>
                                 </div>
                             </section>
                         )}

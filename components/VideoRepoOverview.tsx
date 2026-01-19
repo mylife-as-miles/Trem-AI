@@ -69,24 +69,80 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData }) => {
   const [selectedId, setSelectedId] = useState<string>('timelines');
   const [fileSystem, setFileSystem] = useState<FileNode[]>(defaultFileSystem);
 
-  // Update filesystem if new assets are present (simple mock injection)
+  // Update filesystem to match the standard Trem Repo structure
   useEffect(() => {
-    if (repoData && repoData.assets && repoData.assets.length > 0) {
-      const newFS = [...defaultFileSystem];
-      // Find media folder
-      const mediaFolder = newFS.find(n => n.id === 'media');
-      if (mediaFolder && mediaFolder.children) {
-        const rawFolder = mediaFolder.children.find(n => n.id === 'raw_footage');
-        if (rawFolder) {
-          rawFolder.children = repoData.assets.map((asset: any) => ({
-            id: asset.id,
-            name: asset.name || asset.id, // Ensure name exists
+    if (repoData && repoData.assets) {
+      const repoName = repoData.name || 'new-repo';
+
+      const newFS: FileNode[] = [
+        {
+          id: 'config',
+          name: 'trem.json',
+          type: 'file',
+          icon: 'settings',
+          iconColor: 'text-slate-400'
+        },
+        {
+          id: 'media',
+          name: 'media',
+          type: 'folder',
+          locked: true,
+          children: [
+            {
+              id: 'raw_footage', name: 'raw_footage', type: 'folder', children: repoData.assets.map((asset: any) => ({
+                id: asset.id,
+                name: asset.name || asset.id,
+                type: 'file',
+                icon: 'movie',
+                iconColor: 'text-emerald-400'
+              }))
+            },
+            { id: 'audio', name: 'audio', type: 'folder', children: [] },
+            { id: 'images', name: 'images', type: 'folder', children: [] },
+          ]
+        },
+        {
+          id: 'meta',
+          name: 'meta',
+          type: 'folder',
+          children: repoData.assets.map((asset: any) => ({
+            id: `meta_${asset.id}`,
+            name: `${asset.id}.json`,
             type: 'file',
-            icon: 'movie',
-            iconColor: 'text-emerald-400'
-          }));
+            icon: 'description',
+            iconColor: 'text-amber-400'
+          }))
+        },
+        {
+          id: 'timelines',
+          name: 'timelines',
+          type: 'folder',
+          children: []
+        },
+        {
+          id: 'story',
+          name: 'story',
+          type: 'folder',
+          children: [
+            { id: 'dag_logic', name: 'main_flow.dag', type: 'file', icon: 'account_tree', iconColor: 'text-blue-400' }
+          ]
+        },
+        {
+          id: 'renders',
+          name: 'renders',
+          type: 'folder',
+          children: []
+        },
+        {
+          id: 'lockfile',
+          name: 'trem.lock',
+          type: 'file',
+          locked: true,
+          icon: 'lock',
+          iconColor: 'text-slate-500'
         }
-      }
+      ];
+
       setFileSystem(newFS);
     }
   }, [repoData]);
