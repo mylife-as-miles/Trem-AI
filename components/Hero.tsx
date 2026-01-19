@@ -7,7 +7,7 @@ const Logo = () => (
         <div className="w-5 h-5 md:w-6 md:h-6 bg-primary rounded-[4px] flex items-center justify-center">
             <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-full"></div>
         </div>
-        <span className="tracking-tight text-base md:text-lg">datakeeper</span>
+        <span className="tracking-tight text-base md:text-lg">trem-ai</span>
     </div>
 );
 
@@ -79,41 +79,41 @@ const Hero: React.FC = () => {
                             <Logo />
                         </div>
                         <div className="flex gap-4 md:gap-8 text-[10px] md:text-xs font-medium text-secondary/60 tracking-widest uppercase hidden sm:flex">
-                            <span>landing page</span>
-                            <span>saas system</span>
+                            <span>agent hub</span>
+                            <span>orchestrator</span>
                         </div>
                     </nav>
 
                     <main className="flex-1 flex flex-col justify-center max-w-4xl pointer-events-auto mt-8 md:mt-0">
                         <div className="mb-6 md:mb-8 flex items-center gap-3 text-primary font-medium text-xs md:text-base">
                             <span className="font-bold">→</span>
-                            <span>the best system for keeping data</span>
+                            <span>the future of autonomous work</span>
                         </div>
                         <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[7.5rem] leading-[1.1] md:leading-[0.95] font-medium text-primary tracking-[-0.03em] mb-8 md:mb-12 break-words">
-                            Keep your <br className="hidden md:block" />
+                            Deploy your <br className="hidden md:block" />
                             <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-2">
-                                <span className="relative font-serif italic font-semibold text-5xl sm:text-7xl md:text-8xl lg:text-[8rem]">"data"</span>
-                                <span>organized<span className="text-accentBlue">.</span></span>
+                                <span className="relative font-serif italic font-semibold text-5xl sm:text-7xl md:text-8xl lg:text-[8rem]">"swarm"</span>
+                                <span>instantly<span className="text-accentBlue">.</span></span>
                             </div>
                         </h1>
                         <p className="text-secondary text-sm md:text-lg leading-relaxed mb-10 md:mb-16 max-w-[280px] sm:max-w-md font-normal">
-                            convenient and secure access to all your data in one place on cloud storage
+                            Orchestrate specialized AI agents to code, analyze, and solve complex workflows autonomously.
                         </p>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 md:gap-8 w-full sm:w-auto">
                             <button className="group relative flex items-center justify-between bg-black text-white rounded-full pl-6 md:pl-8 pr-2 py-2 h-14 md:h-16 w-full sm:w-auto min-w-[200px] hover:bg-neutral-800 transition-all duration-300 cursor-pointer shadow-xl active:scale-95">
-                                <span className="text-sm md:text-base font-medium">get started</span>
+                                <span className="text-sm md:text-base font-medium">deploy agents</span>
                                 <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                                     <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black" />
                                 </div>
                             </button>
                             <button className="group relative flex items-center justify-center px-8 md:px-10 h-14 md:h-16 text-primary hover:text-black transition-colors cursor-pointer w-full sm:w-auto">
                                 <TryForFreeBrackets />
-                                <span className="text-sm font-medium z-10 relative group-hover:scale-105 transition-transform">try for free</span>
+                                <span className="text-sm font-medium z-10 relative group-hover:scale-105 transition-transform">view architecture</span>
                             </button>
                         </div>
                     </main>
                     <div className="absolute bottom-6 md:bottom-10 left-6 md:left-20 text-secondary/50 text-xs md:text-sm font-medium tracking-wide hidden md:block">
-                        data keeper
+                        trem-ai v1.0
                     </div>
                 </div>
 
@@ -122,14 +122,14 @@ const Hero: React.FC = () => {
                     <div className="flex flex-col items-center text-center space-y-8 pointer-events-auto backdrop-blur-sm bg-card/60 md:bg-transparent p-6 sm:p-8 rounded-3xl max-w-4xl mx-auto z-20 shadow-sm md:shadow-none border border-white/50 md:border-none">
                         <div className="inline-flex items-center gap-2 text-accentBlue font-medium uppercase tracking-widest text-xs">
                             <div className="w-2 h-2 rounded-full bg-accentBlue"></div>
-                            <span>Granular Control</span>
+                            <span>Intelligent Orchestration</span>
                         </div>
                         <h2 className="text-3xl sm:text-4xl md:text-6xl font-serif italic text-primary leading-tight">
-                            Break it down. <br />
-                            <span className="not-italic font-sans font-semibold text-2xl sm:text-3xl md:text-5xl">Analyze every bit.</span>
+                            Delegate Complexity. <br />
+                            <span className="not-italic font-sans font-semibold text-2xl sm:text-3xl md:text-5xl">Scale Intelligence.</span>
                         </h2>
                         <p className="text-secondary text-sm sm:text-base md:text-lg leading-relaxed max-w-md mx-auto">
-                            Watch as your complex datasets align perfectly. Our system solves the chaos, organizing every fragment into a coherent whole.
+                            Don't just chat with AI. Equip it. Trem-AI breaks down massive objectives into executable tasks, assigning them to specialized agents that work in parallel.
                         </p>
                     </div>
                     {/* Spacer for 3D animation visibility */}
@@ -141,10 +141,10 @@ const Hero: React.FC = () => {
                     <div className="absolute top-10 md:top-24 left-0 w-full text-center z-10 pointer-events-auto px-6">
                         <div className="inline-block relative">
                             <div className="absolute inset-0 bg-white/40 blur-xl rounded-full"></div>
-                            <h3 className="relative text-2xl md:text-5xl font-serif italic text-primary mb-2 md:mb-4">System Architecture</h3>
+                            <h3 className="relative text-2xl md:text-5xl font-serif italic text-primary mb-2 md:mb-4">Swarm Performance</h3>
                         </div>
                         <div className="inline-block px-3 py-1 rounded-full border border-primary/10 bg-white/40 backdrop-blur-md">
-                            <span className="text-[10px] md:text-xs font-mono tracking-[0.2em] uppercase text-primary/70">Schematic v2.0</span>
+                            <span className="text-[10px] md:text-xs font-mono tracking-[0.2em] uppercase text-primary/70">Live Metrics</span>
                         </div>
                     </div>
 
@@ -152,14 +152,14 @@ const Hero: React.FC = () => {
 
                         {/* Mobile: Top Grid Layout */}
                         <div className="md:hidden grid grid-cols-2 gap-x-8 gap-y-8 w-full mb-8 pointer-events-auto">
-                            <SpecLabel label="Latency" value="12ms" sub="Global edge response." align="left" />
-                            <SpecLabel label="Encryption" value="AES-256" sub="Military grade." align="right" />
+                            <SpecLabel label="Response" value="12ms" sub="Global edge response." align="left" />
+                            <SpecLabel label="Security" value="AES-256" sub="Military grade." align="right" />
                         </div>
 
                         {/* Desktop: Left Column */}
                         <div className="hidden md:flex flex-col gap-24 pointer-events-auto">
-                            <SpecLabel label="Latency" value="12ms" sub="Global edge network response time." align="left" />
-                            <SpecLabel label="Encryption" value="AES-256" sub="Military grade security standard." align="left" />
+                            <SpecLabel label="Response" value="<50ms" sub="Agent decision latency." align="left" />
+                            <SpecLabel label="Context" value="1M+" sub="Token context window." align="left" />
                         </div>
 
                         {/* Center area reserved for 3D Explosion */}
@@ -169,13 +169,13 @@ const Hero: React.FC = () => {
                         {/* Mobile: Bottom Grid Layout */}
                         <div className="md:hidden grid grid-cols-2 gap-x-8 gap-y-8 w-full mt-8 pointer-events-auto">
                             <SpecLabel label="Uptime" value="99.9%" sub="Guaranteed SLA." align="left" />
-                            <SpecLabel label="Scalability" value="∞ Nodes" sub="Elastic scaling." align="right" />
+                            <SpecLabel label="Agents" value="∞" sub="Elastic scaling." align="right" />
                         </div>
 
                         {/* Desktop: Right Column */}
                         <div className="hidden md:flex flex-col gap-24 text-right pointer-events-auto">
-                            <SpecLabel label="Uptime" value="99.99%" sub="Guaranteed availability SLA." align="right" />
-                            <SpecLabel label="Scalability" value="∞ Nodes" sub="Elastic infrastructure scaling." align="right" />
+                            <SpecLabel label="Concurrency" value="100+" sub="Parallel active agents." align="right" />
+                            <SpecLabel label="Agents" value="∞" sub="Elastic infrastructure scaling." align="right" />
                         </div>
                     </div>
                 </div>
@@ -188,10 +188,10 @@ const Hero: React.FC = () => {
 
                         <div className="flex flex-col items-center mb-24 md:mb-32 pointer-events-auto relative z-10">
                             <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-serif italic text-primary leading-none tracking-tight">
-                                Order from
+                                Automate
                             </h2>
                             <span className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-sans font-bold text-primary leading-none tracking-tight -mt-2 md:-mt-4 relative block">
-                                Chaos.
+                                Everything.
                             </span>
                         </div>
 
@@ -202,7 +202,7 @@ const Hero: React.FC = () => {
                                 <button className="w-full px-6 sm:px-8 py-4 sm:py-6 flex items-center justify-between text-primary">
                                     <div className="flex flex-col items-start text-left">
                                         <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-primary/60 mb-1">Initialize System</span>
-                                        <span className="text-xl sm:text-2xl font-semibold tracking-tight">Get Started</span>
+                                        <span className="text-xl sm:text-2xl font-semibold tracking-tight">Launch Console</span>
                                     </div>
                                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary text-white flex items-center justify-center group-hover:rotate-45 transition-transform duration-500 shadow-lg">
                                         <ArrowUpRight size={20} strokeWidth={1.5} />
@@ -216,7 +216,7 @@ const Hero: React.FC = () => {
 
                             {/* Sub-label */}
                             <div className="absolute -bottom-8 left-0 w-full flex justify-between text-[10px] font-mono text-secondary/60 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                                <span>v2.0.4 Ready</span>
+                                <span>v1.0 Ready</span>
                                 <span>Secure Connection</span>
                             </div>
                         </div>
@@ -227,7 +227,7 @@ const Hero: React.FC = () => {
                             <Logo />
                         </div>
                         <p className="text-[10px] md:text-xs font-mono w-full md:w-auto text-center md:text-left">
-                            DESIGNED FOR<br />PRECISION
+                            DESIGNED FOR<br />AUTONOMY
                         </p>
                     </div>
                 </div>
