@@ -3,8 +3,8 @@ import { ArrowUpRight, Menu } from 'lucide-react';
 import ThreeScene from './ThreeScene';
 
 const Logo = () => (
-    <div className="flex items-center gap-2 font-semibold text-primary z-50 pointer-events-auto select-none group cursor-pointer">
-        <div className="w-5 h-5 md:w-6 md:h-6 bg-primary rounded-[4px] flex items-center justify-center group-hover:rotate-180 transition-transform duration-500 ease-out">
+    <div className="flex items-center gap-2 font-semibold text-foreground z-50 pointer-events-auto select-none group cursor-pointer">
+        <div className="w-5 h-5 md:w-6 md:h-6 bg-primary rounded-[4px] flex items-center justify-center group-hover:rotate-180 transition-transform duration-500 ease-out shadow-[0_0_10px_rgba(168,85,247,0.4)]">
             <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-full"></div>
         </div>
         <span className="tracking-tight text-base md:text-lg">trem-ai</span>
@@ -12,7 +12,7 @@ const Logo = () => (
 );
 
 const DecorativeBackground = () => (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-20 text-primary" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-20 text-foreground" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
         <line x1="75%" y1="0" x2="75%" y2="100%" stroke="currentColor" strokeWidth="2" />
         <path
             d="M 850 -50 A 500 500 0 0 1 1350 450"
@@ -45,17 +45,17 @@ const SpecLabel = ({ label, value, sub, align = 'left', index = 0 }: { label: st
         <div className={`absolute -inset-4 bg-card/30 backdrop-blur-[2px] rounded-2xl -z-20 border border-white/20`}></div>
 
         <div className={`flex items-center gap-2 mb-2 ${align === 'right' ? 'flex-row-reverse' : 'flex-row'}`}>
-            <div className="h-[1px] w-8 bg-primary/30 group-hover:w-16 transition-all duration-500"></div>
+            <div className="h-[1px] w-8 bg-white/30 group-hover:w-16 transition-all duration-500"></div>
             <span className="text-[10px] font-mono tracking-widest text-secondary uppercase">{label}</span>
         </div>
-        <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif italic text-primary mb-1">{value}</h4>
-        <p className="text-[10px] sm:text-xs font-medium text-primary/60 max-w-[150px]">{sub}</p>
+        <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif italic text-foreground mb-1">{value}</h4>
+        <p className="text-[10px] sm:text-xs font-medium text-foreground/60 max-w-[150px]">{sub}</p>
     </div>
 );
 
 const Hero: React.FC = () => {
     return (
-        <div className="relative w-full min-h-screen bg-card overflow-x-hidden font-sans text-primary selection:bg-white selection:text-black">
+        <div className="relative w-full min-h-screen bg-background overflow-x-hidden font-sans text-foreground selection:bg-primary selection:text-white">
 
             {/* --- GLOBAL FIXED BACKGROUNDS --- */}
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -73,16 +73,16 @@ const Hero: React.FC = () => {
                 <div id="hero-section" className="relative flex flex-col min-h-[100dvh] w-full pointer-events-none px-4 sm:px-8 md:px-12 lg:px-24 pb-10">
                     <nav className="flex justify-between items-center py-6 md:py-10 pointer-events-auto">
                         <div className="flex items-center gap-4 md:gap-12">
-                            <button className="group relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-primary/10 hover:bg-primary hover:text-card transition-all duration-300">
+                            <button className="group relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300 text-foreground">
                                 <Menu className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
                             </button>
                             <Logo />
                         </div>
                         <div className="flex gap-4 md:gap-12 text-[10px] sm:text-xs font-mono font-medium text-secondary/60 tracking-widest uppercase hidden md:flex">
-                            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div> System Online</span>
+                            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div> System Online</span>
                             <span>v2.4.0-beta</span>
                         </div>
-                        <button className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-primary text-card">
+                        <button className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white">
                             <ArrowUpRight className="w-5 h-5" />
                         </button>
                     </nav>
@@ -95,19 +95,19 @@ const Hero: React.FC = () => {
                             <span className="font-serif italic text-2xl text-primary">Active</span>
                         </div>
 
-                        <div className="mb-6 md:mb-10 flex flex-wrap items-center gap-3 text-primary font-medium text-xs md:text-sm tracking-wide uppercase">
-                            <span className="px-3 py-1 rounded-full border border-primary/10 bg-white/5 backdrop-blur-sm">Non-Linear</span>
-                            <span className="px-3 py-1 rounded-full border border-primary/10 bg-white/5 backdrop-blur-sm">Non-Blocking</span>
-                            <span className="px-3 py-1 rounded-full border border-primary/10 bg-white/5 backdrop-blur-sm">Cloud Native</span>
+                        <div className="mb-6 md:mb-10 flex flex-wrap items-center gap-3 text-foreground/80 font-medium text-xs md:text-sm tracking-wide uppercase">
+                            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">Non-Linear</span>
+                            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">Non-Blocking</span>
+                            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">Cloud Native</span>
                         </div>
 
-                        <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-primary tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em]">
+                        <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-foreground tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em]">
                             Edit video <br />
                             <div className="flex flex-wrap items-baseline gap-2 md:gap-6">
                                 <span className="text-[5vw] sm:text-[4vw] lg:text-4xl font-mono font-normal text-secondary tracking-normal align-middle max-w-[200px] leading-tight hidden md:inline-block">
                                     / at the speed <br /> of thought
                                 </span>
-                                <span className="relative font-serif italic font-semibold text-[13vw] sm:text-[10vw] lg:text-[8.5rem]">thought<span className="text-accentBlue">.</span></span>
+                                <span className="relative font-serif italic font-semibold text-[13vw] sm:text-[10vw] lg:text-[8.5rem]">thought<span className="text-primary">.</span></span>
                             </div>
                         </h1>
 
@@ -117,18 +117,19 @@ const Hero: React.FC = () => {
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
-                                <button className="group relative flex items-center justify-between bg-primary text-card rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-white transition-all duration-500 cursor-pointer shadow-xl hover:shadow-2xl active:scale-95 overflow-hidden">
+                                <button className="group relative flex items-center justify-between bg-primary text-white rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-white transition-all duration-500 cursor-pointer shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] active:scale-95 overflow-hidden">
                                     <span className="relative z-10 text-base sm:text-lg font-medium tracking-wide">Start Editing</span>
-                                    <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-card rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                        <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                                    <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-white">
+                                        <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6" />
                                     </div>
                                     {/* Hover Effect bg */}
                                     <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                                    <span className="absolute inset-0 z-[11] text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center pl-8 pointer-events-none text-base sm:text-lg font-medium tracking-wide">Start Editing</span>
                                 </button>
 
                                 <div className="hidden sm:flex flex-col items-center justify-center px-4">
                                     <span className="text-[10px] font-mono uppercase tracking-widest text-secondary/70 mb-1">Architecture</span>
-                                    <span className="text-xs font-bold border-b border-primary text-primary">V2.4 VIEW</span>
+                                    <span className="text-xs font-bold border-b border-white/50 text-foreground">V2.4 VIEW</span>
                                 </div>
                             </div>
                         </div>
@@ -146,18 +147,18 @@ const Hero: React.FC = () => {
                 {/* --- SECTION 2: DETAILS --- */}
                 <div id="details-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center py-20 pointer-events-none px-4 sm:px-8">
                     <div className="relative z-20 flex flex-col items-center text-center space-y-6 md:space-y-10 pointer-events-auto backdrop-blur-md bg-white/5 md:bg-transparent p-8 sm:p-12 rounded-[2rem] max-w-5xl mx-auto border border-primary/10 md:border-none shadow-2xl md:shadow-none">
-                        <div className="inline-flex items-center gap-3 text-primary font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-primary/10 px-4 py-2 rounded-full bg-white/5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-accentBlue animate-pulse"></div>
+                        <div className="inline-flex items-center gap-3 text-foreground font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-white/10 px-4 py-2 rounded-full bg-white/5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.6)]"></div>
                             <span>Parallel Processing Core</span>
                         </div>
 
-                        <h2 className="text-4xl sm:text-6xl md:text-8xl leading-[0.9] text-primary tracking-tighter">
+                        <h2 className="text-4xl sm:text-6xl md:text-8xl leading-[0.9] text-foreground tracking-tighter">
                             <span className="block font-serif italic mb-2">Never wait for</span>
                             <span className="block font-semibold">a render bar.</span>
                         </h2>
 
                         <p className="text-secondary text-base sm:text-lg md:text-2xl leading-relaxed max-w-2xl mx-auto font-light">
-                            Trem-AI decouples the interface from the engine. Make a thousand edits a minute; our <span className="text-primary font-medium">cloud swarm</span> handles the heavy lifting instantly.
+                            Trem-AI decouples the interface from the engine. Make a thousand edits a minute; our <span className="text-foreground font-medium underline decoration-primary/50 underline-offset-4">cloud swarm</span> handles the heavy lifting instantly.
                         </p>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-12 pt-8 w-full max-w-3xl">
@@ -167,8 +168,8 @@ const Hero: React.FC = () => {
                                 { label: "FPS", val: "240" },
                                 { label: "Format", val: "RAW" }
                             ].map((item, i) => (
-                                <div key={i} className="flex flex-col items-center border-l border-primary/10 first:border-l-0 md:first:border-l">
-                                    <span className="text-2xl md:text-3xl font-bold text-primary tabular-nums">{item.val}</span>
+                                <div key={i} className="flex flex-col items-center border-l border-white/10 first:border-l-0 md:first:border-l">
+                                    <span className="text-2xl md:text-3xl font-bold text-foreground tabular-nums">{item.val}</span>
                                     <span className="text-[10px] uppercase tracking-widest text-secondary font-mono mt-1">{item.label}</span>
                                 </div>
                             ))}
@@ -180,17 +181,17 @@ const Hero: React.FC = () => {
                 <div id="breakdown-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center pointer-events-none overflow-hidden py-10 px-4 sm:px-8">
                     {/* Background Grid Lines for HUD feel */}
                     <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
-                        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-primary"></div>
-                        <div className="absolute top-0 left-1/2 w-[1px] h-full bg-primary"></div>
-                        <div className="absolute top-1/4 left-0 w-full h-[1px] bg-primary border-t border-dashed"></div>
-                        <div className="absolute top-3/4 left-0 w-full h-[1px] bg-primary border-t border-dashed"></div>
+                        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white"></div>
+                        <div className="absolute top-0 left-1/2 w-[1px] h-full bg-white"></div>
+                        <div className="absolute top-1/4 left-0 w-full h-[1px] bg-white border-t border-dashed"></div>
+                        <div className="absolute top-3/4 left-0 w-full h-[1px] bg-white border-t border-dashed"></div>
                     </div>
 
                     <div className="absolute top-0 left-0 w-full p-6 md:p-12 flex justify-between items-start z-10">
                         <div className="pointer-events-auto">
-                            <h3 className="text-3xl md:text-5xl font-serif italic text-primary">Engine Metrics</h3>
+                            <h3 className="text-3xl md:text-5xl font-serif italic text-foreground">Engine Metrics</h3>
                             <div className="flex items-center gap-2 mt-2 text-[10px] font-mono uppercase tracking-widest text-secondary">
-                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                <span className="w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(168,85,247,0.6)]"></span>
                                 Live Telemetry
                             </div>
                         </div>
@@ -226,10 +227,10 @@ const Hero: React.FC = () => {
                         <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8 pointer-events-auto bg-white/5 px-4 py-1 rounded-full backdrop-blur-sm border border-white/5">Ready to Cut?</span>
 
                         <div className="flex flex-col items-center mb-16 md:mb-24 pointer-events-auto relative z-10">
-                            <h2 className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-serif italic text-primary leading-[0.8] tracking-tighter opacity-90">
+                            <h2 className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-serif italic text-foreground leading-[0.8] tracking-tighter opacity-90">
                                 Create
                             </h2>
-                            <span className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-sans font-bold text-transparent bg-clip-text bg-gradient-to-b from-primary to-transparent leading-[0.8] tracking-tighter -mt-2 md:-mt-6 relative block">
+                            <span className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-sans font-bold text-transparent bg-clip-text bg-gradient-to-b from-foreground to-transparent leading-[0.8] tracking-tighter -mt-2 md:-mt-6 relative block">
                                 Faster.
                             </span>
                         </div>
@@ -238,7 +239,7 @@ const Hero: React.FC = () => {
                             <div className="relative overflow-hidden rounded-full bg-primary text-card shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                                 <button className="w-full pl-8 pr-3 py-3 flex items-center justify-between">
                                     <span className="text-lg md:text-xl font-medium tracking-wide pl-4">Open Studio</span>
-                                    <div className="w-14 h-14 rounded-full bg-card text-primary flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
+                                    <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
                                         <ArrowUpRight size={24} strokeWidth={2} />
                                     </div>
                                 </button>

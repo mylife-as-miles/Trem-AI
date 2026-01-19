@@ -625,11 +625,11 @@ const ThreeScene: React.FC = () => {
         <div className="absolute inset-0 z-0 pointer-events-auto">
             <Canvas shadows dpr={[1, 2]}>
                 <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={35} />
-                <color attach="background" args={['#0A0A0A']} />
+                <color attach="background" args={['#000000']} />
 
                 <ambientLight intensity={0.2} />
                 <directionalLight position={[5, 10, 7]} intensity={2.5} castShadow />
-                <directionalLight position={[-5, 5, -2]} intensity={0.5} color="#3B82F6" />
+                <directionalLight position={[-5, 5, -2]} intensity={0.8} color="#A855F7" />
                 <spotLight position={[0, 5, -10]} intensity={2} color="#ffffff" />
 
                 <RubiksCube />
