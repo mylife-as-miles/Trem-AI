@@ -6,7 +6,7 @@ import VideoRepoOverview from './components/VideoRepoOverview';
 import CompareDiffView from './components/CompareDiffView';
 import AssetLibrary from './components/AssetLibrary';
 
-type ViewState = 'landing' | 'orchestrator' | 'timeline' | 'repo' | 'diff' | 'assets';
+type ViewState = 'landing' | 'orchestrator' | 'dashboard' | 'timeline' | 'repo' | 'diff' | 'assets';
 
 function App() {
   const [view, setView] = useState<ViewState>('landing');
@@ -15,6 +15,7 @@ function App() {
     switch (view) {
       case 'landing':
         return <Hero onStart={() => setView('orchestrator')} />;
+      case 'dashboard':
       case 'orchestrator':
         return (
           <div className="min-h-screen bg-background p-4 md:p-8 flex flex-col items-center justify-center">
