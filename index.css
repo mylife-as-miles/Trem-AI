@@ -4,6 +4,6 @@
 
 @layer base {
   body {
-    @apply antialiased text-primary bg-card;
+    @apply antialiased text-foreground bg-background;
   }
 }
