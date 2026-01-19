@@ -43,7 +43,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
 
         {/* Command Input */}
         <div className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-purple-600/30 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-emerald-600/30 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
           <div className="relative bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-xl dark:shadow-glow-box flex flex-col gap-4">
             <div className="flex gap-4">
               <span className="pt-2 text-primary font-mono text-lg select-none font-bold">&gt;</span>
@@ -108,22 +108,22 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
           </div>
 
           {/* GPU Edit Cluster Card */}
-          <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-purple-400/40 transition-colors">
+          <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-emerald-400/40 transition-colors">
             <div className="absolute right-0 top-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-              <span className="material-icons-outlined text-4xl text-purple-400">smart_toy</span>
+              <span className="material-icons-outlined text-4xl text-emerald-400">smart_toy</span>
             </div>
             <div className="flex items-center gap-2 mb-2">
               <div className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
               </div>
-              <span className="font-mono text-[10px] uppercase tracking-widest text-purple-400 font-bold dark:drop-shadow-glow-text">gpu_edit_cluster</span>
+              <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-400 font-bold dark:drop-shadow-glow-text">gpu_edit_cluster</span>
             </div>
             <div>
               <div className="text-2xl font-mono text-slate-800 dark:text-white font-bold">92<span className="text-sm text-slate-500 dark:text-gray-500 font-normal">%</span></div>
               <div className="text-xs text-slate-500 dark:text-gray-400 mt-1 font-mono">Job: SCENE_DETECT_V3</div>
             </div>
-            <div className="absolute bottom-0 left-0 w-3/4 h-1 bg-gradient-to-r from-purple-400 to-transparent opacity-50 shadow-[0_0_10px_theme('colors.purple.400')]"></div>
+            <div className="absolute bottom-0 left-0 w-3/4 h-1 bg-gradient-to-r from-emerald-400 to-transparent opacity-50 shadow-[0_0_10px_theme('colors.emerald.400')]"></div>
           </div>
 
           {/* CDN Uplink Card */}
@@ -176,7 +176,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
             {/* Completed Task */}
             <div className="glass-panel rounded-lg p-4 flex items-center justify-between group hover:border-primary/40 transition-colors">
               <div className="flex items-center gap-4">
-                <div className="p-2 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <div className="p-2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   <span className="material-icons-outlined">subtitles</span>
                 </div>
                 <div>

@@ -111,14 +111,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
                     onClick={() => onNavigate('repo')}
                     className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? repo : ""}
                   >
-                    <span className="material-icons-outlined text-sm text-purple-400/70 group-hover:text-primary transition-colors">folder</span>
+                    <span className="material-icons-outlined text-sm text-emerald-400/70 group-hover:text-primary transition-colors">folder</span>
                     {!isCollapsed && <span className="truncate">{repo}</span>}
                   </button>
                 </li>
               ))}
               <li>
                 <button onClick={() => onNavigate('repo')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "archive/legacy-b-roll" : ""}>
-                  <span className="material-icons-outlined text-sm text-purple-400/70 group-hover:text-primary transition-colors">cloud_queue</span>
+                  <span className="material-icons-outlined text-sm text-emerald-400/70 group-hover:text-primary transition-colors">cloud_queue</span>
                   {!isCollapsed && <span className="truncate">archive/legacy-b-roll</span>}
                 </button>
               </li>
