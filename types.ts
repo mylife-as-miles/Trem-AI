@@ -32,5 +32,9 @@ export interface CubeProps {
   rotation?: [number, number, number];
   color?: string;
   size?: number;
+  scale?: number;
+  iconType?: string;
+  type?: string;
   wireframe?: boolean;
+  userData?: { id: string };
 }
