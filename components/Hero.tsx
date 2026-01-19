@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef } from 'react';
-import { ArrowUpRight, Menu, Zap } from 'lucide-react';
+import { ArrowUpRight, Menu, Zap, Check, Play, Star, ChevronDown } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ThreeScene from './ThreeScene';
@@ -15,45 +15,14 @@ const Logo = () => (
     </div>
 );
 
-const DecorativeBackground = () => (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-20 text-foreground" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-        <line x1="75%" y1="0" x2="75%" y2="100%" stroke="currentColor" strokeWidth="2" />
-        <path
-            d="M 850 -50 A 500 500 0 0 1 1350 450"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeOpacity="0.5"
-        />
-        <circle cx="75%" cy="45%" r="280" fill="none" stroke="currentColor" strokeWidth="1" strokeOpacity="0.2" />
-        <circle cx="45%" cy="85%" r="100" fill="none" stroke="currentColor" strokeWidth="1" strokeOpacity="0.3" />
-    </svg>
-);
-
-const TryForFreeBrackets = () => (
-    <div className="absolute inset-0 pointer-events-none">
-        <svg className="w-full h-full" viewBox="0 0 160 60" preserveAspectRatio="none">
-            <path d="M 40 10 C 20 10 20 50 40 50" fill="none" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-            <path d="M 120 10 C 140 10 140 50 120 50" fill="none" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-    </div>
-)
-
-// New "HUD" Style Spec Label for Deconstructed View with improved readability
-const SpecLabel = ({ label, value, sub, align = 'left', index = 0 }: { label: string, value: string, sub: string, align?: 'left' | 'right', index?: number }) => (
-    <div className={`flex flex-col ${align === 'right' ? 'items-end text-right' : 'items-start text-left'} group relative z-10`} style={{ transitionDelay: `${index * 100}ms` }}>
-        {/* Plain Backing - No Glass */}
-        <div className={`absolute -inset-4 bg-transparent rounded-2xl -z-10 group-hover:bg-white/5 transition-colors duration-300`}></div>
-
-        {/* Border only */}
-        <div className={`absolute -inset-4 rounded-2xl -z-20 border border-white/10 group-hover:border-primary/30 transition-colors duration-300`}></div>
-
-        <div className={`flex items-center gap-2 mb-2 ${align === 'right' ? 'flex-row-reverse' : 'flex-row'}`}>
-            <div className="h-[1px] w-8 bg-white/30 group-hover:w-16 transition-all duration-500"></div>
-            <span className="text-[10px] font-mono tracking-widest text-secondary uppercase">{label}</span>
-        </div>
-        <h4 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif italic text-foreground mb-1">{value}</h4>
-        <p className="text-[10px] sm:text-xs font-medium text-foreground/60 max-w-[150px]">{sub}</p>
+const SectionHeading = ({ children, subtitle }: { children: React.ReactNode, subtitle?: string }) => (
+    <div className="flex flex-col items-center text-center mb-16 md:mb-24 relative z-10 px-4">
+        {subtitle && (
+            <span className="text-primary font-mono text-xs uppercase tracking-widest mb-4 block">{subtitle}</span>
+        )}
+        <h2 className="text-4xl md:text-6xl lg:text-7xl font-display font-medium tracking-tight text-foreground max-w-4xl mx-auto leading-[1.1]">
+            {children}
+        </h2>
     </div>
 );
 
@@ -72,12 +41,6 @@ const Hero: React.FC<{ onStart: () => void }> = ({ onStart }) => {
                 stagger: 0.1,
                 ease: "power3.out"
             })
-                .from(".hero-tag", {
-                    x: 20,
-                    opacity: 0,
-                    duration: 0.8,
-                    ease: "power3.out"
-                }, "-=0.6")
                 .from(".hero-title-line", {
                     y: 100,
                     opacity: 0,
@@ -85,12 +48,6 @@ const Hero: React.FC<{ onStart: () => void }> = ({ onStart }) => {
                     stagger: 0.15,
                     ease: "power4.out"
                 }, "-=0.4")
-                .from(".hero-desc", {
-                    y: 20,
-                    opacity: 0,
-                    duration: 0.8,
-                    ease: "power3.out"
-                }, "-=0.6")
                 .from(".hero-btn", {
                     scale: 0.9,
                     opacity: 0,
@@ -98,28 +55,19 @@ const Hero: React.FC<{ onStart: () => void }> = ({ onStart }) => {
                     ease: "back.out(1.7)"
                 }, "-=0.4");
 
-            // Scroll Triggers
-            gsap.from("#details-section h2", {
-                scrollTrigger: {
-                    trigger: "#details-section",
-                    start: "top 80%",
-                },
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                ease: "power3.out"
-            });
-
-            gsap.from(".stat-card", {
-                scrollTrigger: {
-                    trigger: "#details-section",
-                    start: "top 70%",
-                },
-                y: 30,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.1,
-                ease: "power3.out"
+            // Scroll Triggers for Sections
+            gsap.utils.toArray<HTMLElement>('.fade-up-section').forEach(section => {
+                gsap.from(section.children, {
+                    scrollTrigger: {
+                        trigger: section,
+                        start: "top 85%",
+                    },
+                    y: 40,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: "power3.out"
+                });
             });
 
         }, componentRef);
@@ -132,8 +80,10 @@ const Hero: React.FC<{ onStart: () => void }> = ({ onStart }) => {
             <div className="bg-noise"></div>
 
             {/* --- GLOBAL FIXED BACKGROUNDS --- */}
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <DecorativeBackground />
+            <div className="fixed inset-0 z-0 pointer-events-none opacity-20 text-foreground">
+                <svg className="w-full h-full" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+                    <path d="M 0 450 Q 720 150 1440 450" fill="none" stroke="currentColor" strokeWidth="1" strokeOpacity="0.1" />
+                </svg>
             </div>
 
             <div className="fixed inset-0 z-0">
@@ -144,195 +94,219 @@ const Hero: React.FC<{ onStart: () => void }> = ({ onStart }) => {
             <div className="relative z-10 w-full max-w-[1920px] mx-auto flex flex-col">
 
                 {/* --- SECTION 1: HERO --- */}
-                <div id="hero-section" className="relative flex flex-col min-h-[100dvh] w-full pointer-events-none px-4 sm:px-8 md:px-12 lg:px-24 pb-10">
-                    <nav className="flex justify-between items-center py-6 md:py-10 pointer-events-auto">
+                <div id="hero-section" className="relative flex flex-col min-h-[90dvh] w-full px-4 sm:px-8 md:px-12 lg:px-24 pb-10">
+                    <nav className="flex justify-between items-center py-6 md:py-10 pointer-events-auto relative z-50">
                         <div className="flex items-center gap-4 md:gap-12 nav-item">
-                            <button className="group relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-white/10 hover:bg-white/10 hover:text-white transition-all duration-300 text-foreground">
-                                <Menu className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
-                            </button>
                             <Logo />
                         </div>
-                        <div className="flex gap-4 md:gap-12 text-[10px] sm:text-xs font-mono font-medium text-secondary/60 tracking-widest uppercase hidden md:flex">
-                            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.6)]"></div> System Online</span>
-                            <span>v2.4.0-beta</span>
+                        <div className="hidden md:flex gap-8 nav-item items-center text-sm font-medium text-secondary">
+                            <a href="#features" className="hover:text-primary transition-colors">Features</a>
+                            <a href="#process" className="hover:text-primary transition-colors">Process</a>
+                            <a href="#pricing" className="hover:text-primary transition-colors">Pricing</a>
+                            <button onClick={onStart} className="px-5 py-2 rounded-full border border-white/10 hover:bg-white/10 hover:text-white transition-all text-foreground">
+                                Sign in
+                            </button>
+                            <button onClick={onStart} className="px-5 py-2 rounded-full bg-primary text-white hover:bg-primary_hover transition-all shadow-[0_0_20px_rgba(168,85,247,0.4)]">
+                                Sign up for free
+                            </button>
                         </div>
-                        <button className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white">
-                            <ArrowUpRight className="w-5 h-5" />
+                        <button onClick={onStart} className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white nav-item">
+                            <Menu className="w-5 h-5" />
                         </button>
                     </nav>
 
-                    <main className="flex-1 flex flex-col justify-center max-w-7xl w-full mx-auto pointer-events-auto mt-12 md:mt-0 relative">
-
-                        {/* Floating Tag */}
-                        <div className="absolute top-0 right-0 hidden lg:flex flex-col items-end gap-2 text-right opacity-80 hero-tag mix-blend-difference">
-                            <span className="font-mono text-xs uppercase tracking-widest text-secondary flex items-center gap-2">
-                                <Zap size={12} className="text-primary fill-primary animate-pulse" />
-                                Render Pipeline
-                            </span>
-                            <span className="font-serif italic text-2xl text-foreground">Active</span>
-                        </div>
-
-                        <div className="mb-6 md:mb-10 flex flex-wrap items-center gap-3 text-foreground/80 font-medium text-xs md:text-sm tracking-wide uppercase">
-                            <span className="px-3 py-1 rounded-full border border-white/10 bg-transparent">Non-Linear</span>
-                            <span className="px-3 py-1 rounded-full border border-white/10 bg-transparent">Non-Blocking</span>
-                            <span className="px-3 py-1 rounded-full border border-white/10 bg-transparent">Cloud Native</span>
-                        </div>
-
-                        <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-foreground tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em] relative z-20">
-                            <div className="hero-title-line">Edit video</div>
-                            <div className="flex flex-wrap items-baseline gap-2 md:gap-6 hero-title-line">
-                                <span className="text-[5vw] sm:text-[4vw] lg:text-4xl font-mono font-normal text-secondary tracking-normal align-middle max-w-[200px] leading-tight hidden md:inline-block">
-                                    / at the speed <br /> of thought
-                                </span>
-                                <span className="relative font-serif italic font-semibold text-[13vw] sm:text-[10vw] lg:text-[9.5rem] text-glow mix-blend-screen">thought<span className="text-primary">.</span></span>
+                    <main className="flex-1 flex flex-col justify-center max-w-5xl w-full mx-auto pointer-events-auto mt-12 md:mt-20 relative text-center items-center">
+                        <h1 className="text-[12vw] sm:text-[9vw] lg:text-[7rem] leading-[0.9] font-medium text-foreground tracking-[-0.04em] mb-8 md:mb-10 relative z-20">
+                            <div className="hero-title-line">Edit your video in</div>
+                            <div className="hero-title-line relative inline-block">
+                                <span className="font-serif italic text-primary text-glow mix-blend-screen">5 minutes</span>
                             </div>
                         </h1>
 
-                        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 lg:gap-0 w-full">
-                            <p className="text-secondary text-sm sm:text-base md:text-xl leading-relaxed max-w-md font-light border-l border-primary/20 pl-4 md:pl-6">
-                                The first asynchronous video engine. Render, clip, and effect in parallel without freezing your flow.
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto hero-btn">
-                                <button onClick={onStart} className="group relative flex items-center justify-between bg-primary text-white rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-white transition-all duration-500 cursor-pointer shadow-[0_0_40px_rgba(168,85,247,0.3)] hover:shadow-[0_0_60px_rgba(168,85,247,0.5)] active:scale-95 overflow-hidden">
-                                    <span className="relative z-10 text-base sm:text-lg font-medium tracking-wide">Start Editing</span>
-                                    <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-white">
-                                        <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                                    </div>
-                                    {/* Hover Effect bg */}
-                                    <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                                    <span className="absolute inset-0 z-[11] text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center pl-8 pointer-events-none text-base sm:text-lg font-medium tracking-wide">Start Editing</span>
-                                </button>
-
-                                <div className="hidden sm:flex flex-col items-center justify-center px-4">
-                                    <span className="text-[10px] font-mono uppercase tracking-widest text-secondary/70 mb-1">Architecture</span>
-                                    <span className="text-xs font-bold border-b border-white/50 text-foreground">V2.4 VIEW</span>
-                                </div>
-                            </div>
-                        </div>
-                    </main>
-
-                    <div className="absolute bottom-6 md:bottom-10 left-4 sm:left-12 flex items-end justify-between w-[90%] text-secondary/50 text-[10px] sm:text-xs font-mono font-medium tracking-wider hidden md:flex">
-                        <div className="flex flex-col">
-                            <span>LATENCY: 12ms</span>
-                            <span>REGION: US-EAST</span>
-                        </div>
-                        <span>SCROLL TO EXPLORE</span>
-                    </div>
-                </div>
-
-                {/* --- SECTION 2: DETAILS --- */}
-                <div id="details-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center py-20 pointer-events-none px-4 sm:px-8">
-                    <div className="relative z-20 flex flex-col items-center text-center space-y-6 md:space-y-10 pointer-events-auto bg-transparent p-0 sm:p-0 rounded-none max-w-5xl mx-auto border-none shadow-none">
-                        <div className="inline-flex items-center gap-3 text-foreground font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-white/10 px-4 py-2 rounded-full bg-transparent">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.6)]"></div>
-                            <span>Parallel Processing Core</span>
-                        </div>
-
-                        <h2 className="text-4xl sm:text-6xl md:text-8xl leading-[0.9] text-foreground tracking-tighter">
-                            <span className="block font-serif italic mb-2">Never wait for</span>
-                            <span className="block font-semibold">a render bar.</span>
-                        </h2>
-
-                        <p className="text-secondary text-base sm:text-lg md:text-2xl leading-relaxed max-w-2xl mx-auto font-light">
-                            Trem-AI decouples the interface from the engine. Make a thousand edits a minute; our <span className="text-foreground font-medium underline decoration-primary/50 underline-offset-4">cloud swarm</span> handles the heavy lifting instantly.
+                        <p className="text-secondary text-lg sm:text-xl md:text-2xl leading-relaxed max-w-2xl mx-auto mb-10 hero-title-line font-light">
+                            Instant AI animations for your <span className="text-foreground border-b border-primary/50">talking head</span> marketing videos.
+                            Turn raw footage into engaging content in seconds.
                         </p>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-12 pt-8 w-full max-w-3xl">
-                            {[
-                                { label: "Export", val: "8K+" },
-                                { label: "Depth", val: "32-bit" },
-                                { label: "FPS", val: "240" },
-                                { label: "Format", val: "RAW" }
-                            ].map((item, i) => (
-                                <div key={i} className="stat-card flex flex-col items-center border-l border-white/10 first:border-l-0 md:first:border-l">
-                                    <span className="text-2xl md:text-3xl font-bold text-foreground tabular-nums">{item.val}</span>
-                                    <span className="text-[10px] uppercase tracking-widest text-secondary font-mono mt-1">{item.label}</span>
+                        <div className="hero-btn">
+                            <button onClick={onStart} className="group relative flex items-center gap-4 bg-primary text-white rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 min-w-[280px] hover:bg-white transition-all duration-500 cursor-pointer shadow-[0_0_40px_rgba(168,85,247,0.3)] hover:shadow-[0_0_60px_rgba(168,85,247,0.5)] active:scale-95 overflow-hidden mx-auto">
+                                <span className="relative z-10 text-xl font-medium tracking-wide">Join now</span>
+                                <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-black rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-white ml-auto">
+                                    <ArrowUpRight className="w-6 h-6" />
                                 </div>
-                            ))}
+                                <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                                <span className="absolute inset-0 z-[11] text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center pl-8 pointer-events-none text-xl font-medium tracking-wide">Join now</span>
+                            </button>
+                        </div>
+                    </main>
+                </div>
+
+                {/* --- FEATURES GRID --- */}
+                <div id="features" className="w-full py-20 px-4 sm:px-8 md:px-12 pointer-events-auto fade-up-section">
+                    <SectionHeading subtitle="Built by creatives, for creatives">
+                        We know it sounds too good to be true, <br /><span className="font-serif italic text-secondary">here's why it isn't.</span>
+                    </SectionHeading>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+                        {[
+                            { title: "Workflow-first", desc: "Editing starts with workflow, with timelines only if you want them." },
+                            { title: "Content-aware", desc: "We analyze everything in your video before creating the animations." },
+                            { title: "Match your brand", desc: "Define your style once. Get consistent animations every time." },
+                            { title: "Tweak by chat", desc: "Modify insertions by chat instead of spending hours in After Effects." },
+                            { title: "Learns with you", desc: "Becomes faster and better with every edit you make." },
+                            { title: "Platform Native", desc: "Optimized outputs for YouTube, Instagram, TikTok, and LinkedIn." }
+                        ].map((feature, i) => (
+                            <div key={i} className="group p-8 rounded-3xl border border-white/10 bg-black/40 hover:bg-white/5 transition-all duration-300 hover:border-primary/50 relative overflow-hidden">
+                                <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 blur-3xl rounded-full group-hover:bg-primary/30 transition-colors"></div>
+                                <h3 className="text-2xl font-display font-medium mb-3 text-foreground">{feature.title}</h3>
+                                <p className="text-secondary text-lg font-light leading-relaxed">{feature.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* --- PROCESS STEPS --- */}
+                <div id="process" className="w-full py-20 px-4 sm:px-8 md:px-12 pointer-events-auto fade-up-section bg-gradient-to-b from-transparent to-black/80">
+                    <SectionHeading subtitle="How we do it">
+                        From raw footage to <br /> <span className="text-primary text-glow">viral content.</span>
+                    </SectionHeading>
+
+                    <div className="max-w-6xl mx-auto flex flex-col md:grid md:grid-cols-4 gap-8">
+                        {[
+                            { step: "01", title: "Context Analysis", desc: "We process your video contents, script, lighting, and framing." },
+                            { step: "02", title: "Storyboard", desc: "We generate a tailored storyboard based on transcript processing." },
+                            { step: "03", title: "Animation", desc: "Each canvas is animated element by element, just like a pro editor." },
+                            { step: "04", title: "Integration", desc: "We integrate approved animations and render the final cut." }
+                        ].map((item, i) => (
+                            <div key={i} className="relative flex flex-col border-l border-white/20 pl-6 md:border-l-0 md:border-t md:pt-6 group">
+                                <span className="text-6xl font-display font-bold text-white/5 mb-4 group-hover:text-primary/20 transition-colors">{item.step}</span>
+                                <h4 className="text-xl font-bold text-foreground mb-2">{item.title}</h4>
+                                <p className="text-secondary text-sm leading-relaxed">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* --- TESTIMONIALS --- */}
+                <div id="testimonials" className="w-full py-24 px-4 sm:px-8 pointer-events-auto fade-up-section overflow-hidden">
+                    <h3 className="text-center text-sm font-mono uppercase tracking-widest text-secondary mb-12">In the words of creatives</h3>
+
+                    {/* Horizontal Scroll / Grid for simplicity on this implementation */}
+                    <div className="flex flex-wrap justify-center gap-6 max-w-[1920px] mx-auto">
+                        {[
+                            { name: "James Fears", role: "Content Creator", text: "This is a really good product. I barely have to do any editing. I like not having to think." },
+                            { name: "Nizzy", role: "Co-founder of Mail0", text: "This is what I want: one that cuts the dead parts & auto captions. Honestly a game changer." },
+                            { name: "Sam", role: "Filmmaker @frontrow", text: "Proud to be one of the first users! :)" },
+                            { name: "Paulius", role: "Indie Hacker", text: "This is super cool." }
+                        ].map((t, i) => (
+                            <div key={i} className="w-full sm:w-[350px] p-6 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
+                                <div className="flex gap-1 mb-4 text-primary">
+                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                                </div>
+                                <p className="text-foreground/90 text-lg mb-6 leading-relaxed">"{t.text}"</p>
+                                <div>
+                                    <div className="font-bold text-foreground text-sm">{t.name}</div>
+                                    <div className="text-xs text-secondary font-mono mt-0.5">{t.role}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+
+                {/* --- PRICING --- */}
+                <div id="pricing" className="w-full py-24 px-4 sm:px-8 pointer-events-auto fade-up-section">
+                    <SectionHeading subtitle="Commitment Free">
+                        Fair pricing for <br /> <span className="font-serif italic">every stage.</span>
+                    </SectionHeading>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+                        {/* Free Tier */}
+                        <div className="p-8 rounded-3xl border border-white/10 bg-black/40 flex flex-col">
+                            <h3 className="text-xl font-bold text-foreground mb-2">Free</h3>
+                            <div className="text-4xl font-display font-bold text-foreground mb-4">$0<span className="text-lg font-sans font-normal text-secondary">/mo</span></div>
+                            <p className="text-secondary text-sm mb-6">Try it out for free, no commitments.</p>
+                            <button onClick={onStart} className="w-full py-3 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all mb-8 text-sm font-bold uppercase tracking-wider">Try it</button>
+                            <ul className="space-y-4 text-sm text-secondary">
+                                {['3 Export credits', 'Guided AI editing', 'You approve most actions', 'Captions', 'Basic b-roll'].map((feat, i) => (
+                                    <li key={i} className="flex gap-3"><Check size={16} className="text-primary shrink-0" /> {feat}</li>
+                                ))}
+                            </ul>
+                            <div className="mt-6 text-xs text-secondary/50 text-center">*we don't ask for your credit card</div>
+                        </div>
+
+                        {/* Creator Tier (Featured) */}
+                        <div className="p-8 rounded-[2rem] border border-primary/50 bg-black/80 flex flex-col relative shadow-[0_0_40px_rgba(168,85,247,0.15)] transform md:-translate-y-4">
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full shadow-lg">Most Popular</div>
+                            <h3 className="text-xl font-bold text-foreground mb-2 text-primary">Creator</h3>
+                            <div className="text-5xl font-display font-bold text-foreground mb-4">$19<span className="text-lg font-sans font-normal text-secondary">/mo</span></div>
+                            <p className="text-secondary text-sm mb-6">If you want to make more videos and edit faster.</p>
+                            <button onClick={onStart} className="w-full py-3 rounded-full bg-primary hover:bg-primary_hover text-white transition-all mb-8 text-sm font-bold uppercase tracking-wider shadow-lg">Get Started</button>
+                            <ul className="space-y-4 text-sm text-foreground/90">
+                                {['20 Export credits', 'Autonomous AI editing', 'Agent makes decisions', 'Animated titles', 'B-roll insertions', 'Advanced animations'].map((feat, i) => (
+                                    <li key={i} className="flex gap-3"><Check size={16} className="text-primary shrink-0" /> {feat}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Pro Tier */}
+                        <div className="p-8 rounded-3xl border border-white/10 bg-black/40 flex flex-col">
+                            <h3 className="text-xl font-bold text-foreground mb-2">Pro</h3>
+                            <div className="text-4xl font-display font-bold text-foreground mb-4">$99<span className="text-lg font-sans font-normal text-secondary">/mo</span></div>
+                            <p className="text-secondary text-sm mb-6">Daily videos with highly advanced insertions.</p>
+                            <button onClick={onStart} className="w-full py-3 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all mb-8 text-sm font-bold uppercase tracking-wider">Get Started</button>
+                            <ul className="space-y-4 text-sm text-secondary">
+                                {['60 Export credits', 'Autonomous AI editing', 'Agent makes decisions', 'Context-aware captions', 'Advanced b-roll', 'Advanced animations'].map((feat, i) => (
+                                    <li key={i} className="flex gap-3"><Check size={16} className="text-primary shrink-0" /> {feat}</li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                {/* --- SECTION 3: DECONSTRUCTED VIEW (HUD Style) --- */}
-                <div id="breakdown-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center pointer-events-none overflow-hidden py-10 px-4 sm:px-8">
-                    {/* Background Grid Lines for HUD feel */}
-                    <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
-                        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white"></div>
-                        <div className="absolute top-0 left-1/2 w-[1px] h-full bg-white"></div>
-                        <div className="absolute top-1/4 left-0 w-full h-[1px] bg-white border-t border-dashed"></div>
-                        <div className="absolute top-3/4 left-0 w-full h-[1px] bg-white border-t border-dashed"></div>
-                    </div>
-
-                    <div className="absolute top-0 left-0 w-full p-6 md:p-12 flex justify-between items-start z-10">
-                        <div className="pointer-events-auto">
-                            <h3 className="text-3xl md:text-5xl font-serif italic text-foreground">Engine Metrics</h3>
-                            <div className="flex items-center gap-2 mt-2 text-[10px] font-mono uppercase tracking-widest text-secondary">
-                                <span className="w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(168,85,247,0.6)]"></span>
-                                Live Telemetry
+                {/* --- FAQ --- */}
+                <div id="faq" className="w-full py-20 px-4 sm:px-8 pointer-events-auto fade-up-section max-w-3xl mx-auto">
+                    <h3 className="text-2xl font-display font-bold text-foreground mb-8 text-center">Questions?</h3>
+                    <div className="space-y-4">
+                        {[
+                            { q: "How is this different from traditional video editors?", a: "Trem-AI removes the timeline grind. Instead of dragging clips and keyframes, it analyzes your video and builds animations for you." },
+                            { q: "What kinds of videos work best?", a: "Talking head marketing videos, social media shorts, and educational content typically see the best results." },
+                            { q: "Will it match my brand style?", a: "Yes. You can define your brand assets and style guide once, and our agents will adhere to it for every edit." },
+                            { q: "How much control do I have?", a: "Total control. You can approve every decision the agent makes, or let it run autonomously and tweak the final output." }
+                        ].map((item, i) => (
+                            <div key={i} className="border-b border-white/10 pb-4">
+                                <div className="font-medium text-foreground py-2 cursor-pointer">{item.q}</div>
+                                <div className="text-secondary text-sm leading-relaxed">{item.a}</div>
                             </div>
-                        </div>
-                        <div className="hidden md:block text-right font-mono text-xs text-secondary/60">
-                            <div>SYS.CPU: 12%</div>
-                            <div>SYS.MEM: 4.2GB</div>
-                            <div>NET.IO: 1.2GB/s</div>
-                        </div>
-                    </div>
-
-                    <div className="w-full h-full max-w-[1800px] relative flex flex-col md:flex-row items-center justify-between z-10 mt-20 md:mt-0 mx-auto px-4 md:px-12">
-                        {/* Left Stats */}
-                        <div className="flex flex-col gap-12 md:gap-32 w-full md:w-auto pointer-events-auto">
-                            <SpecLabel label="Pipeline" value="Async" sub="Non-blocking Render IO" align="left" index={1} />
-                            <SpecLabel label="Bit Depth" value="32-bit" sub="Float Precision Color" align="left" index={2} />
-                        </div>
-
-                        {/* Center Spacer */}
-                        <div className="w-full h-[30vh] md:w-full md:h-auto flex-1"></div>
-
-                        {/* Right Stats */}
-                        <div className="flex flex-col gap-12 md:gap-32 w-full md:w-auto text-right items-end pointer-events-auto mt-12 md:mt-0">
-                            <SpecLabel label="Preview" value="120fps" sub="Real-time Playback" align="right" index={3} />
-                            <SpecLabel label="Nodes" value="Dist." sub="Elastic Compute Swarm" align="right" index={4} />
-                        </div>
+                        ))}
                     </div>
                 </div>
 
-                {/* --- SECTION 4: FOOTER (MAGNETIC PORTAL) --- */}
-                <div id="footer-section" className="relative w-full min-h-[90dvh] flex flex-col items-center justify-center py-20 pointer-events-none overflow-hidden px-4 sm:px-8">
+                {/* --- FOOTER --- */}
+                <div id="footer-section" className="relative w-full py-20 px-4 sm:px-8 pointer-events-auto border-t border-white/5 bg-black/80">
+                    <div className="relative z-20 flex flex-col items-center justify-center w-full text-center">
+                        <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8">Sooooooo....</span>
 
-                    <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none text-center">
-                        <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8 pointer-events-auto bg-transparent px-4 py-1 rounded-full border border-white/10">Ready to Cut?</span>
+                        <h2 className="text-[10vw] sm:text-[8vw] lg:text-[6rem] font-serif italic text-foreground leading-[0.9] tracking-tighter opacity-90 mb-4">
+                            Ready to make <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400 not-italic font-sans font-bold">crazy videos?</span>
+                        </h2>
 
-                        <div className="flex flex-col items-center mb-16 md:mb-24 pointer-events-auto relative z-10">
-                            <h2 className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-serif italic text-foreground leading-[0.8] tracking-tighter opacity-90">
-                                Create
-                            </h2>
-                            <span className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-sans font-bold text-transparent bg-clip-text bg-gradient-to-b from-foreground to-transparent leading-[0.8] tracking-tighter -mt-2 md:-mt-6 relative block">
-                                Faster.
-                            </span>
-                        </div>
-
-                        <div className="relative group cursor-pointer w-full max-w-md mx-auto pointer-events-auto z-20 px-4">
-                            <div className="relative overflow-hidden rounded-full bg-primary text-card shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-                                <button onClick={onStart} className="w-full pl-8 pr-3 py-3 flex items-center justify-between">
-                                    <span className="text-lg md:text-xl font-medium tracking-wide pl-4">Open Studio</span>
-                                    <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
-                                        <ArrowUpRight size={24} strokeWidth={2} />
-                                    </div>
-                                </button>
-                            </div>
+                        <div className="flex gap-4 mt-8">
+                            <button onClick={onStart} className="px-6 py-3 rounded-full bg-white text-black font-bold hover:bg-gray-200 transition-colors">Start for free</button>
+                            <button className="px-6 py-3 rounded-full border border-white/20 text-white hover:bg-white/10 transition-colors">Talk to us</button>
                         </div>
                     </div>
 
-                    <div className="absolute bottom-8 w-full px-6 md:px-12 flex justify-between items-end pointer-events-auto text-primary/80">
-                        <div className="flex flex-col gap-1">
+                    <div className="max-w-7xl mx-auto mt-24 flex flex-col md:flex-row justify-between items-end gap-8">
+                        <div>
                             <Logo />
-                            <span className="text-[10px] text-secondary">© 2026 Trem Inc.</span>
+                            <p className="text-xs text-secondary mt-2">© 2026 Trem-AI</p>
                         </div>
-                        <div className="flex gap-6 text-xs font-medium uppercase tracking-wider text-secondary hover:text-primary transition-colors">
-                            <a href="#" className="hover:underline decoration-1 underline-offset-4">Legal</a>
-                            <a href="#" className="hover:underline decoration-1 underline-offset-4">Privacy</a>
-                            <a href="#" className="hover:underline decoration-1 underline-offset-4">Twitter</a>
+                        <div className="flex gap-6 text-sm text-secondary">
+                            <a href="#" className="hover:text-white">Twitter</a>
+                            <a href="#" className="hover:text-white">LinkedIn</a>
+                            <a href="#" className="hover:text-white">Instagram</a>
+                            <a href="#" className="hover:text-white">Privacy Policy</a>
                         </div>
                     </div>
                 </div>
