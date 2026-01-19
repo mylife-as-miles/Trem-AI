@@ -3,8 +3,8 @@ import { ArrowUpRight, Menu } from 'lucide-react';
 import ThreeScene from './ThreeScene';
 
 const Logo = () => (
-    <div className="flex items-center gap-2 font-semibold text-primary z-50 pointer-events-auto select-none">
-        <div className="w-5 h-5 md:w-6 md:h-6 bg-primary rounded-[4px] flex items-center justify-center">
+    <div className="flex items-center gap-2 font-semibold text-primary z-50 pointer-events-auto select-none group cursor-pointer">
+        <div className="w-5 h-5 md:w-6 md:h-6 bg-primary rounded-[4px] flex items-center justify-center group-hover:rotate-180 transition-transform duration-500 ease-out">
             <div className="w-2 h-2 md:w-2.5 md:h-2.5 bg-white rounded-full"></div>
         </div>
         <span className="tracking-tight text-base md:text-lg">trem-ai</span>
@@ -36,10 +36,10 @@ const TryForFreeBrackets = () => (
 )
 
 // New "HUD" Style Spec Label for Deconstructed View with improved readability
-const SpecLabel = ({ label, value, sub, align = 'left' }: { label: string, value: string, sub: string, align?: 'left' | 'right' }) => (
-    <div className={`flex flex-col ${align === 'right' ? 'items-end text-right' : 'items-start text-left'} group relative z-10`}>
+const SpecLabel = ({ label, value, sub, align = 'left', index = 0 }: { label: string, value: string, sub: string, align?: 'left' | 'right', index?: number }) => (
+    <div className={`flex flex-col ${align === 'right' ? 'items-end text-right' : 'items-start text-left'} group relative z-10`} style={{ transitionDelay: `${index * 100}ms` }}>
         {/* Glassmorphism Backing */}
-        <div className={`absolute -inset-4 bg-white/40 backdrop-blur-md rounded-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 border border-white/40 shadow-sm`}></div>
+        <div className={`absolute -inset-4 bg-white/40 backdrop-blur-md rounded-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 border border-white/40 shadow-sm transition-all`}></div>
 
         {/* Always visible soft backing for better contrast */}
         <div className={`absolute -inset-4 bg-card/30 backdrop-blur-[2px] rounded-2xl -z-20 border border-white/20`}></div>
@@ -58,7 +58,6 @@ const Hero: React.FC = () => {
         <div className="relative w-full min-h-screen bg-card overflow-x-hidden font-sans text-primary selection:bg-black selection:text-white">
 
             {/* --- GLOBAL FIXED BACKGROUNDS --- */}
-            {/* These span the full viewport width regardless of content constraints */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <DecorativeBackground />
             </div>
@@ -68,167 +67,195 @@ const Hero: React.FC = () => {
             </div>
 
             {/* --- MAIN CONTENT CONTAINER --- */}
-            {/* This enforces the max-width and centering for the entire website's UI */}
-            <div className="relative z-10 w-full max-w-[1600px] mx-auto flex flex-col">
+            <div className="relative z-10 w-full max-w-[1920px] mx-auto flex flex-col">
 
                 {/* --- SECTION 1: HERO --- */}
-                <div id="hero-section" className="relative flex flex-col min-h-[100dvh] w-full pointer-events-none px-6 sm:px-12 md:px-16 lg:px-24 pb-10">
+                <div id="hero-section" className="relative flex flex-col min-h-[100dvh] w-full pointer-events-none px-4 sm:px-8 md:px-12 lg:px-24 pb-10">
                     <nav className="flex justify-between items-center py-6 md:py-10 pointer-events-auto">
-                        <div className="flex items-center gap-6 md:gap-12">
-                            <Menu className="w-8 h-8 md:w-10 md:h-10 text-primary stroke-[1.5] cursor-pointer hover:opacity-70 transition-opacity" />
+                        <div className="flex items-center gap-4 md:gap-12">
+                            <button className="group relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-primary/10 hover:bg-primary hover:text-white transition-all duration-300">
+                                <Menu className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
+                            </button>
                             <Logo />
                         </div>
-                        <div className="flex gap-4 md:gap-8 text-[10px] md:text-xs font-medium text-secondary/60 tracking-widest uppercase hidden sm:flex">
-                            <span>async editor</span>
-                            <span>cloud render</span>
+                        <div className="flex gap-4 md:gap-12 text-[10px] sm:text-xs font-mono font-medium text-secondary/60 tracking-widest uppercase hidden md:flex">
+                            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div> System Online</span>
+                            <span>v2.4.0-beta</span>
                         </div>
+                        <button className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white">
+                            <ArrowUpRight className="w-5 h-5" />
+                        </button>
                     </nav>
 
-                    <main className="flex-1 flex flex-col justify-center max-w-4xl pointer-events-auto mt-8 md:mt-0">
-                        <div className="mb-6 md:mb-8 flex items-center gap-3 text-primary font-medium text-xs md:text-base">
-                            <span className="font-bold">→</span>
-                            <span>non-linear. non-blocking. native.</span>
+                    <main className="flex-1 flex flex-col justify-center max-w-7xl w-full mx-auto pointer-events-auto mt-12 md:mt-0 relative">
+
+                        {/* Floating Tag */}
+                        <div className="absolute top-0 right-0 hidden lg:flex flex-col items-end gap-2 text-right opacity-60">
+                            <span className="font-mono text-xs uppercase tracking-widest text-secondary">Render Pipeline</span>
+                            <span className="font-serif italic text-2xl">Active</span>
                         </div>
-                        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[7.5rem] leading-[1.1] md:leading-[0.95] font-medium text-primary tracking-[-0.03em] mb-8 md:mb-12 break-words">
-                            Edit video <br className="hidden md:block" />
-                            <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-2">
-                                <span>at the speed of</span>
-                                <span className="relative font-serif italic font-semibold text-5xl sm:text-7xl md:text-8xl lg:text-[8rem]">thought<span className="text-accentBlue">.</span></span>
+
+                        <div className="mb-6 md:mb-10 flex flex-wrap items-center gap-3 text-primary font-medium text-xs md:text-sm tracking-wide uppercase">
+                            <span className="px-3 py-1 rounded-full border border-primary/20 bg-white/50 backdrop-blur-sm">Non-Linear</span>
+                            <span className="px-3 py-1 rounded-full border border-primary/20 bg-white/50 backdrop-blur-sm">Non-Blocking</span>
+                            <span className="px-3 py-1 rounded-full border border-primary/20 bg-white/50 backdrop-blur-sm">Cloud Native</span>
+                        </div>
+
+                        <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-primary tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em]">
+                            Edit video <br />
+                            <div className="flex flex-wrap items-baseline gap-2 md:gap-6">
+                                <span className="text-[5vw] sm:text-[4vw] lg:text-4xl font-mono font-normal text-secondary tracking-normal align-middle max-w-[200px] leading-tight hidden md:inline-block">
+                                    / at the speed <br /> of thought
+                                </span>
+                                <span className="relative font-serif italic font-semibold text-[13vw] sm:text-[10vw] lg:text-[8.5rem]">thought<span className="text-accentBlue">.</span></span>
                             </div>
                         </h1>
-                        <p className="text-secondary text-sm md:text-lg leading-relaxed mb-10 md:mb-16 max-w-[280px] sm:max-w-md font-normal">
-                            The first asynchronous video engine. Render, clip, and effect in parallel without freezing your flow.
-                        </p>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 md:gap-8 w-full sm:w-auto">
-                            <button className="group relative flex items-center justify-between bg-black text-white rounded-full pl-6 md:pl-8 pr-2 py-2 h-14 md:h-16 w-full sm:w-auto min-w-[200px] hover:bg-neutral-800 transition-all duration-300 cursor-pointer shadow-xl active:scale-95">
-                                <span className="text-sm md:text-base font-medium">start editing</span>
-                                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
-                                    <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black" />
+
+                        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 lg:gap-0 w-full">
+                            <p className="text-secondary text-sm sm:text-base md:text-xl leading-relaxed max-w-md font-light border-l border-primary/20 pl-4 md:pl-6">
+                                The first asynchronous video engine. Render, clip, and effect in parallel without freezing your flow.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+                                <button className="group relative flex items-center justify-between bg-primary text-white rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-black transition-all duration-500 cursor-pointer shadow-xl hover:shadow-2xl active:scale-95 overflow-hidden">
+                                    <span className="relative z-10 text-base sm:text-lg font-medium tracking-wide">Start Editing</span>
+                                    <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                        <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+                                    </div>
+                                    {/* Hover Effect bg */}
+                                    <div className="absolute inset-0 bg-neutral-800 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                                </button>
+
+                                <div className="hidden sm:flex flex-col items-center justify-center px-4">
+                                    <span className="text-[10px] font-mono uppercase tracking-widest text-secondary/70 mb-1">Architecture</span>
+                                    <span className="text-xs font-bold border-b border-primary">V2.4 VIEW</span>
                                 </div>
-                            </button>
-                            <button className="group relative flex items-center justify-center px-8 md:px-10 h-14 md:h-16 text-primary hover:text-black transition-colors cursor-pointer w-full sm:w-auto">
-                                <TryForFreeBrackets />
-                                <span className="text-sm font-medium z-10 relative group-hover:scale-105 transition-transform">view timeline</span>
-                            </button>
+                            </div>
                         </div>
                     </main>
-                    <div className="absolute bottom-6 md:bottom-10 left-6 md:left-20 text-secondary/50 text-xs md:text-sm font-medium tracking-wide hidden md:block">
-                        trem-ai v2.0
+
+                    <div className="absolute bottom-6 md:bottom-10 left-4 sm:left-12 flex items-end justify-between w-[90%] text-secondary/50 text-[10px] sm:text-xs font-mono font-medium tracking-wider hidden md:flex">
+                        <div className="flex flex-col">
+                            <span>LATENCY: 12ms</span>
+                            <span>REGION: US-EAST</span>
+                        </div>
+                        <span>SCROLL TO EXPLORE</span>
                     </div>
                 </div>
 
                 {/* --- SECTION 2: DETAILS --- */}
-                <div id="details-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-start pt-20 md:pt-32 pointer-events-none px-6 sm:px-12 md:px-16">
-                    <div className="flex flex-col items-center text-center space-y-8 pointer-events-auto backdrop-blur-sm bg-card/60 md:bg-transparent p-6 sm:p-8 rounded-3xl max-w-4xl mx-auto z-20 shadow-sm md:shadow-none border border-white/50 md:border-none">
-                        <div className="inline-flex items-center gap-2 text-accentBlue font-medium uppercase tracking-widest text-xs">
-                            <div className="w-2 h-2 rounded-full bg-accentBlue"></div>
-                            <span>Parallel Processing</span>
+                <div id="details-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center py-20 pointer-events-none px-4 sm:px-8">
+                    <div className="relative z-20 flex flex-col items-center text-center space-y-6 md:space-y-10 pointer-events-auto backdrop-blur-md bg-white/40 md:bg-transparent p-8 sm:p-12 rounded-[2rem] max-w-5xl mx-auto border border-white/40 md:border-none shadow-2xl md:shadow-none">
+                        <div className="inline-flex items-center gap-3 text-primary font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-primary/10 px-4 py-2 rounded-full bg-white/50">
+                            <div className="w-1.5 h-1.5 rounded-full bg-accentBlue animate-pulse"></div>
+                            <span>Parallel Processing Core</span>
                         </div>
-                        <h2 className="text-3xl sm:text-4xl md:text-6xl font-serif italic text-primary leading-tight">
-                            Never wait for <br />
-                            <span className="not-italic font-sans font-semibold text-2xl sm:text-3xl md:text-5xl">a render bar again.</span>
+
+                        <h2 className="text-4xl sm:text-6xl md:text-8xl leading-[0.9] text-primary tracking-tighter">
+                            <span className="block font-serif italic mb-2">Never wait for</span>
+                            <span className="block font-semibold">a render bar.</span>
                         </h2>
-                        <p className="text-secondary text-sm sm:text-base md:text-lg leading-relaxed max-w-md mx-auto">
-                            Trem-AI decouples the interface from the engine. Make a thousand edits a minute; our cloud swarm handles the heavy lifting instantly.
+
+                        <p className="text-secondary text-base sm:text-lg md:text-2xl leading-relaxed max-w-2xl mx-auto font-light">
+                            Trem-AI decouples the interface from the engine. Make a thousand edits a minute; our <span className="text-primary font-medium">cloud swarm</span> handles the heavy lifting instantly.
                         </p>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-12 pt-8 w-full max-w-3xl">
+                            {[
+                                { label: "Export", val: "8K+" },
+                                { label: "Depth", val: "32-bit" },
+                                { label: "FPS", val: "240" },
+                                { label: "Format", val: "RAW" }
+                            ].map((item, i) => (
+                                <div key={i} className="flex flex-col items-center border-l border-primary/10 first:border-l-0 md:first:border-l">
+                                    <span className="text-2xl md:text-3xl font-bold text-primary tabular-nums">{item.val}</span>
+                                    <span className="text-[10px] uppercase tracking-widest text-secondary font-mono mt-1">{item.label}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    {/* Spacer for 3D animation visibility */}
-                    <div className="flex-1 w-full min-h-[50vh]"></div>
                 </div>
 
                 {/* --- SECTION 3: DECONSTRUCTED VIEW (HUD Style) --- */}
-                <div id="breakdown-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center pointer-events-none overflow-hidden py-10 px-6 sm:px-12 md:px-16">
-                    <div className="absolute top-10 md:top-24 left-0 w-full text-center z-10 pointer-events-auto px-6">
-                        <div className="inline-block relative">
-                            <div className="absolute inset-0 bg-white/40 blur-xl rounded-full"></div>
-                            <h3 className="relative text-2xl md:text-5xl font-serif italic text-primary mb-2 md:mb-4">Engine Metrics</h3>
+                <div id="breakdown-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center pointer-events-none overflow-hidden py-10 px-4 sm:px-8">
+                    {/* Background Grid Lines for HUD feel */}
+                    <div className="absolute inset-0 pointer-events-none opacity-5">
+                        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-primary"></div>
+                        <div className="absolute top-0 left-1/2 w-[1px] h-full bg-primary"></div>
+                        <div className="absolute top-1/4 left-0 w-full h-[1px] bg-primary border-t border-dashed"></div>
+                        <div className="absolute top-3/4 left-0 w-full h-[1px] bg-primary border-t border-dashed"></div>
+                    </div>
+
+                    <div className="absolute top-0 left-0 w-full p-6 md:p-12 flex justify-between items-start z-10">
+                        <div className="pointer-events-auto">
+                            <h3 className="text-3xl md:text-5xl font-serif italic text-primary">Engine Metrics</h3>
+                            <div className="flex items-center gap-2 mt-2 text-[10px] font-mono uppercase tracking-widest text-secondary">
+                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                Live Telemetry
+                            </div>
                         </div>
-                        <div className="inline-block px-3 py-1 rounded-full border border-primary/10 bg-white/40 backdrop-blur-md">
-                            <span className="text-[10px] md:text-xs font-mono tracking-[0.2em] uppercase text-primary/70">Live Telemetry</span>
+                        <div className="hidden md:block text-right font-mono text-xs text-secondary/60">
+                            <div>SYS.CPU: 12%</div>
+                            <div>SYS.MEM: 4.2GB</div>
+                            <div>NET.IO: 1.2GB/s</div>
                         </div>
                     </div>
 
-                    <div className="max-w-[1400px] w-full h-full relative flex flex-col md:flex-row items-center justify-between z-10 mt-20 md:mt-0 mx-auto">
-
-                        {/* Mobile: Top Grid Layout */}
-                        <div className="md:hidden grid grid-cols-2 gap-x-8 gap-y-8 w-full mb-8 pointer-events-auto">
-                            <SpecLabel label="Pipeline" value="Async" sub="Non-blocking IO." align="left" />
-                            <SpecLabel label="Color" value="32-bit" sub="Float precision." align="right" />
+                    <div className="w-full h-full max-w-[1800px] relative flex flex-col md:flex-row items-center justify-between z-10 mt-20 md:mt-0 mx-auto px-4 md:px-12">
+                        {/* Left Stats */}
+                        <div className="flex flex-col gap-12 md:gap-32 w-full md:w-auto pointer-events-auto">
+                            <SpecLabel label="Pipeline" value="Async" sub="Non-blocking Render IO" align="left" index={1} />
+                            <SpecLabel label="Bit Depth" value="32-bit" sub="Float Precision Color" align="left" index={2} />
                         </div>
 
-                        {/* Desktop: Left Column */}
-                        <div className="hidden md:flex flex-col gap-24 pointer-events-auto">
-                            <SpecLabel label="Pipeline" value="Async" sub="Non-blocking render IO." align="left" />
-                            <SpecLabel label="Color Depth" value="32-bit" sub="Floating point precision." align="left" />
-                        </div>
+                        {/* Center Spacer */}
+                        <div className="w-full h-[30vh] md:w-full md:h-auto flex-1"></div>
 
-                        {/* Center area reserved for 3D Explosion */}
-                        {/* Fixed height on mobile to ensure spacing, auto on desktop */}
-                        <div className="w-full h-[40vh] md:h-auto md:flex-1"></div>
-
-                        {/* Mobile: Bottom Grid Layout */}
-                        <div className="md:hidden grid grid-cols-2 gap-x-8 gap-y-8 w-full mt-8 pointer-events-auto">
-                            <SpecLabel label="Export" value="8K" sub="Real-time preview." align="left" />
-                            <SpecLabel label="Nodes" value="Dist." sub="Distributed render." align="right" />
-                        </div>
-
-                        {/* Desktop: Right Column */}
-                        <div className="hidden md:flex flex-col gap-24 text-right pointer-events-auto">
-                            <SpecLabel label="Export" value="8K 120fps" sub="Instant preview generation." align="right" />
-                            <SpecLabel label="Architecture" value="Distributed" sub="Elastic cloud render nodes." align="right" />
+                        {/* Right Stats */}
+                        <div className="flex flex-col gap-12 md:gap-32 w-full md:w-auto text-right items-end pointer-events-auto mt-12 md:mt-0">
+                            <SpecLabel label="Preview" value="120fps" sub="Real-time Playback" align="right" index={3} />
+                            <SpecLabel label="Nodes" value="Dist." sub="Elastic Compute Swarm" align="right" index={4} />
                         </div>
                     </div>
                 </div>
 
                 {/* --- SECTION 4: FOOTER (MAGNETIC PORTAL) --- */}
-                <div id="footer-section" className="relative w-full min-h-[90dvh] flex flex-col items-center justify-center py-20 pointer-events-none overflow-hidden px-6 sm:px-12 md:px-16">
+                <div id="footer-section" className="relative w-full min-h-[90dvh] flex flex-col items-center justify-center py-20 pointer-events-none overflow-hidden px-4 sm:px-8">
 
-                    <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none text-center">
-                        <span className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-secondary mb-8 pointer-events-auto">Ready to Cut</span>
+                    <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none text-center mix-blend-multiply">
+                        <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8 pointer-events-auto bg-white/50 px-4 py-1 rounded-full backdrop-blur-sm">Ready to Cut?</span>
 
-                        <div className="flex flex-col items-center mb-24 md:mb-32 pointer-events-auto relative z-10">
-                            <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-serif italic text-primary leading-none tracking-tight">
+                        <div className="flex flex-col items-center mb-16 md:mb-24 pointer-events-auto relative z-10">
+                            <h2 className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-serif italic text-primary leading-[0.8] tracking-tighter opacity-90">
                                 Create
                             </h2>
-                            <span className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-sans font-bold text-primary leading-none tracking-tight -mt-2 md:-mt-4 relative block">
+                            <span className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-sans font-bold text-transparent bg-clip-text bg-gradient-to-b from-primary to-transparent leading-[0.8] tracking-tighter -mt-2 md:-mt-6 relative block">
                                 Faster.
                             </span>
                         </div>
 
-                        <div className="relative group cursor-pointer w-full max-w-xs sm:max-w-sm mx-auto pointer-events-auto z-20">
-                            {/* High Tech Button Interface */}
-                            <div className="relative overflow-hidden rounded-2xl bg-white/20 backdrop-blur-xl border border-white/50 shadow-2xl transition-all duration-300 group-hover:bg-white/30 group-hover:scale-105 group-hover:shadow-glow">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-accentBlue/50 group-hover:bg-accentBlue transition-colors"></div>
-                                <button className="w-full px-6 sm:px-8 py-4 sm:py-6 flex items-center justify-between text-primary">
-                                    <div className="flex flex-col items-start text-left">
-                                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-primary/60 mb-1">New Project</span>
-                                        <span className="text-xl sm:text-2xl font-semibold tracking-tight">Open Studio</span>
-                                    </div>
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary text-white flex items-center justify-center group-hover:rotate-45 transition-transform duration-500 shadow-lg">
-                                        <ArrowUpRight size={20} strokeWidth={1.5} />
+                        <div className="relative group cursor-pointer w-full max-w-md mx-auto pointer-events-auto z-20 px-4">
+                            <div className="relative overflow-hidden rounded-full bg-[#111] text-white shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(0,0,0,0.3)]">
+                                <button className="w-full pl-8 pr-3 py-3 flex items-center justify-between">
+                                    <span className="text-lg md:text-xl font-medium tracking-wide pl-4">Open Studio</span>
+                                    <div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
+                                        <ArrowUpRight size={24} strokeWidth={2} />
                                     </div>
                                 </button>
-
-                                {/* Animated Tech Lines */}
-                                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent group-hover:via-primary/50 transition-all"></div>
-                                <div className="absolute top-0 right-0 w-[1px] h-full bg-gradient-to-b from-transparent via-primary/10 to-transparent"></div>
-                            </div>
-
-                            {/* Sub-label */}
-                            <div className="absolute -bottom-8 left-0 w-full flex justify-between text-[10px] font-mono text-secondary/60 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                                <span>v2.0 Ready</span>
-                                <span>Studio Mode</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="absolute bottom-10 w-full px-6 md:px-10 flex justify-between items-end pointer-events-auto mix-blend-difference text-secondary">
-                        <div className="hidden md:block">
+                    <div className="absolute bottom-8 w-full px-6 md:px-12 flex justify-between items-end pointer-events-auto text-primary/80">
+                        <div className="flex flex-col gap-1">
                             <Logo />
+                            <span className="text-[10px] text-secondary">© 2026 Trem Inc.</span>
                         </div>
-                        <p className="text-[10px] md:text-xs font-mono w-full md:w-auto text-center md:text-left">
-                            DESIGNED FOR<br />CREATORS
-                        </p>
+                        <div className="flex gap-6 text-xs font-medium uppercase tracking-wider">
+                            <a href="#" className="hover:text-black hover:underline decoration-1 underline-offset-4">Legal</a>
+                            <a href="#" className="hover:text-black hover:underline decoration-1 underline-offset-4">Privacy</a>
+                            <a href="#" className="hover:text-black hover:underline decoration-1 underline-offset-4">Twitter</a>
+                        </div>
                     </div>
                 </div>
 
