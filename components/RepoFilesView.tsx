@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TopNavigation from './TopNavigation';
 import { RepoData } from './VideoRepoOverview';
+import AlertDialog from './AlertDialog';
 
 interface RepoFilesViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files') => void;
@@ -21,6 +22,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
     const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
     const [editorContent, setEditorContent] = useState('');
     const [isDirty, setIsDirty] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     // Initialize files from repoData
     useEffect(() => {
@@ -68,8 +70,8 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                         asset_id: a.id,
                         duration_frames: Math.floor(Math.random() * 1000),
                         scenes: [
-                            { start: 0, end: 120, label: "Intro" },
-                            { start: 121, end: 450, label: "Action" }
+                            { scene_id: 1, start_frame: 0, end_frame: 120, label: "Intro" },
+                            { scene_id: 2, start_frame: 121, end_frame: 450, label: "Action" }
                         ]
                     }, null, 2)
                 })) || []
@@ -148,12 +150,19 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
         }
     };
 
-    const handleDelete = () => {
-        if (selectedFile && window.confirm(`Are you sure you want to delete ${selectedFile.name}?`)) {
+    const handleDeleteClick = () => {
+        if (selectedFile) {
+            setDeleteDialogOpen(true);
+        }
+    };
+
+    const confirmDelete = () => {
+        if (selectedFile) {
             setFiles(deleteFile(selectedFile.id, files));
             setSelectedFile(null);
             setEditorContent('');
             setIsDirty(false);
+            setDeleteDialogOpen(false);
         }
     };
 
@@ -194,7 +203,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 </div>
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={handleDelete}
+                        onClick={handleDeleteClick}
                         disabled={!selectedFile}
                         className="px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center gap-2"
                     >
@@ -280,6 +289,23 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 <span>{selectedFile ? `Editing: ${selectedFile.name}` : 'Ready'}</span>
                 <span>{repoData?.name ? `Repo: ${repoData.name}` : 'No Repo Loaded'}</span>
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog
+                isOpen={deleteDialogOpen}
+                title="Confirm Selection Deletion"
+                description={
+                    <span>
+                        Are you sure you want to delete <strong className="text-slate-900 dark:text-white">{selectedFile?.name}</strong>?
+                        <br /><span className="text-xs mt-1 block">This action cannot be undone.</span>
+                    </span>
+                }
+                confirmText="Delete File"
+                cancelText="Cancel"
+                type="danger"
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteDialogOpen(false)}
+            />
         </div>
     );
 };
