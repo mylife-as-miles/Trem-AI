@@ -212,7 +212,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
 
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-black">
-      <TopNavigation />
+      <TopNavigation onNavigate={onNavigate} />
       <div className="flex-1 overflow-y-auto p-6 md:p-10">
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[450px]">

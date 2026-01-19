@@ -184,7 +184,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
     return (
         <div className="flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
-            <TopNavigation />
+            <TopNavigation onNavigate={onNavigate} />
             <div className="flex-1 overflow-hidden p-8">
                 <div className="max-w-5xl mx-auto w-full flex flex-col h-full">
 

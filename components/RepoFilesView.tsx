@@ -189,7 +189,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
 
     return (
         <div className="flex flex-col h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-white font-sans transition-colors duration-300">
-            <TopNavigation />
+            <TopNavigation onNavigate={onNavigate} />
 
             {/* Toolbar */}
             <div className="px-6 py-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-black/40">

@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
             )}
             <ul className="space-y-1">
               <li>
-                <button onClick={() => onNavigate('repo')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 shadow-[0_0_10px_rgba(168,85,247,0.1)] ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Ingest: 4k_Raw_Footage_A" : ""}>
+                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 shadow-[0_0_10px_rgba(168,85,247,0.1)] ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Ingest: 4k_Raw_Footage_A" : ""}>
                   <span className="material-icons-outlined text-sm animate-pulse">data_usage</span>
                   {!isCollapsed && <span className="truncate">Ingest: 4k_Raw_Footage_A</span>}
                 </button>
@@ -121,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('repo')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Render: Social_Cut_v3" : ""}>
+                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Render: Social_Cut_v3" : ""}>
                   <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">movie_filter</span>
                   {!isCollapsed && <span className="truncate">Render: Social_Cut_v3</span>}
                 </button>
