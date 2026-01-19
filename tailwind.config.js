@@ -22,13 +22,9 @@ export default {
                 sans: ["'Inter'", "sans-serif"],
                 mono: ["'JetBrains Mono'", "monospace"],
             },
-            boxShadow: {
-                'neon': '0 0 10px theme("colors.green.500"), 0 0 20px theme("colors.green.900")',
-                'glow-box': '0 0 40px -10px rgba(34, 197, 94, 0.25)',
-            },
-            dropShadow: {
-                'glow-text': '0 0 8px rgba(34, 197, 94, 0.6)',
-            }
+            // Removed glow-related shadows
+            boxShadow: {},
+            dropShadow: {}
         },
     },
     plugins: [],
