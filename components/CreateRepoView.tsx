@@ -38,21 +38,65 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
     const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
 
+    // Advanced Simulation State
+    const [simLogs, setSimLogs] = useState<string[]>([]);
+    const [workers, setWorkers] = useState<{ id: number, status: 'idle' | 'analyzing' | 'vectorizing' | 'optimizing', task: string }[]>([
+        { id: 1, status: 'idle', task: 'Waiting...' },
+        { id: 2, status: 'idle', task: 'Waiting...' },
+        { id: 3, status: 'idle', task: 'Waiting...' },
+        { id: 4, status: 'idle', task: 'Waiting...' }
+    ]);
+
     // Ingestion Simulation
     useEffect(() => {
         if (step === 'ingest' && selectedAssets.length > 0) {
+            setSimLogs(prev => [...prev, "> Initializing Trem-AI Compute Cluster...", "> Allocating 4 Worker Nodes..."]);
+
             const interval = setInterval(() => {
                 setSelectedAssets(prev => {
                     const allIndexed = prev.every(a => a.status === 'indexed');
                     if (allIndexed) {
                         clearInterval(interval);
+                        setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Complete' })));
+                        setSimLogs(logs => [...logs, "> Indexing Complete. Semantic Baseline Locked."]);
                         return prev;
+                    }
+
+                    // Randomly update workers
+                    setWorkers(prevWorkers => prevWorkers.map(w => {
+                        if (Math.random() > 0.7) {
+                            const statuses: ('analyzing' | 'vectorizing' | 'optimizing')[] = ['analyzing', 'vectorizing', 'optimizing'];
+                            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                            return {
+                                ...w,
+                                status: randomStatus,
+                                task: `${randomStatus === 'analyzing' ? 'Frame' : randomStatus === 'vectorizing' ? 'Vector' : 'Graph'} #${Math.floor(Math.random() * 9999)}`
+                            };
+                        }
+                        return w;
+                    }));
+
+                    // Randomly add logs
+                    if (Math.random() > 0.6) {
+                        const messages = [
+                            "Detecting scene change...",
+                            "Extracting CLIP embedding...",
+                            "Optimizing vector index...",
+                            "Transcribing audio stream...",
+                            "Generating metadata json..."
+                        ];
+                        const msg = messages[Math.floor(Math.random() * messages.length)];
+                        setSimLogs(logs => {
+                            const newLogs = [...logs, `> [Worker_${Math.floor(Math.random() * 4) + 1}] ${msg}`];
+                            if (newLogs.length > 8) return newLogs.slice(newLogs.length - 8);
+                            return newLogs;
+                        });
                     }
 
                     return prev.map(asset => {
                         if (asset.status === 'indexed') return asset;
 
-                        let newProgress = asset.progress + Math.random() * 5;
+                        let newProgress = asset.progress + Math.random() * 2; // Slower progress for effect
                         if (newProgress >= 100) {
                             if (asset.status === 'pending') return { ...asset, status: 'transcribing', progress: 0 };
                             if (asset.status === 'transcribing') return { ...asset, status: 'detecting', progress: 0 };
@@ -62,7 +106,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         return { ...asset, progress: newProgress };
                     });
                 });
-            }, 500);
+            }, 200); // Faster tick rate for UI updates
             return () => clearInterval(interval);
         }
     }, [step]);
@@ -139,7 +183,9 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         {/* Step 2: Assets & Ingestion */}
                         <section>
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg font-bold font-display text-slate-900 dark:text-white">Source Assets</h2>
+                                <h2 className="text-lg font-bold font-display text-slate-900 dark:text-white">
+                                    {selectedAssets.length > 0 && step === 'ingest' ? 'Compute Cluster Status' : 'Source Assets'}
+                                </h2>
                                 {step === 'details' && (
                                     <button
                                         onClick={() => setIsAssetModalOpen(true)}
@@ -174,30 +220,100 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                 </div>
                             )}
 
-                            {/* Ingestion List */}
-                            {selectedAssets.length > 0 && (
+                            {/* Advanced Simulation UI */}
+                            {selectedAssets.length > 0 && step === 'ingest' && (
+                                <div className="space-y-6">
+                                    {/* Worker Nodes Grid */}
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                        {workers.map(worker => (
+                                            <div key={worker.id} className="bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg p-3 relative overflow-hidden">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="material-icons-outlined text-slate-400 text-sm">dns</span>
+                                                        <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">NODE_0{worker.id}</span>
+                                                    </div>
+                                                    <div className={`w-2 h-2 rounded-full ${worker.status === 'idle' ? 'bg-slate-400' : 'bg-green-400 animate-pulse'}`}></div>
+                                                </div>
+                                                <div className="font-mono text-xs text-slate-500 dark:text-gray-500 mb-1">STATUS</div>
+                                                <div className={`text-sm font-bold uppercase ${worker.status === 'idle' ? 'text-slate-400' : 'text-primary'}`}>
+                                                    {worker.status}
+                                                </div>
+                                                <div className="mt-2 text-[10px] font-mono text-slate-400 dark:text-gray-600 truncate">
+                                                    {worker.task}
+                                                </div>
+                                                {/* Activity Graph Overlay Mock */}
+                                                {worker.status !== 'idle' && (
+                                                    <div className="absolute bottom-0 left-0 right-0 h-8 opacity-20 pointer-events-none">
+                                                        <div className="flex items-end justify-between h-full px-1">
+                                                            {[...Array(10)].map((_, i) => (
+                                                                <div key={i} className="w-1 bg-primary transition-all duration-300" style={{ height: `${Math.random() * 100}%` }}></div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Console & Process List Split */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        {/* Terminal Log */}
+                                        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 font-mono text-xs h-64 overflow-y-auto custom-scrollbar flex flex-col-reverse shadow-inner">
+                                            <div className="flex items-center gap-2 text-green-500 mb-2 border-b border-green-500/20 pb-2 sticky top-0 bg-slate-900/90 backdrop-blur z-10 w-full">
+                                                <span className="material-icons-outlined text-sm">terminal</span>
+                                                <span className="font-bold">CLUSTER_LOGS</span>
+                                            </div>
+                                            <div className="space-y-1">
+                                                {simLogs.map((log, i) => (
+                                                    <div key={i} className="text-slate-300 break-words font-mono opacity-90">
+                                                        {log}
+                                                    </div>
+                                                ))}
+                                                <div className="animate-pulse text-green-500">_</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Asset Progress List */}
+                                        <div className="h-64 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                                            {selectedAssets.map(asset => (
+                                                <div key={asset.id} className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-3 flex items-center gap-3">
+                                                    <div className="p-2 rounded bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
+                                                        <span className="material-icons-outlined text-slate-500 dark:text-gray-400 text-sm">movie</span>
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <span className="font-mono text-xs font-bold truncate text-slate-900 dark:text-white max-w-[120px]">{asset.name}</span>
+                                                            <span className={`text-[10px] font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-primary' : 'text-amber-500 dark:text-yellow-500'}`}>
+                                                                {asset.status === 'indexed' ? 'Ready' : asset.status}
+                                                            </span>
+                                                        </div>
+                                                        <div className="h-1 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
+                                                            <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}%` }}></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Basic List (for before ingestion starts) */}
+                            {selectedAssets.length > 0 && step === 'details' && (
                                 <div className="space-y-3">
                                     {selectedAssets.map(asset => (
-                                        <div key={asset.id} className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 flex items-center gap-4">
+                                        <div key={asset.id} className="opacity-60 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 flex items-center gap-4">
                                             <div className="p-3 rounded bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
                                                 <span className="material-icons-outlined text-slate-500 dark:text-gray-400">movie</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between mb-1">
                                                     <span className="font-mono text-sm font-bold truncate text-slate-900 dark:text-white">{asset.name}</span>
-                                                    <span className={`text-xs font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-primary' : 'text-amber-500 dark:text-yellow-500'}`}>
-                                                        {asset.status === 'indexed' ? 'Ready' : asset.status}
-                                                    </span>
+                                                    <span className="text-xs font-mono uppercase tracking-wider text-slate-500">Pending Ingest</span>
                                                 </div>
-                                                {asset.status !== 'indexed' ? (
-                                                    <div className="h-1.5 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
-                                                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}%` }}></div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-xs text-slate-500 dark:text-gray-500 font-mono">
-                                                        meta/{asset.id}.json ✔
-                                                    </div>
-                                                )}
+                                                <div className="h-1.5 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
+                                                    <div className="h-full bg-slate-300 dark:bg-white/10 w-0"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}

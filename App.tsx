@@ -6,13 +6,14 @@ import VideoRepoOverview, { RepoData } from './components/VideoRepoOverview';
 import CompareDiffView from './components/CompareDiffView';
 import AssetLibrary from './components/AssetLibrary';
 import CreateRepoView from './components/CreateRepoView';
+import RepoFilesView from './components/RepoFilesView';
 
 const App: React.FC = () => {
-    const [currentView, setCurrentView] = useState<'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo'>('dashboard');
+    const [currentView, setCurrentView] = useState<'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files'>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [repoData, setRepoData] = useState<RepoData | null>(null);
 
-    const handleNavigate = (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => {
+    const handleNavigate = (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files') => {
         setCurrentView(view);
         setIsSidebarOpen(false);
     };
@@ -29,13 +30,15 @@ const App: React.FC = () => {
             case 'timeline':
                 return <TimelineEditor onNavigate={handleNavigate} />;
             case 'repo':
-                return <VideoRepoOverview repoData={repoData} />;
+                return <VideoRepoOverview repoData={repoData} onNavigate={handleNavigate} />;
             case 'diff':
                 return <CompareDiffView onNavigate={handleNavigate} />;
             case 'assets':
                 return <AssetLibrary />;
             case 'create-repo':
                 return <CreateRepoView onNavigate={handleNavigate} onCreateRepo={handleCreateRepo} />;
+            case 'repo-files':
+                return <RepoFilesView onNavigate={handleNavigate} repoData={repoData} />;
             default:
                 return <Orchestrator onNavigate={handleNavigate} />;
         }

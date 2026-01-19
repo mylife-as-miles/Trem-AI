@@ -21,6 +21,7 @@ interface FileNode {
 
 interface VideoRepoOverviewProps {
   repoData?: RepoData | null;
+  onNavigate?: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files') => void;
 }
 
 // --- Mock Data ---
@@ -64,7 +65,7 @@ const defaultFileSystem: FileNode[] = [
   }
 ];
 
-const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData }) => {
+const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavigate }) => {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(['timelines', 'media']));
   const [selectedId, setSelectedId] = useState<string>('timelines');
   const [fileSystem, setFileSystem] = useState<FileNode[]>(defaultFileSystem);
@@ -281,6 +282,13 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData }) => {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Repository Files</h3>
                   <div className="flex gap-2">
+                    <button
+                      onClick={() => onNavigate && onNavigate('repo-files')}
+                      className="text-slate-400 hover:text-primary transition-colors flex items-center gap-1"
+                      title="Manage Files"
+                    >
+                      <span className="material-icons-outlined text-base">folder_special</span>
+                    </button>
                     <button className="text-slate-400 hover:text-primary transition-colors"><span className="material-icons-outlined text-base">create_new_folder</span></button>
                     <button className="text-slate-400 hover:text-primary transition-colors"><span className="material-icons-outlined text-base">upload_file</span></button>
                   </div>
