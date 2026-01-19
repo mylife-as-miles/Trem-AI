@@ -26,3 +26,14 @@ export interface Task {
   icon: string;
   color: 'primary' | 'purple' | 'red';
 }
+
+export type IconType = 'link' | 'cloud' | 'wifi' | 'shield' | 'dots';
+
+export interface CubeProps {
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  color: string;
+  type?: 'solid' | 'wireframe';
+  iconType?: IconType;
+  scale?: number;
+}
