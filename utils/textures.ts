@@ -24,86 +24,109 @@ export const createIconTexture = (type: string, color: string = '#000000'): stri
     const cy = size / 2;
 
     switch (type) {
-        case 'wifi':
+        case 'wifi': // Kept for 'cloud/stream' connection
             ctx.beginPath();
             ctx.arc(cx, cy + 100, 30, 0, Math.PI * 2);
             ctx.fill();
-
             ctx.beginPath();
             ctx.arc(cx, cy + 100, 80, Math.PI * 1.2, Math.PI * 1.8);
             ctx.stroke();
-
             ctx.beginPath();
             ctx.arc(cx, cy + 100, 140, Math.PI * 1.2, Math.PI * 1.8);
             ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(cx, cy + 100, 200, Math.PI * 1.2, Math.PI * 1.8);
-            ctx.stroke();
             break;
 
-        case 'link':
+        case 'link': // Kept for 'integration'
             ctx.translate(cx, cy);
             ctx.rotate(-Math.PI / 4);
             ctx.translate(-cx, -cy);
-
-            // Link 1
             ctx.beginPath();
             ctx.roundRect(cx - 100, cy - 40, 120, 80, 40);
             ctx.stroke();
-
-            // Link 2
             ctx.beginPath();
             ctx.roundRect(cx - 20, cy - 40, 120, 80, 40);
             ctx.stroke();
             break;
 
-        case 'cloud':
+        case 'cloud': // Kept for 'storage'
             ctx.beginPath();
             ctx.arc(cx - 60, cy + 20, 50, 0, Math.PI * 2);
             ctx.arc(cx + 60, cy + 20, 50, 0, Math.PI * 2);
             ctx.arc(cx, cy - 40, 70, 0, Math.PI * 2);
-            ctx.fill(); // Silhouette style for this one
+            ctx.fill();
             break;
 
-        case 'shield':
+        case 'play':
             ctx.beginPath();
-            ctx.moveTo(cx - 80, cy - 80);
-            ctx.lineTo(cx + 80, cy - 80);
-            ctx.lineTo(cx + 80, cy);
-            ctx.quadraticCurveTo(cx, cy + 120, cx, cy + 120);
-            ctx.quadraticCurveTo(cx - 80, cy, cx - 80, cy);
+            // Triangle pointing right
+            ctx.moveTo(cx - 40, cy - 60);
+            ctx.lineTo(cx + 60, cy);
+            ctx.lineTo(cx - 40, cy + 60);
             ctx.closePath();
-            ctx.stroke();
-
-            // Inner check
+            ctx.fill(); // Solid fill
+            // Circle around it
             ctx.beginPath();
-            ctx.moveTo(cx - 30, cy + 10);
-            ctx.lineTo(cx, cy + 40);
-            ctx.lineTo(cx + 40, cy - 30);
+            ctx.arc(cx, cy, 100, 0, Math.PI * 2);
             ctx.stroke();
             break;
 
-        case 'dots':
-            const dotSize = 25;
-            const gap = 80;
-            for (let i = -1; i <= 1; i++) {
-                for (let j = -1; j <= 1; j++) {
-                    ctx.beginPath();
-                    ctx.arc(cx + i * gap, cy + j * gap, dotSize, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+        case 'film':
+            // Film strip segment
+            ctx.beginPath();
+            ctx.rect(cx - 80, cy - 100, 160, 200);
+            ctx.stroke();
+            // Sprocket holes
+            ctx.fillStyle = color;
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.rect(cx - 60, cy - 80 + (i * 60), 20, 40);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.rect(cx + 40, cy - 80 + (i * 60), 20, 40);
+                ctx.fill();
             }
             break;
 
-        case 'lines':
-            ctx.lineWidth = 10;
-            for (let i = -2; i <= 2; i++) {
+        case 'audio':
+            // Waveform bars
+            const bars = [40, 70, 100, 60, 90, 50, 30];
+            const barWidth = 20;
+            const spacing = 15;
+            const startX = cx - ((bars.length * (barWidth + spacing)) / 2);
+
+            for (let i = 0; i < bars.length; i++) {
                 ctx.beginPath();
-                ctx.moveTo(cx - 100, cy + i * 50);
-                ctx.lineTo(cx + 100, cy + i * 50);
-                ctx.stroke();
+                ctx.roundRect(startX + i * (barWidth + spacing), cy - bars[i] / 2, barWidth, bars[i], 10);
+                ctx.fill();
             }
+            break;
+
+        case 'render':
+            // Progress circle/gear
+            ctx.beginPath();
+            ctx.arc(cx, cy, 80, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Inner segments
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - 80);
+            ctx.lineTo(cx, cy - 40);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy + 80);
+            ctx.lineTo(cx, cy + 40);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx - 80, cy);
+            ctx.lineTo(cx - 40, cy);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(cx + 80, cy);
+            ctx.lineTo(cx + 40, cy);
+            ctx.stroke();
             break;
     }
 

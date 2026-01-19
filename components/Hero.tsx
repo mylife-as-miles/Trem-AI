@@ -79,41 +79,41 @@ const Hero: React.FC = () => {
                             <Logo />
                         </div>
                         <div className="flex gap-4 md:gap-8 text-[10px] md:text-xs font-medium text-secondary/60 tracking-widest uppercase hidden sm:flex">
-                            <span>agent hub</span>
-                            <span>orchestrator</span>
+                            <span>async editor</span>
+                            <span>cloud render</span>
                         </div>
                     </nav>
 
                     <main className="flex-1 flex flex-col justify-center max-w-4xl pointer-events-auto mt-8 md:mt-0">
                         <div className="mb-6 md:mb-8 flex items-center gap-3 text-primary font-medium text-xs md:text-base">
                             <span className="font-bold">→</span>
-                            <span>the future of autonomous work</span>
+                            <span>non-linear. non-blocking. native.</span>
                         </div>
                         <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[7.5rem] leading-[1.1] md:leading-[0.95] font-medium text-primary tracking-[-0.03em] mb-8 md:mb-12 break-words">
-                            Deploy your <br className="hidden md:block" />
+                            Edit video <br className="hidden md:block" />
                             <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-2">
-                                <span className="relative font-serif italic font-semibold text-5xl sm:text-7xl md:text-8xl lg:text-[8rem]">"swarm"</span>
-                                <span>instantly<span className="text-accentBlue">.</span></span>
+                                <span>at the speed of</span>
+                                <span className="relative font-serif italic font-semibold text-5xl sm:text-7xl md:text-8xl lg:text-[8rem]">thought<span className="text-accentBlue">.</span></span>
                             </div>
                         </h1>
                         <p className="text-secondary text-sm md:text-lg leading-relaxed mb-10 md:mb-16 max-w-[280px] sm:max-w-md font-normal">
-                            Orchestrate specialized AI agents to code, analyze, and solve complex workflows autonomously.
+                            The first asynchronous video engine. Render, clip, and effect in parallel without freezing your flow.
                         </p>
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 md:gap-8 w-full sm:w-auto">
                             <button className="group relative flex items-center justify-between bg-black text-white rounded-full pl-6 md:pl-8 pr-2 py-2 h-14 md:h-16 w-full sm:w-auto min-w-[200px] hover:bg-neutral-800 transition-all duration-300 cursor-pointer shadow-xl active:scale-95">
-                                <span className="text-sm md:text-base font-medium">deploy agents</span>
+                                <span className="text-sm md:text-base font-medium">start editing</span>
                                 <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center group-hover:scale-105 transition-transform">
                                     <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black" />
                                 </div>
                             </button>
                             <button className="group relative flex items-center justify-center px-8 md:px-10 h-14 md:h-16 text-primary hover:text-black transition-colors cursor-pointer w-full sm:w-auto">
                                 <TryForFreeBrackets />
-                                <span className="text-sm font-medium z-10 relative group-hover:scale-105 transition-transform">view architecture</span>
+                                <span className="text-sm font-medium z-10 relative group-hover:scale-105 transition-transform">view timeline</span>
                             </button>
                         </div>
                     </main>
                     <div className="absolute bottom-6 md:bottom-10 left-6 md:left-20 text-secondary/50 text-xs md:text-sm font-medium tracking-wide hidden md:block">
-                        trem-ai v1.0
+                        trem-ai v2.0
                     </div>
                 </div>
 
@@ -122,14 +122,14 @@ const Hero: React.FC = () => {
                     <div className="flex flex-col items-center text-center space-y-8 pointer-events-auto backdrop-blur-sm bg-card/60 md:bg-transparent p-6 sm:p-8 rounded-3xl max-w-4xl mx-auto z-20 shadow-sm md:shadow-none border border-white/50 md:border-none">
                         <div className="inline-flex items-center gap-2 text-accentBlue font-medium uppercase tracking-widest text-xs">
                             <div className="w-2 h-2 rounded-full bg-accentBlue"></div>
-                            <span>Intelligent Orchestration</span>
+                            <span>Parallel Processing</span>
                         </div>
                         <h2 className="text-3xl sm:text-4xl md:text-6xl font-serif italic text-primary leading-tight">
-                            Delegate Complexity. <br />
-                            <span className="not-italic font-sans font-semibold text-2xl sm:text-3xl md:text-5xl">Scale Intelligence.</span>
+                            Never wait for <br />
+                            <span className="not-italic font-sans font-semibold text-2xl sm:text-3xl md:text-5xl">a render bar again.</span>
                         </h2>
                         <p className="text-secondary text-sm sm:text-base md:text-lg leading-relaxed max-w-md mx-auto">
-                            Don't just chat with AI. Equip it. Trem-AI breaks down massive objectives into executable tasks, assigning them to specialized agents that work in parallel.
+                            Trem-AI decouples the interface from the engine. Make a thousand edits a minute; our cloud swarm handles the heavy lifting instantly.
                         </p>
                     </div>
                     {/* Spacer for 3D animation visibility */}
@@ -141,10 +141,10 @@ const Hero: React.FC = () => {
                     <div className="absolute top-10 md:top-24 left-0 w-full text-center z-10 pointer-events-auto px-6">
                         <div className="inline-block relative">
                             <div className="absolute inset-0 bg-white/40 blur-xl rounded-full"></div>
-                            <h3 className="relative text-2xl md:text-5xl font-serif italic text-primary mb-2 md:mb-4">Swarm Performance</h3>
+                            <h3 className="relative text-2xl md:text-5xl font-serif italic text-primary mb-2 md:mb-4">Engine Metrics</h3>
                         </div>
                         <div className="inline-block px-3 py-1 rounded-full border border-primary/10 bg-white/40 backdrop-blur-md">
-                            <span className="text-[10px] md:text-xs font-mono tracking-[0.2em] uppercase text-primary/70">Live Metrics</span>
+                            <span className="text-[10px] md:text-xs font-mono tracking-[0.2em] uppercase text-primary/70">Live Telemetry</span>
                         </div>
                     </div>
 
@@ -152,14 +152,14 @@ const Hero: React.FC = () => {
 
                         {/* Mobile: Top Grid Layout */}
                         <div className="md:hidden grid grid-cols-2 gap-x-8 gap-y-8 w-full mb-8 pointer-events-auto">
-                            <SpecLabel label="Response" value="12ms" sub="Global edge response." align="left" />
-                            <SpecLabel label="Security" value="AES-256" sub="Military grade." align="right" />
+                            <SpecLabel label="Pipeline" value="Async" sub="Non-blocking IO." align="left" />
+                            <SpecLabel label="Color" value="32-bit" sub="Float precision." align="right" />
                         </div>
 
                         {/* Desktop: Left Column */}
                         <div className="hidden md:flex flex-col gap-24 pointer-events-auto">
-                            <SpecLabel label="Response" value="<50ms" sub="Agent decision latency." align="left" />
-                            <SpecLabel label="Context" value="1M+" sub="Token context window." align="left" />
+                            <SpecLabel label="Pipeline" value="Async" sub="Non-blocking render IO." align="left" />
+                            <SpecLabel label="Color Depth" value="32-bit" sub="Floating point precision." align="left" />
                         </div>
 
                         {/* Center area reserved for 3D Explosion */}
@@ -168,14 +168,14 @@ const Hero: React.FC = () => {
 
                         {/* Mobile: Bottom Grid Layout */}
                         <div className="md:hidden grid grid-cols-2 gap-x-8 gap-y-8 w-full mt-8 pointer-events-auto">
-                            <SpecLabel label="Uptime" value="99.9%" sub="Guaranteed SLA." align="left" />
-                            <SpecLabel label="Agents" value="∞" sub="Elastic scaling." align="right" />
+                            <SpecLabel label="Export" value="8K" sub="Real-time preview." align="left" />
+                            <SpecLabel label="Nodes" value="Dist." sub="Distributed render." align="right" />
                         </div>
 
                         {/* Desktop: Right Column */}
                         <div className="hidden md:flex flex-col gap-24 text-right pointer-events-auto">
-                            <SpecLabel label="Concurrency" value="100+" sub="Parallel active agents." align="right" />
-                            <SpecLabel label="Agents" value="∞" sub="Elastic infrastructure scaling." align="right" />
+                            <SpecLabel label="Export" value="8K 120fps" sub="Instant preview generation." align="right" />
+                            <SpecLabel label="Architecture" value="Distributed" sub="Elastic cloud render nodes." align="right" />
                         </div>
                     </div>
                 </div>
@@ -184,14 +184,14 @@ const Hero: React.FC = () => {
                 <div id="footer-section" className="relative w-full min-h-[90dvh] flex flex-col items-center justify-center py-20 pointer-events-none overflow-hidden px-6 sm:px-12 md:px-16">
 
                     <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none text-center">
-                        <span className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-secondary mb-8 pointer-events-auto">Final Output</span>
+                        <span className="text-xs md:text-sm font-mono uppercase tracking-[0.3em] text-secondary mb-8 pointer-events-auto">Ready to Cut</span>
 
                         <div className="flex flex-col items-center mb-24 md:mb-32 pointer-events-auto relative z-10">
                             <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-serif italic text-primary leading-none tracking-tight">
-                                Automate
+                                Create
                             </h2>
                             <span className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-sans font-bold text-primary leading-none tracking-tight -mt-2 md:-mt-4 relative block">
-                                Everything.
+                                Faster.
                             </span>
                         </div>
 
@@ -201,8 +201,8 @@ const Hero: React.FC = () => {
                                 <div className="absolute top-0 left-0 w-1 h-full bg-accentBlue/50 group-hover:bg-accentBlue transition-colors"></div>
                                 <button className="w-full px-6 sm:px-8 py-4 sm:py-6 flex items-center justify-between text-primary">
                                     <div className="flex flex-col items-start text-left">
-                                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-primary/60 mb-1">Initialize System</span>
-                                        <span className="text-xl sm:text-2xl font-semibold tracking-tight">Launch Console</span>
+                                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-primary/60 mb-1">New Project</span>
+                                        <span className="text-xl sm:text-2xl font-semibold tracking-tight">Open Studio</span>
                                     </div>
                                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary text-white flex items-center justify-center group-hover:rotate-45 transition-transform duration-500 shadow-lg">
                                         <ArrowUpRight size={20} strokeWidth={1.5} />
@@ -216,8 +216,8 @@ const Hero: React.FC = () => {
 
                             {/* Sub-label */}
                             <div className="absolute -bottom-8 left-0 w-full flex justify-between text-[10px] font-mono text-secondary/60 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                                <span>v1.0 Ready</span>
-                                <span>Secure Connection</span>
+                                <span>v2.0 Ready</span>
+                                <span>Studio Mode</span>
                             </div>
                         </div>
                     </div>
@@ -227,7 +227,7 @@ const Hero: React.FC = () => {
                             <Logo />
                         </div>
                         <p className="text-[10px] md:text-xs font-mono w-full md:w-auto text-center md:text-left">
-                            DESIGNED FOR<br />AUTONOMY
+                            DESIGNED FOR<br />CREATORS
                         </p>
                     </div>
                 </div>

@@ -27,7 +27,7 @@ export interface Task {
   color: 'primary' | 'purple' | 'red';
 }
 
-export type IconType = 'link' | 'cloud' | 'wifi' | 'shield' | 'dots';
+export type IconType = 'link' | 'cloud' | 'wifi' | 'play' | 'film' | 'audio' | 'render';
 
 export interface CubeProps {
   position: [number, number, number];

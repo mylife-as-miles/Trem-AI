@@ -214,11 +214,11 @@ const RubiksCube = () => {
                     const colorIndex = Math.floor(Math.random() * colors.length);
                     let iconType: CubeProps['iconType'] | undefined = undefined;
 
-                    if (z === 1 && x === 0 && y === 0) iconType = 'link';
-                    else if (z === -1 && x === 0 && y === 0) iconType = 'dots';
-                    else if (y === 1 && x === 0 && z === 0) iconType = 'wifi';
-                    else if (x === 1 && y === 0 && z === 0) iconType = 'cloud';
-                    else if (x === -1 && y === 0 && z === 0) iconType = 'shield';
+                    if (z === 1 && x === 0 && y === 0) iconType = 'film';
+                    else if (z === -1 && x === 0 && y === 0) iconType = 'audio';
+                    else if (y === 1 && x === 0 && z === 0) iconType = 'play';
+                    else if (x === 1 && y === 0 && z === 0) iconType = 'render';
+                    else if (x === -1 && y === 0 && z === 0) iconType = 'wifi';
 
                     const cubeData = {
                         localPosition: [x * gap, 0, z * gap] as [number, number, number],
