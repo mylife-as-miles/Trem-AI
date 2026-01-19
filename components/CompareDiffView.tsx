@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 interface CompareDiffViewProps {
     onNavigate?: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets') => void;
@@ -43,7 +44,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
 
 
     return (
-        <div className="flex flex-col h-screen bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 font-sans overflow-hidden selection:bg-primary selection:text-white transition-colors duration-200">
+        <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 font-sans overflow-hidden selection:bg-primary selection:text-white transition-colors duration-200">
             {/* Header */}
             <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/5 bg-white/95 dark:bg-background-dark/95 backdrop-blur-sm z-30">
                 <div className="flex items-center gap-4">
@@ -207,12 +208,18 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                                     </div>
                                     <div className="bg-white dark:glass-panel p-6 rounded-2xl rounded-tl-none border border-slate-200 dark:border-primary/20 relative shadow-sm dark:shadow-none">
                                         <div className="absolute -left-2 top-0 w-4 h-4 bg-transparent border-t border-l border-slate-200 dark:border-primary/20 [clip-path:polygon(0_0,100%_0,100%_100%)] bg-white dark:bg-black"></div>
-                                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base font-light">
-                                            I analyzed the creative brief for <span className="text-slate-900 dark:text-white font-medium">"high energy"</span>. Based on the bpm of the audio track, the original <span className="text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-1 py-0.5 rounded font-mono text-xs">Shot_03 (Walking)</span> dragged the pacing down.
-                                        </p>
-                                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base font-light mt-4">
-                                            I shortened the intro to increase energy and swapped it for <span className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1 py-0.5 rounded font-mono text-xs">Shot_05 (Running)</span>, which contains a high-intensity run that better matches the "red shoes" prompt and the beat drop at 00:15.
-                                        </p>
+                                        <MarkdownRenderer
+                                            content={`Based on the provided loan portfolio data, several potential compliance gaps and violations can be identified:
+
+1. **Undefined and Missing Deadlines:** 
+   - Loan #LN-2026-4 with DIGNITY PLC and Loan LN-2026-276 with COBHAM ULTRA SENIORCO S.À R.L. have undefined deadlines. Additionally, Loan LN-2026-975 with SEED BIDCO LIMITED has an unavailable deadline. Having clear deadlines is crucial for monitoring and ensuring compliance.
+
+2. **Status of Loans:**
+   - Several loans are currently "In Review," such as **LN-2026-4**, LN-2026-235, LN-2026-257, LN-2026-276, LN-2026-383, LN-2026-628, and LN-2026-975. These loans may face potential compliance risks if decisions are not finalized promptly.
+
+3. **Unspecified Loan Amounts:** 
+   - For loans such as LN-2026-257 and LN-2026-433, the not specified or unavailable loan amounts present a compliance monitoring challenge as it's essential to track the size of the exposure properly.`}
+                                        />
                                     </div>
                                 </div>
                             </div>

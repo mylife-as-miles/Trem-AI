@@ -31,7 +31,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
     );
 
     return (
-        <div className="flex flex-col h-screen bg-[#09090b] text-slate-200 font-sans overflow-hidden">
+        <div className="flex flex-col h-full bg-[#09090b] text-slate-200 font-sans overflow-hidden">
             {/* Minimal Header */}
             <header className="h-14 flex-shrink-0 flex items-center px-6 border-b border-white/5 bg-[#09090b]">
                 <button

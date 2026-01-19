@@ -34,20 +34,51 @@ const App: React.FC = () => {
     }
   };
 
-  // If we are in timeline view, we want a full screen experience without the default shell?
-  // The design provided has its own header.
-  if (currentView === 'timeline') {
-    return <TimelineEditor onNavigate={handleNavigate} />;
-  }
-  if (currentView === 'diff') {
-    return <CompareDiffView onNavigate={handleNavigate} />;
-  }
-  if (currentView === 'assets') {
-    return <AssetLibrary />;
-  }
-  if (currentView === 'settings') {
-    return <SettingsView onNavigate={handleNavigate} />;
-  }
+  // Render function now handles all views inside the shell
+  const renderContent = () => {
+    switch (currentView) {
+      case 'timeline':
+        return <TimelineEditor onNavigate={handleNavigate} />;
+      case 'diff':
+        return <CompareDiffView onNavigate={handleNavigate} />;
+      case 'assets':
+        return <AssetLibrary />;
+      case 'settings':
+        return <SettingsView onNavigate={handleNavigate} />;
+      case 'repo':
+        return (
+          <>
+            <RepoHeader
+              onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              onSettingsClick={() => handleNavigate('settings')}
+            />
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-10 scroll-smooth">
+              <div className="pb-20">
+                <VideoRepoOverview />
+              </div>
+            </div>
+          </>
+        );
+      case 'dashboard':
+      default:
+        return (
+          <>
+            <Header
+              onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              onSettingsClick={() => handleNavigate('settings')}
+            />
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-10 scroll-smooth">
+              <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
+                <Orchestrator onNavigate={handleNavigate} />
+                <StatusGrid />
+                <TaskFeed />
+                <div className="h-20"></div> {/* Spacer for bottom scroll */}
+              </div>
+            </div>
+          </>
+        );
+    }
+  };
 
   return (
     <div className="flex h-screen bg-background-light dark:bg-black text-slate-800 dark:text-white font-sans overflow-hidden transition-colors duration-200">
@@ -66,40 +97,16 @@ const App: React.FC = () => {
         onNavigate={handleNavigate}
       />
 
-      <main className="flex-1 flex flex-col relative z-0 bg-background-light dark:bg-black w-full">
-        {currentView === 'dashboard' ? (
-          <Header
-            onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            onSettingsClick={() => handleNavigate('settings')}
-          />
-        ) : (
-          <RepoHeader
-            onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            onSettingsClick={() => handleNavigate('settings')}
-          />
-        )}
-
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-10 scroll-smooth">
-          {currentView === 'dashboard' ? (
-            <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
-              <Orchestrator onNavigate={handleNavigate} />
-              <StatusGrid />
-              <TaskFeed />
-              <div className="h-20"></div> {/* Spacer for bottom scroll */}
-            </div>
-          ) : (
-            <div className="pb-20">
-              <VideoRepoOverview />
-            </div>
-          )}
-        </div>
+      <main className="flex-1 flex flex-col relative z-0 bg-background-light dark:bg-black w-full h-full overflow-hidden">
+        {renderContent()}
       </main>
 
       {/* Floating Theme Toggle */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50 pointer-events-auto">
         <button
           className="p-3 bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-full shadow-lg text-slate-600 dark:text-white hover:text-primary transition-colors hover:shadow-[0_0_15px_rgba(168,85,247,0.5)]"
           onClick={() => setDarkMode(!darkMode)}
+          title="Toggle Theme"
         >
           <span className="material-icons-outlined">{darkMode ? 'light_mode' : 'dark_mode'}</span>
         </button>
