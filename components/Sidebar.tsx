@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings') => void;
+  onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
@@ -139,7 +139,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
               </button>
             )}
 
-            <button className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md text-slate-500 dark:text-gray-400 hover:text-primary transition-colors group ${isCollapsed ? 'justify-center' : 'w-full'}`} title={isCollapsed ? "New Video Repository" : ""}>
+            <button
+              onClick={() => onNavigate('create-repo')}
+              className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md text-slate-500 dark:text-gray-400 hover:text-primary transition-colors group ${isCollapsed ? 'justify-center' : 'w-full'}`} title={isCollapsed ? "New Video Repository" : ""}
+            >
               <span className="material-icons-outlined text-lg group-hover:text-primary">add_circle_outline</span>
               {!isCollapsed && <span>New Repo</span>}
             </button>

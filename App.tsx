@@ -2,17 +2,24 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Orchestrator from './components/Orchestrator';
 import TimelineEditor from './components/TimelineEditor';
-import VideoRepoOverview from './components/VideoRepoOverview';
+import VideoRepoOverview, { RepoData } from './components/VideoRepoOverview';
 import CompareDiffView from './components/CompareDiffView';
 import AssetLibrary from './components/AssetLibrary';
+import CreateRepoView from './components/CreateRepoView';
 
 const App: React.FC = () => {
-    const [currentView, setCurrentView] = useState<'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings'>('dashboard');
+    const [currentView, setCurrentView] = useState<'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo'>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [repoData, setRepoData] = useState<RepoData | null>(null);
 
-    const handleNavigate = (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings') => {
+    const handleNavigate = (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => {
         setCurrentView(view);
         setIsSidebarOpen(false);
+    };
+
+    const handleCreateRepo = (data: RepoData) => {
+        setRepoData(data);
+        handleNavigate('repo');
     };
 
     const renderView = () => {
@@ -22,11 +29,13 @@ const App: React.FC = () => {
             case 'timeline':
                 return <TimelineEditor onNavigate={handleNavigate} />;
             case 'repo':
-                return <VideoRepoOverview />;
+                return <VideoRepoOverview repoData={repoData} />;
             case 'diff':
                 return <CompareDiffView onNavigate={handleNavigate} />;
             case 'assets':
                 return <AssetLibrary />;
+            case 'create-repo':
+                return <CreateRepoView onNavigate={handleNavigate} onCreateRepo={handleCreateRepo} />;
             default:
                 return <Orchestrator onNavigate={handleNavigate} />;
         }

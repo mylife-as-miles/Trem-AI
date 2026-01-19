@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { interpretAgentCommand } from '../services/geminiService';
 
 interface OrchestratorProps {
-  onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets') => void;
+  onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
 }
 
 const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
@@ -74,7 +74,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Page Title */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">Orchestrate</h1>
+            <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
             <p className="text-slate-500 dark:text-gray-400">Manage your asynchronous video agents via natural language.</p>
           </div>
 
