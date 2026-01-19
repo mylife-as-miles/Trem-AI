@@ -1,7 +1,7 @@
 // Utility to generate simple icon textures on the fly using HTML Canvas
 // This avoids external asset dependencies and ensures crisp vector-like quality.
 
-export const createIconTexture = (type: string, color: string = '#000000'): string => {
+export const createIconTexture = (type: string, color: string = '#FFFFFF'): string => {
     const canvas = document.createElement('canvas');
     const size = 512;
     canvas.width = size;

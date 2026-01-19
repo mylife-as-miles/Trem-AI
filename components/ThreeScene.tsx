@@ -70,7 +70,7 @@ const WireframeShape: React.FC<{ position: [number, number, number], rotation?: 
     return (
         <group ref={groupRef} position={position} rotation={new THREE.Euler(...rotation)} scale={scale}>
             <mesh ref={ref} geometry={geometry}>
-                <meshBasicMaterial color="#111" wireframe transparent opacity={0.1} />
+                <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.03} />
             </mesh>
         </group>
     )
@@ -206,7 +206,7 @@ const RubiksCube = () => {
     const slices = useMemo(() => {
         const top = [], mid = [], bot = [];
         const gap = 1.05;
-        const colors = ['#FFFFFF', '#94A3B8', '#1A1A1A', '#CBD5E1', '#F8FAFC', '#475569'];
+        const colors = ['#1A1A1A', '#27272A', '#0A0A0A', '#3F3F46', '#18181B', '#52525B'];
 
         for (let x = -1; x <= 1; x++) {
             for (let y = -1; y <= 1; y++) {
@@ -625,12 +625,12 @@ const ThreeScene: React.FC = () => {
         <div className="absolute inset-0 z-0 pointer-events-auto">
             <Canvas shadows dpr={[1, 2]}>
                 <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={35} />
-                <color attach="background" args={['#F3F6FB']} />
+                <color attach="background" args={['#0A0A0A']} />
 
-                <ambientLight intensity={0.7} />
-                <directionalLight position={[5, 10, 7]} intensity={1.5} castShadow />
-                <directionalLight position={[-5, 5, -2]} intensity={1} color="#bfdbfe" />
-                <spotLight position={[0, 5, -10]} intensity={0.5} color="#ffffff" />
+                <ambientLight intensity={0.2} />
+                <directionalLight position={[5, 10, 7]} intensity={2.5} castShadow />
+                <directionalLight position={[-5, 5, -2]} intensity={0.5} color="#3B82F6" />
+                <spotLight position={[0, 5, -10]} intensity={2} color="#ffffff" />
 
                 <RubiksCube />
                 <HeroFloatingCubes />

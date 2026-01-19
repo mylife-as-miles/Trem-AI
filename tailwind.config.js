@@ -15,10 +15,10 @@ export default {
                 mono: ['JetBrains Mono', 'monospace'],
             },
             colors: {
-                primary: '#1A1A1A',
-                secondary: '#6B7280',
-                card: '#F3F6FB', // Matches the canvas background color in ThreeScene
-                accentBlue: '#3B82F6',
+                primary: '#EDEDED', // Light text for dark mode
+                secondary: '#A1A1AA', // Gray text for dark mode
+                card: '#0A0A0A', // Dark background (matches ThreeScene)
+                accentBlue: '#60A5FA', // Lighter blue for better contrast
             }
         },
     },

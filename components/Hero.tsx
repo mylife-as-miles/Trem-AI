@@ -12,17 +12,17 @@ const Logo = () => (
 );
 
 const DecorativeBackground = () => (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-60 mix-blend-multiply" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
-        <line x1="75%" y1="0" x2="75%" y2="100%" stroke="#111" strokeWidth="8" />
+    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-20 text-primary" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+        <line x1="75%" y1="0" x2="75%" y2="100%" stroke="currentColor" strokeWidth="2" />
         <path
             d="M 850 -50 A 500 500 0 0 1 1350 450"
             fill="none"
-            stroke="#111"
+            stroke="currentColor"
             strokeWidth="1.5"
-            strokeOpacity="0.4"
+            strokeOpacity="0.5"
         />
-        <circle cx="75%" cy="45%" r="280" fill="none" stroke="#111" strokeWidth="1" strokeOpacity="0.1" />
-        <circle cx="45%" cy="85%" r="100" fill="none" stroke="#111" strokeWidth="1" strokeOpacity="0.15" />
+        <circle cx="75%" cy="45%" r="280" fill="none" stroke="currentColor" strokeWidth="1" strokeOpacity="0.2" />
+        <circle cx="45%" cy="85%" r="100" fill="none" stroke="currentColor" strokeWidth="1" strokeOpacity="0.3" />
     </svg>
 );
 
@@ -55,7 +55,7 @@ const SpecLabel = ({ label, value, sub, align = 'left', index = 0 }: { label: st
 
 const Hero: React.FC = () => {
     return (
-        <div className="relative w-full min-h-screen bg-card overflow-x-hidden font-sans text-primary selection:bg-black selection:text-white">
+        <div className="relative w-full min-h-screen bg-card overflow-x-hidden font-sans text-primary selection:bg-white selection:text-black">
 
             {/* --- GLOBAL FIXED BACKGROUNDS --- */}
             <div className="fixed inset-0 z-0 pointer-events-none">
@@ -73,7 +73,7 @@ const Hero: React.FC = () => {
                 <div id="hero-section" className="relative flex flex-col min-h-[100dvh] w-full pointer-events-none px-4 sm:px-8 md:px-12 lg:px-24 pb-10">
                     <nav className="flex justify-between items-center py-6 md:py-10 pointer-events-auto">
                         <div className="flex items-center gap-4 md:gap-12">
-                            <button className="group relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-primary/10 hover:bg-primary hover:text-white transition-all duration-300">
+                            <button className="group relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full border border-primary/10 hover:bg-primary hover:text-card transition-all duration-300">
                                 <Menu className="w-5 h-5 md:w-6 md:h-6 stroke-[1.5]" />
                             </button>
                             <Logo />
@@ -82,7 +82,7 @@ const Hero: React.FC = () => {
                             <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div> System Online</span>
                             <span>v2.4.0-beta</span>
                         </div>
-                        <button className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white">
+                        <button className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-primary text-card">
                             <ArrowUpRight className="w-5 h-5" />
                         </button>
                     </nav>
@@ -92,13 +92,13 @@ const Hero: React.FC = () => {
                         {/* Floating Tag */}
                         <div className="absolute top-0 right-0 hidden lg:flex flex-col items-end gap-2 text-right opacity-60">
                             <span className="font-mono text-xs uppercase tracking-widest text-secondary">Render Pipeline</span>
-                            <span className="font-serif italic text-2xl">Active</span>
+                            <span className="font-serif italic text-2xl text-primary">Active</span>
                         </div>
 
                         <div className="mb-6 md:mb-10 flex flex-wrap items-center gap-3 text-primary font-medium text-xs md:text-sm tracking-wide uppercase">
-                            <span className="px-3 py-1 rounded-full border border-primary/20 bg-white/50 backdrop-blur-sm">Non-Linear</span>
-                            <span className="px-3 py-1 rounded-full border border-primary/20 bg-white/50 backdrop-blur-sm">Non-Blocking</span>
-                            <span className="px-3 py-1 rounded-full border border-primary/20 bg-white/50 backdrop-blur-sm">Cloud Native</span>
+                            <span className="px-3 py-1 rounded-full border border-primary/10 bg-white/5 backdrop-blur-sm">Non-Linear</span>
+                            <span className="px-3 py-1 rounded-full border border-primary/10 bg-white/5 backdrop-blur-sm">Non-Blocking</span>
+                            <span className="px-3 py-1 rounded-full border border-primary/10 bg-white/5 backdrop-blur-sm">Cloud Native</span>
                         </div>
 
                         <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-primary tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em]">
@@ -117,18 +117,18 @@ const Hero: React.FC = () => {
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
-                                <button className="group relative flex items-center justify-between bg-primary text-white rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-black transition-all duration-500 cursor-pointer shadow-xl hover:shadow-2xl active:scale-95 overflow-hidden">
+                                <button className="group relative flex items-center justify-between bg-primary text-card rounded-full pl-8 pr-2 py-2 h-16 sm:h-20 w-full sm:w-auto min-w-[240px] hover:bg-white transition-all duration-500 cursor-pointer shadow-xl hover:shadow-2xl active:scale-95 overflow-hidden">
                                     <span className="relative z-10 text-base sm:text-lg font-medium tracking-wide">Start Editing</span>
-                                    <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                        <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+                                    <div className="relative z-10 w-12 h-12 sm:w-16 sm:h-16 bg-card rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                        <ArrowUpRight className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                                     </div>
                                     {/* Hover Effect bg */}
-                                    <div className="absolute inset-0 bg-neutral-800 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                                    <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
                                 </button>
 
                                 <div className="hidden sm:flex flex-col items-center justify-center px-4">
                                     <span className="text-[10px] font-mono uppercase tracking-widest text-secondary/70 mb-1">Architecture</span>
-                                    <span className="text-xs font-bold border-b border-primary">V2.4 VIEW</span>
+                                    <span className="text-xs font-bold border-b border-primary text-primary">V2.4 VIEW</span>
                                 </div>
                             </div>
                         </div>
@@ -145,8 +145,8 @@ const Hero: React.FC = () => {
 
                 {/* --- SECTION 2: DETAILS --- */}
                 <div id="details-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center py-20 pointer-events-none px-4 sm:px-8">
-                    <div className="relative z-20 flex flex-col items-center text-center space-y-6 md:space-y-10 pointer-events-auto backdrop-blur-md bg-white/40 md:bg-transparent p-8 sm:p-12 rounded-[2rem] max-w-5xl mx-auto border border-white/40 md:border-none shadow-2xl md:shadow-none">
-                        <div className="inline-flex items-center gap-3 text-primary font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-primary/10 px-4 py-2 rounded-full bg-white/50">
+                    <div className="relative z-20 flex flex-col items-center text-center space-y-6 md:space-y-10 pointer-events-auto backdrop-blur-md bg-white/5 md:bg-transparent p-8 sm:p-12 rounded-[2rem] max-w-5xl mx-auto border border-primary/10 md:border-none shadow-2xl md:shadow-none">
+                        <div className="inline-flex items-center gap-3 text-primary font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-primary/10 px-4 py-2 rounded-full bg-white/5">
                             <div className="w-1.5 h-1.5 rounded-full bg-accentBlue animate-pulse"></div>
                             <span>Parallel Processing Core</span>
                         </div>
@@ -179,7 +179,7 @@ const Hero: React.FC = () => {
                 {/* --- SECTION 3: DECONSTRUCTED VIEW (HUD Style) --- */}
                 <div id="breakdown-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center pointer-events-none overflow-hidden py-10 px-4 sm:px-8">
                     {/* Background Grid Lines for HUD feel */}
-                    <div className="absolute inset-0 pointer-events-none opacity-5">
+                    <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
                         <div className="absolute top-1/2 left-0 w-full h-[1px] bg-primary"></div>
                         <div className="absolute top-0 left-1/2 w-[1px] h-full bg-primary"></div>
                         <div className="absolute top-1/4 left-0 w-full h-[1px] bg-primary border-t border-dashed"></div>
@@ -222,8 +222,8 @@ const Hero: React.FC = () => {
                 {/* --- SECTION 4: FOOTER (MAGNETIC PORTAL) --- */}
                 <div id="footer-section" className="relative w-full min-h-[90dvh] flex flex-col items-center justify-center py-20 pointer-events-none overflow-hidden px-4 sm:px-8">
 
-                    <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none text-center mix-blend-multiply">
-                        <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8 pointer-events-auto bg-white/50 px-4 py-1 rounded-full backdrop-blur-sm">Ready to Cut?</span>
+                    <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none text-center">
+                        <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8 pointer-events-auto bg-white/5 px-4 py-1 rounded-full backdrop-blur-sm border border-white/5">Ready to Cut?</span>
 
                         <div className="flex flex-col items-center mb-16 md:mb-24 pointer-events-auto relative z-10">
                             <h2 className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-serif italic text-primary leading-[0.8] tracking-tighter opacity-90">
@@ -235,10 +235,10 @@ const Hero: React.FC = () => {
                         </div>
 
                         <div className="relative group cursor-pointer w-full max-w-md mx-auto pointer-events-auto z-20 px-4">
-                            <div className="relative overflow-hidden rounded-full bg-[#111] text-white shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(0,0,0,0.3)]">
+                            <div className="relative overflow-hidden rounded-full bg-primary text-card shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                                 <button className="w-full pl-8 pr-3 py-3 flex items-center justify-between">
                                     <span className="text-lg md:text-xl font-medium tracking-wide pl-4">Open Studio</span>
-                                    <div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
+                                    <div className="w-14 h-14 rounded-full bg-card text-primary flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
                                         <ArrowUpRight size={24} strokeWidth={2} />
                                     </div>
                                 </button>
@@ -251,10 +251,10 @@ const Hero: React.FC = () => {
                             <Logo />
                             <span className="text-[10px] text-secondary">© 2026 Trem Inc.</span>
                         </div>
-                        <div className="flex gap-6 text-xs font-medium uppercase tracking-wider">
-                            <a href="#" className="hover:text-black hover:underline decoration-1 underline-offset-4">Legal</a>
-                            <a href="#" className="hover:text-black hover:underline decoration-1 underline-offset-4">Privacy</a>
-                            <a href="#" className="hover:text-black hover:underline decoration-1 underline-offset-4">Twitter</a>
+                        <div className="flex gap-6 text-xs font-medium uppercase tracking-wider text-secondary hover:text-primary transition-colors">
+                            <a href="#" className="hover:underline decoration-1 underline-offset-4">Legal</a>
+                            <a href="#" className="hover:underline decoration-1 underline-offset-4">Privacy</a>
+                            <a href="#" className="hover:underline decoration-1 underline-offset-4">Twitter</a>
                         </div>
                     </div>
                 </div>
