@@ -218,23 +218,53 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     {renderTree(files)}
                 </div>
 
-                {/* Editor Area */}
+                {/* Editor / Preview Area */}
                 <div className="flex-1 flex flex-col bg-white dark:bg-[#1e1e1e]">
                     {selectedFile ? (
                         <>
                             <div className="px-4 py-2 bg-slate-100 dark:bg-[#252526] border-b border-slate-200 dark:border-white/5 text-xs font-mono text-slate-500 dark:text-slate-400 flex justify-between">
                                 <span>{selectedFile.name}</span>
-                                <span>UTF-8</span>
+                                <span className="uppercase">{selectedFile.name.split('.').pop() || 'TXT'}</span>
                             </div>
-                            <textarea
-                                value={editorContent}
-                                onChange={(e) => {
-                                    setEditorContent(e.target.value);
-                                    setIsDirty(true);
-                                }}
-                                className="flex-1 p-4 bg-transparent outline-none font-mono text-sm resize-none text-slate-800 dark:text-[#d4d4d4] leading-relaxed"
-                                spellCheck={false}
-                            />
+
+                            {/* Content Renderer */}
+                            <div className="flex-1 overflow-hidden relative">
+                                {['mp4', 'mov', 'webm'].some(ext => selectedFile.name.toLowerCase().endsWith(ext)) ? (
+                                    <div className="w-full h-full flex items-center justify-center bg-black">
+                                        {/* In a real app, src would be a blob URL or server path. For mock, we show a placeholder player */}
+                                        <div className="text-center text-white/50">
+                                            <span className="material-icons-outlined text-6xl">play_circle_outline</span>
+                                            <p className="mt-4 font-mono text-sm">Preview: {selectedFile.name}</p>
+                                            <p className="text-xs opacity-50">(Media playback simulation)</p>
+                                        </div>
+                                    </div>
+                                ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => selectedFile.name.toLowerCase().endsWith(ext)) ? (
+                                    <div className="w-full h-full flex items-center justify-center bg-black/90 p-8">
+                                        <div className="text-center text-white/50">
+                                            <span className="material-icons-outlined text-6xl">image</span>
+                                            <p className="mt-4 font-mono text-sm">Image Preview: {selectedFile.name}</p>
+                                        </div>
+                                    </div>
+                                ) : ['mp3', 'wav', 'aac'].some(ext => selectedFile.name.toLowerCase().endsWith(ext)) ? (
+                                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white">
+                                        <span className="material-icons-outlined text-6xl mb-4 text-primary animate-pulse">graphic_eq</span>
+                                        <p className="font-mono">{selectedFile.name}</p>
+                                        <div className="w-64 h-1 bg-slate-700 mt-6 rounded-full overflow-hidden">
+                                            <div className="h-full bg-primary w-1/3"></div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <textarea
+                                        value={editorContent}
+                                        onChange={(e) => {
+                                            setEditorContent(e.target.value);
+                                            setIsDirty(true);
+                                        }}
+                                        className="w-full h-full p-4 bg-transparent outline-none font-mono text-sm resize-none text-slate-800 dark:text-[#d4d4d4] leading-relaxed"
+                                        spellCheck={false}
+                                    />
+                                )}
+                            </div>
                         </>
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center text-slate-300 dark:text-slate-600">

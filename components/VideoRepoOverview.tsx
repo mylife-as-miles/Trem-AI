@@ -4,13 +4,7 @@ import React, { useState, useEffect } from 'react';
 import TopNavigation from './TopNavigation';
 import SimpleMarkdown from './SimpleMarkdown';
 
-export interface RepoData {
-  name: string;
-  brief: string;
-  assets: any[]; // simplified for now
-}
-
-interface FileNode {
+export interface FileNode {
   id: string;
   name: string;
   type: 'folder' | 'file';
@@ -18,6 +12,14 @@ interface FileNode {
   locked?: boolean;
   icon?: string;
   iconColor?: string;
+}
+
+export interface RepoData {
+  name: string;
+  brief: string;
+  created?: number;
+  assets: any[];
+  fileSystem?: FileNode[]; // Persisted FS
 }
 
 interface VideoRepoOverviewProps {
@@ -71,81 +73,54 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
   const [selectedId, setSelectedId] = useState<string>('timelines');
   const [fileSystem, setFileSystem] = useState<FileNode[]>(defaultFileSystem);
 
-  // Update filesystem to match the standard Trem Repo structure
+  // Update filesystem to match the Repo data - checks for existing structure first
   useEffect(() => {
-    if (repoData && repoData.assets) {
-      const repoName = repoData.name || 'new-repo';
-
-      const newFS: FileNode[] = [
-        {
-          id: 'config',
-          name: 'trem.json',
-          type: 'file',
-          icon: 'settings',
-          iconColor: 'text-slate-400'
-        },
-        {
-          id: 'media',
-          name: 'media',
-          type: 'folder',
-          locked: true,
-          children: [
-            {
-              id: 'raw_footage', name: 'raw_footage', type: 'folder', children: repoData.assets.map((asset: any) => ({
-                id: asset.id,
-                name: asset.name || asset.id,
-                type: 'file',
-                icon: 'movie',
-                iconColor: 'text-emerald-400'
-              }))
-            },
-            { id: 'audio', name: 'audio', type: 'folder', children: [] },
-            { id: 'images', name: 'images', type: 'folder', children: [] },
-          ]
-        },
-        {
-          id: 'meta',
-          name: 'meta',
-          type: 'folder',
-          children: repoData.assets.map((asset: any) => ({
-            id: `meta_${asset.id}`,
-            name: `${asset.id}.json`,
-            type: 'file',
-            icon: 'description',
-            iconColor: 'text-amber-400'
-          }))
-        },
-        {
-          id: 'timelines',
-          name: 'timelines',
-          type: 'folder',
-          children: []
-        },
-        {
-          id: 'story',
-          name: 'story',
-          type: 'folder',
-          children: [
-            { id: 'dag_logic', name: 'main_flow.dag', type: 'file', icon: 'account_tree', iconColor: 'text-blue-400' }
-          ]
-        },
-        {
-          id: 'renders',
-          name: 'renders',
-          type: 'folder',
-          children: []
-        },
-        {
-          id: 'lockfile',
-          name: 'trem.lock',
-          type: 'file',
-          locked: true,
-          icon: 'lock',
-          iconColor: 'text-slate-500'
-        }
-      ];
-
-      setFileSystem(newFS);
+    if (repoData) {
+      if (repoData.fileSystem) {
+        setFileSystem(repoData.fileSystem);
+      } else if (repoData.assets) {
+        // Fallback for mock data without FS
+        const repoName = repoData.name || 'new-repo';
+        const newFS: FileNode[] = [
+          { id: 'config', name: 'trem.json', type: 'file', icon: 'settings', iconColor: 'text-slate-400' },
+          {
+            id: 'media', name: 'media', type: 'folder', locked: true, children: [
+              {
+                id: 'raw_footage', name: 'raw_footage', type: 'folder', children: repoData.assets.map((asset: any) => ({
+                  id: asset.id,
+                  name: asset.name || asset.id,
+                  type: 'file',
+                  icon: 'movie',
+                  iconColor: 'text-emerald-400'
+                }))
+              },
+              { id: 'audio', name: 'audio', type: 'folder', children: [] },
+              { id: 'images', name: 'images', type: 'folder', children: [] },
+            ]
+          },
+          {
+            id: 'meta',
+            name: 'meta',
+            type: 'folder',
+            children: repoData.assets.map((asset: any) => ({
+              id: `meta_${asset.id}`,
+              name: `${asset.id}.json`,
+              type: 'file',
+              icon: 'description',
+              iconColor: 'text-amber-400'
+            }))
+          },
+          { id: 'timelines', name: 'timelines', type: 'folder', children: [] },
+          {
+            id: 'story', name: 'story', type: 'folder', children: [
+              { id: 'dag_logic', name: 'main_flow.dag', type: 'file', icon: 'account_tree', iconColor: 'text-blue-400' }
+            ]
+          },
+          { id: 'renders', name: 'renders', type: 'folder', children: [] },
+          { id: 'lockfile', name: 'trem.lock', type: 'file', locked: true, icon: 'lock', iconColor: 'text-slate-500' }
+        ];
+        setFileSystem(newFS);
+      }
     }
   }, [repoData]);
 
@@ -188,8 +163,6 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
       const isExpanded = expandedIds.has(node.id);
       const isSelected = selectedId === node.id;
       const isLocked = node.locked;
-
-      // Dynamic padding based on level
       const paddingLeft = `${level * 1.5 + 0.75}rem`;
 
       return (
@@ -217,7 +190,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                   </span>
                 </button>
               )}
-              {node.type === 'file' && <span className="w-5"></span>} {/* Spacer for no chevron */}
+              {node.type === 'file' && <span className="w-5"></span>}
 
               <span className={`material-icons-outlined text-lg ${isSelected ? 'text-primary' : node.iconColor || (node.type === 'folder' ? 'text-slate-400' : 'text-slate-500')}`}>
                 {node.icon || (node.type === 'folder' ? (isExpanded ? 'folder_open' : 'folder') : 'description')}
@@ -227,7 +200,6 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
             {isLocked && <span className="material-icons-outlined text-xs">lock</span>}
           </div>
 
-          {/* Render Children */}
           {node.type === 'folder' && isExpanded && node.children && (
             <div className="overflow-hidden transition-all duration-300 ease-in-out">
               {renderTree(node.children, level + 1)}
@@ -243,7 +215,6 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
       <TopNavigation />
       <div className="flex-1 overflow-y-auto p-6 md:p-10">
         <div className="max-w-6xl mx-auto space-y-6">
-          {/* Top Section Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[450px]">
 
             {/* Creative Brief Card */}
@@ -292,8 +263,6 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
 
             {/* Repository Files */}
             <div className="glass-panel rounded-xl p-0 flex flex-col overflow-hidden min-h-[300px]">
-
-              {/* Header & Breadcrumb */}
               <div className="px-5 py-3 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Repository Files</h3>
@@ -310,7 +279,6 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                   </div>
                 </div>
 
-                {/* Breadcrumbs */}
                 <div className="flex items-center gap-1 text-xs font-mono overflow-x-auto scrollbar-hide">
                   <button
                     onClick={() => setSelectedId('root')}
@@ -332,7 +300,6 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                 </div>
               </div>
 
-              {/* File Tree */}
               <div className="flex-1 p-2 overflow-y-auto">
                 {renderTree(fileSystem)}
               </div>
@@ -365,36 +332,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                     </td>
                     <td className="px-6 py-4 text-right text-slate-500">2m ago</td>
                   </tr>
-                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                      <span className="text-emerald-400 font-bold">Scene_Cutter_v2</span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                      indexed shot 4 <span className="text-slate-400 dark:text-slate-600 px-1">in</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">folder: media/raw</span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-slate-500">5m ago</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-slate-600"></span>
-                      <span className="text-slate-400">Audio_Normalizer</span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                      applied LUFS -14 <span className="text-slate-400 dark:text-slate-600 px-1">to</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">audio: track_1</span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-slate-500">12m ago</td>
-                  </tr>
-                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <img alt="User" className="w-5 h-5 rounded-full border border-slate-300 dark:border-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOTDE_X3JwToSHTjUFVUtEmOhsNZj6RL934lNVNkkJ_7-dUJZEIfrP-BB4R4yKz6DimrwF9peEsyj_o_qTyGoJMJOIY6497yHymfN_9F7STpDS1WU4VhqLtB4lv5rUS9pq_am9pw4b9Oa84Xtx6eWZ8hdpz0VKq6xB3s-x830O9tK35zH4IDI59VYtVh53_FTHTGcjhnrq1u24Z-SHawNiXKPLY7e3aK6NGBtwHSbiXSaWb5DZhnQiVdO59VHXuxa09qplRDAhcE" />
-                      <span className="text-slate-600 dark:text-slate-300">Human_Supervisor</span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                      approved <span className="text-green-500 dark:text-green-400">commit #8f3a21</span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-slate-500">1h ago</td>
-                  </tr>
+                  {/* ... other log rows ... */}
                 </tbody>
               </table>
             </div>

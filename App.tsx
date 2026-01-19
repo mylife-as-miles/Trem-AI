@@ -44,12 +44,18 @@ const App: React.FC = () => {
         }
     };
 
+    const handleSelectRepo = (data: RepoData) => {
+        setRepoData(data);
+        handleNavigate('repo');
+    };
+
     return (
         <div className="flex h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white overflow-hidden selection:bg-primary selection:text-white font-sans">
             <Sidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
                 onNavigate={handleNavigate}
+                onSelectRepo={handleSelectRepo}
             />
 
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">

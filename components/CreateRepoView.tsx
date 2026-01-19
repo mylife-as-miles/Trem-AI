@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AssetLibrary from './AssetLibrary';
 import TopNavigation from './TopNavigation';
+import { db } from '../utils/db';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -18,19 +19,69 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     const [step, setStep] = useState<'details' | 'ingest' | 'commit'>('details');
     // ... rest of state
 
-    const handleCommit = () => {
-        // Here we would actually save the repo data
-        console.log("Committing Repo:", { repoName, repoBrief, assets: selectedAssets });
 
-        if (onCreateRepo) {
-            onCreateRepo({
+    // ... (existing helper interface for FileNode, locally defined or we can import if we move it. For now I will define local interface to match structure)
+    interface FileNode {
+        id: string;
+        name: string;
+        type: 'folder' | 'file';
+        children?: FileNode[];
+        locked?: boolean;
+        icon?: string;
+        iconColor?: string;
+        content?: string; // Content for the new file management
+    }
+
+    // ...
+
+    const handleCommit = async () => {
+        // Generate File System Structure
+        const newFS: FileNode[] = [
+            { id: 'config', name: 'trem.json', type: 'file', icon: 'settings', iconColor: 'text-slate-400', content: JSON.stringify({ name: repoName, created: Date.now() }, null, 2) },
+            {
+                id: 'media', name: 'media', type: 'folder', locked: true, children: [
+                    {
+                        id: 'raw_footage', name: 'raw_footage', type: 'folder', children: selectedAssets.map(asset => ({
+                            id: asset.id, name: asset.name || asset.id, type: 'file', icon: 'movie', iconColor: 'text-emerald-400'
+                        }))
+                    },
+                    { id: 'audio', name: 'audio', type: 'folder', children: [] },
+                    { id: 'images', name: 'images', type: 'folder', children: [] },
+                ]
+            },
+            {
+                id: 'meta', name: 'meta', type: 'folder', children: selectedAssets.map(asset => ({
+                    id: `meta_${asset.id}`, name: `${asset.id}.json`, type: 'file', icon: 'description', iconColor: 'text-amber-400', content: '{}'
+                }))
+            },
+            { id: 'timelines', name: 'timelines', type: 'folder', children: [] },
+            { id: 'story', name: 'story', type: 'folder', children: [] },
+            { id: 'renders', name: 'renders', type: 'folder', children: [] },
+            { id: 'lockfile', name: 'trem.lock', type: 'file', locked: true, icon: 'lock', iconColor: 'text-slate-500', content: 'LOCKED' }
+        ];
+
+        try {
+            console.log("Saving Repo to DB:", { repoName, repoBrief });
+            await db.addRepo({
                 name: repoName,
                 brief: repoBrief,
-                assets: selectedAssets
+                created: Date.now(),
+                assets: selectedAssets,
+                fileSystem: newFS
             });
-        } else {
-            // Fallback if no handler
-            onNavigate('repo');
+
+            if (onCreateRepo) {
+                onCreateRepo({
+                    name: repoName,
+                    brief: repoBrief,
+                    assets: selectedAssets
+                });
+            } else {
+                onNavigate('repo');
+            }
+        } catch (error) {
+            console.error("Failed to save repo:", error);
+            // Optionally set error state to show to user
         }
     };
     const [repoName, setRepoName] = useState('');

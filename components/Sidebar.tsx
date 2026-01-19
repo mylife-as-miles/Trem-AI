@@ -1,13 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db, RepoData } from '../utils/db';
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
+  onSelectRepo?: (repo: RepoData) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelectRepo }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Since we are using a custom DB wrapper and not real Dexie hooks yet (due to npm install fail assumption),
+  // we will standard useEffect to load data. UseLiveQuery is for real Dexie.
+  // We'll mimic live query with an interval or event listener if needed, but for now just load on mount/open.
+  const [repos, setRepos] = useState<RepoData[]>([]);
+
+  useEffect(() => {
+    const loadRepos = async () => {
+      try {
+        const data = await db.getAllRepos();
+        setRepos(data);
+      } catch (e) {
+        console.error("Failed to load repos", e);
+      }
+    };
+    loadRepos();
+
+    // Simple polling to keep sidebar fresh when new repo created
+    const interval = setInterval(loadRepos, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleRepoClick = (repo: RepoData) => {
+    if (onSelectRepo) {
+      onSelectRepo(repo);
+    }
+    onNavigate('repo');
+  };
 
   return (
     <>
@@ -105,23 +135,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate }) => {
               <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 font-bold whitespace-nowrap overflow-hidden">Video Repos</h3>
             )}
             <ul className="space-y-1">
-              {['client/nike-commercial', 'internal/podcast-ep-42', 'events/techcrunch-2023'].map((repo, i) => (
-                <li key={i}>
+              {repos.length === 0 && !isCollapsed && (
+                <li className="px-2 py-2 text-xs text-slate-400 italic">No repositories yet.</li>
+              )}
+              {repos.map((repo) => (
+                <li key={repo.id}>
                   <button
-                    onClick={() => onNavigate('repo')}
-                    className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? repo : ""}
+                    onClick={() => handleRepoClick(repo)}
+                    className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? repo.name : ""}
                   >
                     <span className="material-icons-outlined text-sm text-emerald-400/70 group-hover:text-primary transition-colors">folder</span>
-                    {!isCollapsed && <span className="truncate">{repo}</span>}
+                    {!isCollapsed && <span className="truncate">{repo.name}</span>}
                   </button>
                 </li>
               ))}
-              <li>
-                <button onClick={() => onNavigate('repo')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "archive/legacy-b-roll" : ""}>
-                  <span className="material-icons-outlined text-sm text-emerald-400/70 group-hover:text-primary transition-colors">cloud_queue</span>
-                  {!isCollapsed && <span className="truncate">archive/legacy-b-roll</span>}
-                </button>
-              </li>
             </ul>
           </div>
 
