@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AssetLibrary from './AssetLibrary';
+import TopNavigation from './TopNavigation';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -87,165 +88,167 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
 
     return (
-        <div className="flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white p-8 transition-colors duration-300">
-            <div className="max-w-5xl mx-auto w-full flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+            <TopNavigation />
+            <div className="flex-1 overflow-hidden p-8">
+                <div className="max-w-5xl mx-auto w-full flex flex-col h-full">
 
-                {/* Header */}
-                <header className="mb-8 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-display font-bold tracking-tight text-slate-900 dark:text-white">Create Semantic Repository</h1>
-                        <p className="text-slate-500 dark:text-slate-400 mt-2">Initialize a new video workspace driven by AI context.</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full ${step === 'details' ? 'bg-primary' : 'bg-primary/30'}`}></div>
-                        <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
-                        <div className={`w-3 h-3 rounded-full ${step === 'ingest' ? 'bg-primary' : 'bg-primary/30'}`}></div>
-                        <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
-                        <div className={`w-3 h-3 rounded-full ${step === 'commit' || isIngestionComplete ? 'bg-primary' : 'bg-primary/30'}`}></div>
-                    </div>
-                </header>
-
-                {/* Form Content */}
-                <div className="flex-1 overflow-y-auto space-y-10">
-
-                    {/* Step 1: Repo Details */}
-                    <section className={`transition-opacity duration-300 ${step !== 'details' && 'opacity-50 pointer-events-none'}`}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-4">
-                                <label className="block text-sm font-mono text-primary font-bold uppercase tracking-wider">Repository Name</label>
-                                <input
-                                    type="text"
-                                    value={repoName}
-                                    onChange={(e) => setRepoName(e.target.value)}
-                                    placeholder="e.g., nike-commercial-q3"
-                                    className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-lg p-4 text-xl font-display text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-600"
-                                />
-                            </div>
-                            <div className="space-y-4">
-                                <label className="block text-sm font-mono text-primary font-bold uppercase tracking-wider">Creative Brief (Readme)</label>
-                                <textarea
-                                    value={repoBrief}
-                                    onChange={(e) => setRepoBrief(e.target.value)}
-                                    placeholder="Describe the goals, tone, and visual style..."
-                                    className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-lg p-4 font-mono text-sm h-32 text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors resize-none placeholder-slate-400 dark:placeholder-slate-600"
-                                />
-                            </div>
+                    {/* Header */}
+                    <header className="mb-8 flex items-center justify-between">
+                        <div>
+                            <h1 className="text-3xl font-display font-bold tracking-tight text-slate-900 dark:text-white">Create Semantic Repository</h1>
+                            <p className="text-slate-500 dark:text-slate-400 mt-2">Initialize a new video workspace driven by AI context.</p>
                         </div>
-                    </section>
+                        <div className="flex items-center gap-2">
+                            <div className={`w-3 h-3 rounded-full ${step === 'details' ? 'bg-primary' : 'bg-primary/30'}`}></div>
+                            <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
+                            <div className={`w-3 h-3 rounded-full ${step === 'ingest' ? 'bg-primary' : 'bg-primary/30'}`}></div>
+                            <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
+                            <div className={`w-3 h-3 rounded-full ${step === 'commit' || isIngestionComplete ? 'bg-primary' : 'bg-primary/30'}`}></div>
+                        </div>
+                    </header>
 
-                    {/* Step 2: Assets & Ingestion */}
-                    <section>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-bold font-display text-slate-900 dark:text-white">Source Assets</h2>
-                            {step === 'details' && (
-                                <button
-                                    onClick={() => setIsAssetModalOpen(true)}
-                                    disabled={!repoName}
-                                    className={`
+                    {/* Form Content */}
+                    <div className="flex-1 overflow-y-auto space-y-10">
+
+                        {/* Step 1: Repo Details */}
+                        <section className={`transition-opacity duration-300 ${step !== 'details' && 'opacity-50 pointer-events-none'}`}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <label className="block text-sm font-mono text-primary font-bold uppercase tracking-wider">Repository Name</label>
+                                    <input
+                                        type="text"
+                                        value={repoName}
+                                        onChange={(e) => setRepoName(e.target.value)}
+                                        placeholder="e.g., nike-commercial-q3"
+                                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-lg p-4 text-xl font-display text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-600"
+                                    />
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="block text-sm font-mono text-primary font-bold uppercase tracking-wider">Creative Brief (Readme)</label>
+                                    <textarea
+                                        value={repoBrief}
+                                        onChange={(e) => setRepoBrief(e.target.value)}
+                                        placeholder="Describe the goals, tone, and visual style..."
+                                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-lg p-4 font-mono text-sm h-32 text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors resize-none placeholder-slate-400 dark:placeholder-slate-600"
+                                    />
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Step 2: Assets & Ingestion */}
+                        <section>
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-lg font-bold font-display text-slate-900 dark:text-white">Source Assets</h2>
+                                {step === 'details' && (
+                                    <button
+                                        onClick={() => setIsAssetModalOpen(true)}
+                                        disabled={!repoName}
+                                        className={`
                                         flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
                                         ${repoName
-                                            ? 'bg-primary hover:bg-primary_hover text-white shadow-[0_0_15px_rgba(34,197,94,0.3)]'
-                                            : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500 cursor-not-allowed'
-                                        }
+                                                ? 'bg-primary hover:bg-primary_hover text-white shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                                                : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500 cursor-not-allowed'
+                                            }
                                     `}
-                                >
-                                    <span className="material-icons-outlined">add_to_queue</span>
-                                    Add Assets from Library
-                                </button>
-                            )}
-                        </div>
+                                    >
+                                        <span className="material-icons-outlined">add_to_queue</span>
+                                        Add Assets from Library
+                                    </button>
+                                )}
+                            </div>
 
-                        {/* Empty State */}
-                        {selectedAssets.length === 0 && (
-                            <div
-                                onClick={() => repoName && setIsAssetModalOpen(true)}
-                                className={`
+                            {/* Empty State */}
+                            {selectedAssets.length === 0 && (
+                                <div
+                                    onClick={() => repoName && setIsAssetModalOpen(true)}
+                                    className={`
                                     border-2 border-dashed rounded-2xl h-48 flex flex-col items-center justify-center gap-4 transition-colors
                                     ${repoName ? 'border-slate-300 dark:border-white/10 hover:border-primary/50 cursor-pointer bg-white dark:bg-white/5' : 'border-slate-200 dark:border-white/5 bg-transparent'}
                                 `}
-                            >
-                                <span className={`material-icons-outlined text-4xl ${repoName ? 'text-slate-400 dark:text-gray-400' : 'text-slate-300 dark:text-gray-700'}`}>folder_open</span>
-                                <p className={`font-mono text-sm ${repoName ? 'text-slate-500 dark:text-gray-400' : 'text-slate-400 dark:text-gray-700'}`}>
-                                    {repoName ? 'Click to select footage, audio, or scripts' : 'Enter a repository name first'}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Ingestion List */}
-                        {selectedAssets.length > 0 && (
-                            <div className="space-y-3">
-                                {selectedAssets.map(asset => (
-                                    <div key={asset.id} className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 flex items-center gap-4">
-                                        <div className="p-3 rounded bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
-                                            <span className="material-icons-outlined text-slate-500 dark:text-gray-400">movie</span>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="font-mono text-sm font-bold truncate text-slate-900 dark:text-white">{asset.name}</span>
-                                                <span className={`text-xs font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-primary' : 'text-amber-500 dark:text-yellow-500'}`}>
-                                                    {asset.status === 'indexed' ? 'Ready' : asset.status}
-                                                </span>
-                                            </div>
-                                            {asset.status !== 'indexed' ? (
-                                                <div className="h-1.5 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
-                                                    <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}%` }}></div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-xs text-slate-500 dark:text-gray-500 font-mono">
-                                                    meta/{asset.id}.json ✔
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </section>
-
-                    {/* Step 3: Commit */}
-                    {isIngestionComplete && (
-                        <section className="bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 rounded-2xl p-6 animate-fade-in-up">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h3 className="text-xl font-bold font-display text-slate-900 dark:text-white">Ready to Commit</h3>
-                                    <p className="text-primary/80 font-mono text-sm mt-1">Generated {selectedAssets.length} metadata files • Trem Locked</p>
-                                </div>
-                                <button
-                                    onClick={handleCommit}
-                                    className="bg-primary hover:bg-primary_hover text-white px-8 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-all flex items-center gap-3 transform hover:-translate-y-1 active:scale-95"
                                 >
-                                    <span className="material-icons-outlined">check_circle</span>
-                                    Initialize Repository
-                                </button>
-                            </div>
+                                    <span className={`material-icons-outlined text-4xl ${repoName ? 'text-slate-400 dark:text-gray-400' : 'text-slate-300 dark:text-gray-700'}`}>folder_open</span>
+                                    <p className={`font-mono text-sm ${repoName ? 'text-slate-500 dark:text-gray-400' : 'text-slate-400 dark:text-gray-700'}`}>
+                                        {repoName ? 'Click to select footage, audio, or scripts' : 'Enter a repository name first'}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Ingestion List */}
+                            {selectedAssets.length > 0 && (
+                                <div className="space-y-3">
+                                    {selectedAssets.map(asset => (
+                                        <div key={asset.id} className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 flex items-center gap-4">
+                                            <div className="p-3 rounded bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
+                                                <span className="material-icons-outlined text-slate-500 dark:text-gray-400">movie</span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <span className="font-mono text-sm font-bold truncate text-slate-900 dark:text-white">{asset.name}</span>
+                                                    <span className={`text-xs font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-primary' : 'text-amber-500 dark:text-yellow-500'}`}>
+                                                        {asset.status === 'indexed' ? 'Ready' : asset.status}
+                                                    </span>
+                                                </div>
+                                                {asset.status !== 'indexed' ? (
+                                                    <div className="h-1.5 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
+                                                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}%` }}></div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-xs text-slate-500 dark:text-gray-500 font-mono">
+                                                        meta/{asset.id}.json ✔
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </section>
-                    )}
-                </div>
 
-                {/* Footer Controls (Cancel) */}
-                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10 flex justify-between">
-                    <button onClick={() => onNavigate('dashboard')} className="text-slate-500 hover:text-slate-900 dark:text-gray-500 dark:hover:text-white transition-colors font-mono text-sm">
-                        Cancel & Discard
-                    </button>
-                    <div className="text-xs text-slate-400 dark:text-gray-600 font-mono">
-                        Trem-AI v2.1.0 • Semantic Indexing Active
+                        {/* Step 3: Commit */}
+                        {isIngestionComplete && (
+                            <section className="bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 rounded-2xl p-6 animate-fade-in-up">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-xl font-bold font-display text-slate-900 dark:text-white">Ready to Commit</h3>
+                                        <p className="text-primary/80 font-mono text-sm mt-1">Generated {selectedAssets.length} metadata files • Trem Locked</p>
+                                    </div>
+                                    <button
+                                        onClick={handleCommit}
+                                        className="bg-primary hover:bg-primary_hover text-white px-8 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-all flex items-center gap-3 transform hover:-translate-y-1 active:scale-95"
+                                    >
+                                        <span className="material-icons-outlined">check_circle</span>
+                                        Initialize Repository
+                                    </button>
+                                </div>
+                            </section>
+                        )}
                     </div>
+
+                    {/* Footer Controls (Cancel) */}
+                    <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10 flex justify-between">
+                        <button onClick={() => onNavigate('dashboard')} className="text-slate-500 hover:text-slate-900 dark:text-gray-500 dark:hover:text-white transition-colors font-mono text-sm">
+                            Cancel & Discard
+                        </button>
+                        <div className="text-xs text-slate-400 dark:text-gray-600 font-mono">
+                            Trem-AI v2.1.0 • Semantic Indexing Active
+                        </div>
+                    </div>
+
                 </div>
 
+                {/* Asset Modal */}
+                {isAssetModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-12 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+                        <AssetLibrary
+                            isModal={true}
+                            onClose={() => setIsAssetModalOpen(false)}
+                            onSelect={handleAssetsSelected}
+                        />
+                    </div>
+                )}
             </div>
-
-            {/* Asset Modal */}
-            {isAssetModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-12 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
-                    <AssetLibrary
-                        isModal={true}
-                        onClose={() => setIsAssetModalOpen(false)}
-                        onSelect={handleAssetsSelected}
-                    />
-                </div>
-            )}
-        </div>
-    );
+            );
 };
 
-export default CreateRepoView;
+            export default CreateRepoView;
