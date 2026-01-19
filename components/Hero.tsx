@@ -38,11 +38,11 @@ const TryForFreeBrackets = () => (
 // New "HUD" Style Spec Label for Deconstructed View with improved readability
 const SpecLabel = ({ label, value, sub, align = 'left', index = 0 }: { label: string, value: string, sub: string, align?: 'left' | 'right', index?: number }) => (
     <div className={`flex flex-col ${align === 'right' ? 'items-end text-right' : 'items-start text-left'} group relative z-10`} style={{ transitionDelay: `${index * 100}ms` }}>
-        {/* Glassmorphism Backing */}
-        <div className={`absolute -inset-4 bg-white/40 backdrop-blur-md rounded-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 border border-white/40 shadow-sm transition-all`}></div>
+        {/* Plain Backing - No Glass */}
+        <div className={`absolute -inset-4 bg-transparent rounded-2xl -z-10 group-hover:bg-white/5 transition-colors duration-300`}></div>
 
-        {/* Always visible soft backing for better contrast */}
-        <div className={`absolute -inset-4 bg-card/30 backdrop-blur-[2px] rounded-2xl -z-20 border border-white/20`}></div>
+        {/* Border only */}
+        <div className={`absolute -inset-4 rounded-2xl -z-20 border border-white/10 group-hover:border-primary/30 transition-colors duration-300`}></div>
 
         <div className={`flex items-center gap-2 mb-2 ${align === 'right' ? 'flex-row-reverse' : 'flex-row'}`}>
             <div className="h-[1px] w-8 bg-white/30 group-hover:w-16 transition-all duration-500"></div>
@@ -96,9 +96,9 @@ const Hero: React.FC = () => {
                         </div>
 
                         <div className="mb-6 md:mb-10 flex flex-wrap items-center gap-3 text-foreground/80 font-medium text-xs md:text-sm tracking-wide uppercase">
-                            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">Non-Linear</span>
-                            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">Non-Blocking</span>
-                            <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm">Cloud Native</span>
+                            <span className="px-3 py-1 rounded-full border border-white/10 bg-transparent">Non-Linear</span>
+                            <span className="px-3 py-1 rounded-full border border-white/10 bg-transparent">Non-Blocking</span>
+                            <span className="px-3 py-1 rounded-full border border-white/10 bg-transparent">Cloud Native</span>
                         </div>
 
                         <h1 className="text-[13vw] sm:text-[10vw] lg:text-[7.5rem] leading-[0.9] sm:leading-[0.85] font-medium text-foreground tracking-[-0.04em] mb-8 md:mb-12 break-words -ml-[0.05em]">
@@ -146,8 +146,8 @@ const Hero: React.FC = () => {
 
                 {/* --- SECTION 2: DETAILS --- */}
                 <div id="details-section" className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center py-20 pointer-events-none px-4 sm:px-8">
-                    <div className="relative z-20 flex flex-col items-center text-center space-y-6 md:space-y-10 pointer-events-auto backdrop-blur-md bg-white/5 md:bg-transparent p-8 sm:p-12 rounded-[2rem] max-w-5xl mx-auto border border-primary/10 md:border-none shadow-2xl md:shadow-none">
-                        <div className="inline-flex items-center gap-3 text-foreground font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-white/10 px-4 py-2 rounded-full bg-white/5">
+                    <div className="relative z-20 flex flex-col items-center text-center space-y-6 md:space-y-10 pointer-events-auto bg-transparent p-0 sm:p-0 rounded-none max-w-5xl mx-auto border-none shadow-none">
+                        <div className="inline-flex items-center gap-3 text-foreground font-mono font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs border border-white/10 px-4 py-2 rounded-full bg-transparent">
                             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_rgba(168,85,247,0.6)]"></div>
                             <span>Parallel Processing Core</span>
                         </div>
@@ -224,7 +224,7 @@ const Hero: React.FC = () => {
                 <div id="footer-section" className="relative w-full min-h-[90dvh] flex flex-col items-center justify-center py-20 pointer-events-none overflow-hidden px-4 sm:px-8">
 
                     <div className="relative z-20 flex flex-col items-center justify-center w-full pointer-events-none text-center">
-                        <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8 pointer-events-auto bg-white/5 px-4 py-1 rounded-full backdrop-blur-sm border border-white/5">Ready to Cut?</span>
+                        <span className="text-xs font-mono uppercase tracking-[0.4em] text-secondary mb-8 pointer-events-auto bg-transparent px-4 py-1 rounded-full border border-white/10">Ready to Cut?</span>
 
                         <div className="flex flex-col items-center mb-16 md:mb-24 pointer-events-auto relative z-10">
                             <h2 className="text-[15vw] sm:text-[12vw] lg:text-[10rem] font-serif italic text-foreground leading-[0.8] tracking-tighter opacity-90">
