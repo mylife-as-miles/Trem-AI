@@ -248,7 +248,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     </div>
                 )}
             </div>
-            );
+        </div>
+    );
 };
 
-            export default CreateRepoView;
+export default CreateRepoView;
