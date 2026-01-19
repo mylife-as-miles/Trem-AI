@@ -5,7 +5,6 @@ import TimelineEditor from './components/TimelineEditor';
 import VideoRepoOverview from './components/VideoRepoOverview';
 import CompareDiffView from './components/CompareDiffView';
 import AssetLibrary from './components/AssetLibrary';
-// import Header from './components/Header'; // Assuming Header might be used inside views or globally
 
 const App: React.FC = () => {
     const [currentView, setCurrentView] = useState<'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings'>('dashboard');
@@ -13,7 +12,7 @@ const App: React.FC = () => {
 
     const handleNavigate = (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings') => {
         setCurrentView(view);
-        setIsSidebarOpen(false); // Close sidebar on mobile nav
+        setIsSidebarOpen(false);
     };
 
     const renderView = () => {
@@ -23,11 +22,11 @@ const App: React.FC = () => {
             case 'timeline':
                 return <TimelineEditor onNavigate={handleNavigate} />;
             case 'repo':
-                return <VideoRepoOverview onNavigate={handleNavigate} />;
+                return <VideoRepoOverview />;
             case 'diff':
                 return <CompareDiffView onNavigate={handleNavigate} />;
             case 'assets':
-                return <AssetLibrary onNavigate={handleNavigate} />;
+                return <AssetLibrary />;
             default:
                 return <Orchestrator onNavigate={handleNavigate} />;
         }
