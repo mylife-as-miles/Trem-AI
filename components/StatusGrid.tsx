@@ -13,32 +13,32 @@ const StatusGrid: React.FC = () => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
           </div>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold dark:drop-shadow-glow-text">cpu_ingest</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">cpu_ingest</span>
         </div>
         <div>
           <div className="text-2xl font-mono text-slate-800 dark:text-white font-bold">84<span className="text-sm text-slate-500 dark:text-gray-500 font-normal">%</span></div>
           <div className="text-xs text-slate-500 dark:text-gray-400 mt-1 font-mono">Process: FFMPEG_TRANSCODE</div>
         </div>
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50 shadow-[0_0_10px_theme('colors.primary')]"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50"></div>
       </div>
 
       {/* GPU Card */}
-      <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-purple-400/40 transition-colors">
+      <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-emerald-400/40 transition-colors">
         <div className="absolute right-0 top-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-          <span className="material-icons-outlined text-4xl text-purple-400">smart_toy</span>
+          <span className="material-icons-outlined text-4xl text-emerald-400">smart_toy</span>
         </div>
         <div className="flex items-center gap-2 mb-2">
           <div className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
           </div>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-purple-400 font-bold dark:drop-shadow-glow-text">gpu_edit_cluster</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-400 font-bold">gpu_edit_cluster</span>
         </div>
         <div>
           <div className="text-2xl font-mono text-slate-800 dark:text-white font-bold">92<span className="text-sm text-slate-500 dark:text-gray-500 font-normal">%</span></div>
           <div className="text-xs text-slate-500 dark:text-gray-400 mt-1 font-mono">Job: SCENE_DETECT_V3</div>
         </div>
-        <div className="absolute bottom-0 left-0 w-3/4 h-1 bg-gradient-to-r from-purple-400 to-transparent opacity-50 shadow-[0_0_10px_theme('colors.purple.400')]"></div>
+        <div className="absolute bottom-0 left-0 w-3/4 h-1 bg-gradient-to-r from-emerald-400 to-transparent opacity-50"></div>
       </div>
 
       {/* Uplink Card */}
