@@ -11,6 +11,11 @@ type ViewState = 'landing' | 'orchestrator' | 'dashboard' | 'timeline' | 'repo' 
 function App() {
   const [view, setView] = useState<ViewState>('landing');
 
+  // Wrapper to strictly match child component callback signatures
+  const handleNavigate = (newView: 'landing' | 'orchestrator' | 'dashboard' | 'timeline' | 'repo' | 'diff' | 'assets') => {
+    setView(newView);
+  };
+
   const renderView = () => {
     switch (view) {
       case 'landing':
@@ -20,12 +25,12 @@ function App() {
         return (
           <div className="min-h-screen bg-background p-4 md:p-8 flex flex-col items-center justify-center">
             <div className="w-full max-w-4xl">
-              <Orchestrator onNavigate={setView} />
+              <Orchestrator onNavigate={handleNavigate} />
             </div>
           </div>
         );
       case 'timeline':
-        return <TimelineEditor onNavigate={setView} />;
+        return <TimelineEditor onNavigate={handleNavigate} />;
       case 'repo':
         return (
           <div className="min-h-screen bg-background text-foreground p-8">
@@ -35,7 +40,7 @@ function App() {
           </div>
         );
       case 'diff':
-        return <CompareDiffView onNavigate={setView} />;
+        return <CompareDiffView onNavigate={handleNavigate} />;
       case 'assets':
         return (
           <div className="h-screen flex flex-col">
