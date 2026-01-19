@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 // --- Types ---
+import TopNavigation from './TopNavigation';
+
 export interface RepoData {
   name: string;
   brief: string;
@@ -179,139 +181,144 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData }) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Top Section Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[450px]">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-black">
+      <TopNavigation />
+      <div className="flex-1 overflow-y-auto p-6 md:p-10">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Top Section Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[450px]">
 
-        {/* Creative Brief Card */}
-        <div className="lg:col-span-2 glass-panel rounded-xl p-8 flex flex-col relative overflow-hidden group min-h-[300px]">
-          <div className="absolute top-0 right-0 p-8 opacity-10 dark:opacity-20 pointer-events-none">
-            <span className="material-icons-outlined text-9xl text-primary">description</span>
-          </div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-primary font-semibold">{repoData?.name ? `Brief: ${repoData.name}` : 'Creative Brief'}</h2>
-            <button className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-              <span className="material-icons-outlined text-lg">edit</span>
-            </button>
-          </div>
-          <div className="flex-1 flex flex-col justify-center relative z-10">
-            <p className="font-display text-3xl md:text-3xl lg:text-4xl font-bold leading-[1.3] text-slate-900 dark:text-white selection:bg-primary/30 whitespace-pre-wrap">
-              {repoData?.brief || (
-                <>
-                  High-energy 30s spot for Instagram. Use the <span className="text-primary">Urban LUT</span>. Focus on <span className="text-red-500 font-normal italic">red shoes</span>.
-                </>
-              )}
-            </p>
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            {['#social-media', '#high-contrast', '#vertical'].map(tag => (
-              <div key={tag} className="px-3 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-black/40 text-xs text-slate-500 dark:text-slate-400 font-mono">
-                {tag}
+            {/* Creative Brief Card */}
+            <div className="lg:col-span-2 glass-panel rounded-xl p-8 flex flex-col relative overflow-hidden group min-h-[300px]">
+              <div className="absolute top-0 right-0 p-8 opacity-10 dark:opacity-20 pointer-events-none">
+                <span className="material-icons-outlined text-9xl text-primary">description</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Repository Files */}
-        <div className="glass-panel rounded-xl p-0 flex flex-col overflow-hidden min-h-[300px]">
-
-          {/* Header & Breadcrumb */}
-          <div className="px-5 py-3 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Repository Files</h3>
-              <div className="flex gap-2">
-                <button className="text-slate-400 hover:text-primary transition-colors"><span className="material-icons-outlined text-base">create_new_folder</span></button>
-                <button className="text-slate-400 hover:text-primary transition-colors"><span className="material-icons-outlined text-base">upload_file</span></button>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-primary font-semibold">{repoData?.name ? `Brief: ${repoData.name}` : 'Creative Brief'}</h2>
+                <button className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                  <span className="material-icons-outlined text-lg">edit</span>
+                </button>
+              </div>
+              <div className="flex-1 flex flex-col justify-center relative z-10">
+                <p className="font-display text-3xl md:text-3xl lg:text-4xl font-bold leading-[1.3] text-slate-900 dark:text-white selection:bg-primary/30 whitespace-pre-wrap">
+                  {repoData?.brief || (
+                    <>
+                      High-energy 30s spot for Instagram. Use the <span className="text-primary">Urban LUT</span>. Focus on <span className="text-red-500 font-normal italic">red shoes</span>.
+                    </>
+                  )}
+                </p>
+              </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {['#social-media', '#high-contrast', '#vertical'].map(tag => (
+                  <div key={tag} className="px-3 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-black/40 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                    {tag}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Breadcrumbs */}
-            <div className="flex items-center gap-1 text-xs font-mono overflow-x-auto scrollbar-hide">
-              <button
-                onClick={() => setSelectedId('root')}
-                className={`hover:text-white transition-colors flex-shrink-0 ${selectedPath.length === 0 ? 'text-primary font-bold' : 'text-slate-500'}`}
-              >
-                root
-              </button>
-              {selectedPath.map((node, i) => (
-                <React.Fragment key={node.id}>
-                  <span className="text-slate-600">/</span>
+            {/* Repository Files */}
+            <div className="glass-panel rounded-xl p-0 flex flex-col overflow-hidden min-h-[300px]">
+
+              {/* Header & Breadcrumb */}
+              <div className="px-5 py-3 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">Repository Files</h3>
+                  <div className="flex gap-2">
+                    <button className="text-slate-400 hover:text-primary transition-colors"><span className="material-icons-outlined text-base">create_new_folder</span></button>
+                    <button className="text-slate-400 hover:text-primary transition-colors"><span className="material-icons-outlined text-base">upload_file</span></button>
+                  </div>
+                </div>
+
+                {/* Breadcrumbs */}
+                <div className="flex items-center gap-1 text-xs font-mono overflow-x-auto scrollbar-hide">
                   <button
-                    onClick={() => handleSelect(node.id, node.type)}
-                    className={`hover:text-white transition-colors whitespace-nowrap ${i === selectedPath.length - 1 ? 'text-primary font-bold' : 'text-slate-500'}`}
+                    onClick={() => setSelectedId('root')}
+                    className={`hover:text-white transition-colors flex-shrink-0 ${selectedPath.length === 0 ? 'text-primary font-bold' : 'text-slate-500'}`}
                   >
-                    {node.name}
+                    root
                   </button>
-                </React.Fragment>
-              ))}
+                  {selectedPath.map((node, i) => (
+                    <React.Fragment key={node.id}>
+                      <span className="text-slate-600">/</span>
+                      <button
+                        onClick={() => handleSelect(node.id, node.type)}
+                        className={`hover:text-white transition-colors whitespace-nowrap ${i === selectedPath.length - 1 ? 'text-primary font-bold' : 'text-slate-500'}`}
+                      >
+                        {node.name}
+                      </button>
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+
+              {/* File Tree */}
+              <div className="flex-1 p-2 overflow-y-auto">
+                {renderTree(fileSystem)}
+              </div>
             </div>
           </div>
 
-          {/* File Tree */}
-          <div className="flex-1 p-2 overflow-y-auto">
-            {renderTree(fileSystem)}
+          {/* Activity Log */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-display font-medium text-slate-900 dark:text-white">Latest Activity</h2>
+              <button className="text-xs text-primary font-mono hover:text-primary_hover transition-colors">VIEW FULL LOG</button>
+            </div>
+            <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto">
+              <table className="w-full text-left text-sm font-mono min-w-[600px]">
+                <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-white/5">
+                  <tr>
+                    <th className="px-6 py-3 font-medium w-1/4">Agent / Worker</th>
+                    <th className="px-6 py-3 font-medium w-1/2">Commit Message</th>
+                    <th className="px-6 py-3 font-medium text-right">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-white/5 text-slate-700 dark:text-slate-300">
+                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-primary"></span>
+                      <span className="text-primary font-bold">Agent_GPT4</span>
+                    </td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                      trimmed silence <span className="text-slate-400 dark:text-slate-600 px-1">-&gt;</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">timeline: Main_Cut_v2</span>
+                    </td>
+                    <td className="px-6 py-4 text-right text-slate-500">2m ago</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span className="text-emerald-400 font-bold">Scene_Cutter_v2</span>
+                    </td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                      indexed shot 4 <span className="text-slate-400 dark:text-slate-600 px-1">in</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">folder: media/raw</span>
+                    </td>
+                    <td className="px-6 py-4 text-right text-slate-500">5m ago</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <span className="w-2 h-2 rounded-full bg-slate-600"></span>
+                      <span className="text-slate-400">Audio_Normalizer</span>
+                    </td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                      applied LUFS -14 <span className="text-slate-400 dark:text-slate-600 px-1">to</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">audio: track_1</span>
+                    </td>
+                    <td className="px-6 py-4 text-right text-slate-500">12m ago</td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <img alt="User" className="w-5 h-5 rounded-full border border-slate-300 dark:border-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOTDE_X3JwToSHTjUFVUtEmOhsNZj6RL934lNVNkkJ_7-dUJZEIfrP-BB4R4yKz6DimrwF9peEsyj_o_qTyGoJMJOIY6497yHymfN_9F7STpDS1WU4VhqLtB4lv5rUS9pq_am9pw4b9Oa84Xtx6eWZ8hdpz0VKq6xB3s-x830O9tK35zH4IDI59VYtVh53_FTHTGcjhnrq1u24Z-SHawNiXKPLY7e3aK6NGBtwHSbiXSaWb5DZhnQiVdO59VHXuxa09qplRDAhcE" />
+                      <span className="text-slate-600 dark:text-slate-300">Human_Supervisor</span>
+                    </td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                      approved <span className="text-green-500 dark:text-green-400">commit #8f3a21</span>
+                    </td>
+                    <td className="px-6 py-4 text-right text-slate-500">1h ago</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Activity Log */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-display font-medium text-slate-900 dark:text-white">Latest Activity</h2>
-          <button className="text-xs text-primary font-mono hover:text-primary_hover transition-colors">VIEW FULL LOG</button>
-        </div>
-        <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto">
-          <table className="w-full text-left text-sm font-mono min-w-[600px]">
-            <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-white/5">
-              <tr>
-                <th className="px-6 py-3 font-medium w-1/4">Agent / Worker</th>
-                <th className="px-6 py-3 font-medium w-1/2">Commit Message</th>
-                <th className="px-6 py-3 font-medium text-right">Time</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-white/5 text-slate-700 dark:text-slate-300">
-              <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                <td className="px-6 py-4 flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-primary"></span>
-                  <span className="text-primary font-bold">Agent_GPT4</span>
-                </td>
-                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                  trimmed silence <span className="text-slate-400 dark:text-slate-600 px-1">-&gt;</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">timeline: Main_Cut_v2</span>
-                </td>
-                <td className="px-6 py-4 text-right text-slate-500">2m ago</td>
-              </tr>
-              <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                <td className="px-6 py-4 flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span className="text-emerald-400 font-bold">Scene_Cutter_v2</span>
-                </td>
-                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                  indexed shot 4 <span className="text-slate-400 dark:text-slate-600 px-1">in</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">folder: media/raw</span>
-                </td>
-                <td className="px-6 py-4 text-right text-slate-500">5m ago</td>
-              </tr>
-              <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                <td className="px-6 py-4 flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-slate-600"></span>
-                  <span className="text-slate-400">Audio_Normalizer</span>
-                </td>
-                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                  applied LUFS -14 <span className="text-slate-400 dark:text-slate-600 px-1">to</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">audio: track_1</span>
-                </td>
-                <td className="px-6 py-4 text-right text-slate-500">12m ago</td>
-              </tr>
-              <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                <td className="px-6 py-4 flex items-center gap-3">
-                  <img alt="User" className="w-5 h-5 rounded-full border border-slate-300 dark:border-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOTDE_X3JwToSHTjUFVUtEmOhsNZj6RL934lNVNkkJ_7-dUJZEIfrP-BB4R4yKz6DimrwF9peEsyj_o_qTyGoJMJOIY6497yHymfN_9F7STpDS1WU4VhqLtB4lv5rUS9pq_am9pw4b9Oa84Xtx6eWZ8hdpz0VKq6xB3s-x830O9tK35zH4IDI59VYtVh53_FTHTGcjhnrq1u24Z-SHawNiXKPLY7e3aK6NGBtwHSbiXSaWb5DZhnQiVdO59VHXuxa09qplRDAhcE" />
-                  <span className="text-slate-600 dark:text-slate-300">Human_Supervisor</span>
-                </td>
-                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                  approved <span className="text-green-500 dark:text-green-400">commit #8f3a21</span>
-                </td>
-                <td className="px-6 py-4 text-right text-slate-500">1h ago</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
