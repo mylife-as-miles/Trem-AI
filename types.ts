@@ -26,3 +26,11 @@ export interface Task {
   icon: string;
   color: 'primary' | 'purple' | 'red';
 }
+
+export interface CubeProps {
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  color?: string;
+  size?: number;
+  wireframe?: boolean;
+}

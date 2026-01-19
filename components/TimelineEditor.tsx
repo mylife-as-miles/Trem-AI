@@ -241,7 +241,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                             <div className="flex items-center gap-1 justify-center w-full md:w-auto">
                                 <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span className="material-icons-outlined">skip_previous</span></button>
                                 <button className="p-2 text-slate-900 dark:text-white hover:text-primary transition-colors"><span className="material-icons-outlined text-3xl">play_circle_filled</span></button>
-                                <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span class="material-icons-outlined">skip_next</span></button>
+                                <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span className="material-icons-outlined">skip_next</span></button>
                             </div>
 
                             <div className="flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-md px-4 py-2 w-full max-w-md mx-4 hidden sm:flex">
