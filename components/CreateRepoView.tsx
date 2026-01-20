@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import AssetLibrary from './AssetLibrary';
 import TopNavigation from './TopNavigation';
-import { db } from '../utils/db';
+import { db, RepoData } from '../utils/db';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
-    onCreateRepo?: (data: { name: string, brief: string, assets: any[] }) => void;
+    onCreateRepo?: (data: RepoData) => void;
 }
 
 interface Asset {
@@ -62,7 +62,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
         try {
             console.log("Saving Repo to DB:", { repoName, repoBrief });
-            await db.addRepo({
+            const newRepoId = await db.addRepo({
                 name: repoName,
                 brief: repoBrief,
                 created: Date.now(),
@@ -72,9 +72,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
             if (onCreateRepo) {
                 onCreateRepo({
+                    id: newRepoId,
                     name: repoName,
                     brief: repoBrief,
-                    assets: selectedAssets
+                    assets: selectedAssets,
+                    fileSystem: newFS,
+                    created: Date.now()
                 });
             } else {
                 onNavigate('repo');

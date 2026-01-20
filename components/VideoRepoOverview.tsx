@@ -14,13 +14,11 @@ export interface FileNode {
   iconColor?: string;
 }
 
-export interface RepoData {
-  name: string;
-  brief: string;
-  created?: number;
-  assets: any[];
-  fileSystem?: FileNode[]; // Persisted FS
-}
+import { RepoData } from '../utils/db';
+
+
+
+export type { RepoData };
 
 interface VideoRepoOverviewProps {
   repoData?: RepoData | null;

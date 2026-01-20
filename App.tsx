@@ -2,25 +2,107 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Orchestrator from './components/Orchestrator';
 import TimelineEditor from './components/TimelineEditor';
-import VideoRepoOverview, { RepoData } from './components/VideoRepoOverview';
+import VideoRepoOverview from './components/VideoRepoOverview';
 import CompareDiffView from './components/CompareDiffView';
 import AssetLibrary from './components/AssetLibrary';
 import CreateRepoView from './components/CreateRepoView';
 import RepoFilesView from './components/RepoFilesView';
+
+import { db, RepoData } from './utils/db';
 
 const App: React.FC = () => {
     const [currentView, setCurrentView] = useState<'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files'>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [repoData, setRepoData] = useState<RepoData | null>(null);
 
+    // Initial Route Handling & PopState Listener
+    useEffect(() => {
+        const handleRoute = async () => {
+            const path = window.location.pathname;
+
+            if (path === '/timeline') setCurrentView('timeline');
+            else if (path === '/diff') setCurrentView('diff');
+            else if (path === '/assets') setCurrentView('assets');
+            else if (path === '/create-repo') setCurrentView('create-repo');
+            else if (path === '/repo-files' && repoData) setCurrentView('repo-files'); // Fallback if data exists
+            else if (path.startsWith('/repo/')) {
+                const parts = path.split('/');
+                const id = parts[2] ? parseInt(parts[2]) : null;
+
+                if (id && !isNaN(id)) {
+                    // Start loading repo
+                    try {
+                        const data = await db.getRepo(id);
+                        if (data) {
+                            setRepoData(data);
+                            if (path.endsWith('/files')) {
+                                setCurrentView('repo-files');
+                            } else {
+                                setCurrentView('repo');
+                            }
+                        } else {
+                            // Repo not found, redirect to dashboard
+                            window.history.replaceState({}, '', '/orchestrator');
+                            setCurrentView('dashboard');
+                        }
+                    } catch (e) {
+                        console.error("Failed to route to repo:", e);
+                        setCurrentView('dashboard');
+                    }
+                }
+            } else {
+                // Default to dashboard for / or /orchestrator or unknown
+                if (path !== '/' && path !== '/orchestrator') {
+                    window.history.replaceState({}, '', '/orchestrator');
+                }
+                setCurrentView('dashboard');
+            }
+        };
+
+        handleRoute();
+
+        const onPopState = () => handleRoute();
+        window.addEventListener('popstate', onPopState);
+        return () => window.removeEventListener('popstate', onPopState);
+    }, []); // Run once on mount
+
     const handleNavigate = (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files') => {
+        let url = '/orchestrator';
+
+        switch (view) {
+            case 'timeline': url = '/timeline'; break;
+            case 'diff': url = '/diff'; break;
+            case 'assets': url = '/assets'; break;
+            case 'create-repo': url = '/create-repo'; break;
+            case 'settings': url = '/settings'; break;
+            case 'dashboard': url = '/orchestrator'; break;
+            case 'repo':
+                if (repoData?.id) url = `/repo/${repoData.id}`;
+                break;
+            case 'repo-files':
+                if (repoData?.id) url = `/repo/${repoData.id}/files`;
+                break;
+        }
+
+        if (window.location.pathname !== url) {
+            window.history.pushState({}, '', url);
+        }
         setCurrentView(view);
         setIsSidebarOpen(false);
     };
 
     const handleCreateRepo = (data: RepoData) => {
         setRepoData(data);
-        handleNavigate('repo');
+        const url = data.id ? `/repo/${data.id}` : '/orchestrator';
+        window.history.pushState({}, '', url);
+        setCurrentView('repo');
+    };
+
+    const handleSelectRepo = (data: RepoData) => {
+        setRepoData(data);
+        const url = data.id ? `/repo/${data.id}` : '/orchestrator';
+        window.history.pushState({}, '', url);
+        setCurrentView('repo');
     };
 
     const renderView = () => {
@@ -42,11 +124,6 @@ const App: React.FC = () => {
             default:
                 return <Orchestrator onNavigate={handleNavigate} />;
         }
-    };
-
-    const handleSelectRepo = (data: RepoData) => {
-        setRepoData(data);
-        handleNavigate('repo');
     };
 
     return (
