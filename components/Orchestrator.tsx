@@ -142,136 +142,110 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          {/* Status Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* CPU Ingest Card */}
-            <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-primary/40 transition-colors">
-              <div className="absolute right-0 top-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                <span className="material-icons-outlined text-4xl text-primary">memory</span>
-              </div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </div>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold">cpu_ingest</span>
-              </div>
-              <div>
-                <div className="text-2xl font-mono text-slate-800 dark:text-white font-bold">84<span className="text-sm text-slate-500 dark:text-gray-500 font-normal">%</span></div>
-                <div className="text-xs text-slate-500 dark:text-gray-400 mt-1 font-mono">Process: FFMPEG_TRANSCODE</div>
-              </div>
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50"></div>
+          {/* Suggestions */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-display font-bold text-slate-800 dark:text-white">Suggestions</h2>
+              <span className="text-[10px] font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">AI-POWERED</span>
             </div>
-
-            {/* GPU Edit Cluster Card */}
-            <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-emerald-400/40 transition-colors">
-              <div className="absolute right-0 top-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                <span className="material-icons-outlined text-4xl text-emerald-400">smart_toy</span>
-              </div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                </div>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-400 font-bold">gpu_edit_cluster</span>
-              </div>
-              <div>
-                <div className="text-2xl font-mono text-slate-800 dark:text-white font-bold">92<span className="text-sm text-slate-500 dark:text-gray-500 font-normal">%</span></div>
-                <div className="text-xs text-slate-500 dark:text-gray-400 mt-1 font-mono">Job: SCENE_DETECT_V3</div>
-              </div>
-              <div className="absolute bottom-0 left-0 w-3/4 h-1 bg-gradient-to-r from-emerald-400 to-transparent opacity-50"></div>
-            </div>
-
-            {/* CDN Uplink Card */}
-            <div className="bg-slate-50 dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col justify-between h-32 relative overflow-hidden group">
-              <div className="absolute right-0 top-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                <span className="material-icons-outlined text-4xl text-slate-500">cloud_upload</span>
-              </div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-2 w-2 rounded-full bg-slate-500 dark:bg-gray-600"></div>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-slate-500 dark:text-gray-400 font-bold">cdn_uplink</span>
-              </div>
-              <div>
-                <div className="text-2xl font-mono text-slate-800 dark:text-gray-300 font-normal">IDLE</div>
-                <div className="text-xs text-slate-500 dark:text-gray-500 mt-1 font-mono">Waiting for queue...</div>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                "Generate highlights from raw footage",
+                "Add subtitles to all clips",
+                "Apply color grading LUT",
+                "Detect and cut silence",
+                "Create social media cuts",
+                "Sync audio tracks"
+              ].map((suggestion, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPrompt(suggestion)}
+                  className="px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm text-slate-600 dark:text-gray-300 hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all group flex items-center gap-2"
+                >
+                  <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">auto_awesome</span>
+                  {suggestion}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Agent Tasks */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-display font-bold text-slate-800 dark:text-white">Agent Tasks</h2>
-              <button className="text-xs text-primary font-mono hover:text-primary_hover transition-colors hover:underline">VIEW ALL LOGS</button>
-            </div>
-            <div className="space-y-3">
-              {/* Processing Task */}
-              <div className="glass-panel rounded-lg p-4 flex items-center justify-between group hover:border-primary/40 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded bg-primary/10 text-primary border border-primary/20">
-                    <span className="material-icons-outlined">auto_fix_high</span>
+          {/* Quick Actions */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-display font-bold text-slate-800 dark:text-white">Quick Actions</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* New Repository */}
+              <button
+                onClick={() => onNavigate('create-repo')}
+                className="bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
+                    <span className="material-icons-outlined">add_circle</span>
                   </div>
-                  <div>
-                    <div className="text-sm font-bold text-slate-800 dark:text-white">Highlight Extraction</div>
-                    <div className="text-xs text-slate-500 dark:text-gray-400 font-mono mt-0.5">repo: interview-series-b • 12m ago</div>
-                  </div>
+                  <span className="font-display font-bold text-slate-800 dark:text-white">New Repository</span>
                 </div>
-                <div className="flex items-center gap-6">
-                  <div className="hidden md:flex flex-col items-end w-32">
-                    <div className="text-[10px] font-mono text-primary mb-1 animate-pulse">PROCESSING</div>
-                    <div className="w-full h-1 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-primary w-2/3 rounded-full"></div>
+                <p className="text-xs text-slate-500 dark:text-gray-400">Create a new video repository and ingest media assets.</p>
+              </button>
+
+              {/* Timeline Editor */}
+              <button
+                onClick={() => onNavigate('timeline')}
+                className="bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-400/5 transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 group-hover:bg-emerald-400 group-hover:text-white transition-colors">
+                    <span className="material-icons-outlined">movie_edit</span>
+                  </div>
+                  <span className="font-display font-bold text-slate-800 dark:text-white">Timeline Editor</span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-gray-400">Open the AI-powered timeline and instruction stack.</p>
+              </button>
+
+              {/* Compare & Diff */}
+              <button
+                onClick={() => onNavigate('diff')}
+                className="bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left hover:border-amber-400/50 hover:shadow-lg hover:shadow-amber-400/5 transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-amber-400/10 text-amber-400 border border-amber-400/20 group-hover:bg-amber-400 group-hover:text-white transition-colors">
+                    <span className="material-icons-outlined">compare</span>
+                  </div>
+                  <span className="font-display font-bold text-slate-800 dark:text-white">Compare & Diff</span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-gray-400">Review changes between timeline versions before committing.</p>
+              </button>
+            </div>
+          </div>
+
+          {/* Recent Repositories */}
+          {repos.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-display font-bold text-slate-800 dark:text-white">Recent Repositories</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {repos.slice(0, 6).map(repo => (
+                  <button
+                    key={repo.id}
+                    onClick={() => {
+                      setSelectedRepo(repo.name);
+                      // Could also navigate to repo view here
+                    }}
+                    className={`bg-white dark:bg-white/5 border rounded-lg p-4 text-left hover:border-primary/50 transition-all flex items-center gap-3 ${selectedRepo === repo.name ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-white/10'}`}
+                  >
+                    <span className="material-icons-outlined text-emerald-400">folder</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-mono text-sm font-bold text-slate-800 dark:text-white truncate">{repo.name}</div>
+                      <div className="text-[10px] text-slate-400 dark:text-gray-500 font-mono">
+                        {new Date(repo.created).toLocaleDateString()}
+                      </div>
                     </div>
-                  </div>
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white">
-                    <span className="material-icons-outlined">more_horiz</span>
+                    {selectedRepo === repo.name && (
+                      <span className="material-icons-outlined text-primary text-sm">check_circle</span>
+                    )}
                   </button>
-                </div>
-              </div>
-
-              {/* Completed Task */}
-              <div className="glass-panel rounded-lg p-4 flex items-center justify-between group hover:border-primary/40 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span className="material-icons-outlined">subtitles</span>
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-slate-800 dark:text-white">Subtitle Generation (En)</div>
-                    <div className="text-xs text-slate-500 dark:text-gray-400 font-mono mt-0.5">repo: campaign-q1-raw • 45m ago</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="px-2 py-1 rounded bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-mono tracking-wide">
-                    COMPLETED
-                  </div>
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white">
-                    <span className="material-icons-outlined">download</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Failed Task */}
-              <div className="glass-panel rounded-lg p-4 flex items-center justify-between group hover:border-primary/40 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 rounded bg-red-500/10 text-red-400 border border-red-500/20">
-                    <span className="material-icons-outlined">warning_amber</span>
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-slate-800 dark:text-white">Metadata Analysis Error</div>
-                    <div className="text-xs text-slate-500 dark:text-gray-400 font-mono mt-0.5">repo: test-footage-alpha • 2h ago</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  <div className="px-2 py-1 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-mono tracking-wide">
-                    FAILED
-                  </div>
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white">
-                    <span className="material-icons-outlined">restart_alt</span>
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="h-20"></div>
       </div>
