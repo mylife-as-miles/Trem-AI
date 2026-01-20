@@ -169,53 +169,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-display font-bold text-slate-800 dark:text-white">Quick Actions</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* New Repository */}
-              <button
-                onClick={() => onNavigate('create-repo')}
-                className="bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all group"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
-                    <span className="material-icons-outlined">add_circle</span>
-                  </div>
-                  <span className="font-display font-bold text-slate-800 dark:text-white">New Repository</span>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Create a new video repository and ingest media assets.</p>
-              </button>
 
-              {/* Timeline Editor */}
-              <button
-                onClick={() => onNavigate('timeline')}
-                className="bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-400/5 transition-all group"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 group-hover:bg-emerald-400 group-hover:text-white transition-colors">
-                    <span className="material-icons-outlined">movie_edit</span>
-                  </div>
-                  <span className="font-display font-bold text-slate-800 dark:text-white">Timeline Editor</span>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Open the AI-powered timeline and instruction stack.</p>
-              </button>
-
-              {/* Compare & Diff */}
-              <button
-                onClick={() => onNavigate('diff')}
-                className="bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left hover:border-amber-400/50 hover:shadow-lg hover:shadow-amber-400/5 transition-all group"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-amber-400/10 text-amber-400 border border-amber-400/20 group-hover:bg-amber-400 group-hover:text-white transition-colors">
-                    <span className="material-icons-outlined">compare</span>
-                  </div>
-                  <span className="font-display font-bold text-slate-800 dark:text-white">Compare & Diff</span>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Review changes between timeline versions before committing.</p>
-              </button>
-            </div>
-          </div>
 
           {/* Recent Repositories */}
           {repos.length > 0 && (
