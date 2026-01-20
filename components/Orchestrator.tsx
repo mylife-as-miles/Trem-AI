@@ -200,6 +200,12 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
             </div>
           )}
         </div>
+        <div className="mt-12 p-4 rounded-lg bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-900/20 text-center">
+          <h4 className="text-sm font-bold text-orange-600 dark:text-orange-400 font-mono mb-1">Public Beta Experimental</h4>
+          <p className="text-xs text-orange-600/80 dark:text-orange-400/80">
+            AI may produce inaccurate information. Please verify important details.
+          </p>
+        </div>
         <div className="h-20"></div>
       </div>
     </div>
