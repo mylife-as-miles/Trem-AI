@@ -92,10 +92,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 border-t border-slate-100 dark:border-white/10 gap-4 sm:gap-0">
                 <div className="flex flex-wrap gap-2">
-                  <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-gray-400 hover:border-primary/50 hover:text-primary transition-colors">
-                    <span className="material-icons-outlined text-sm text-primary">model_training</span>
-                    <span>Model: GPT-4o-Video</span>
-                  </button>
+
 
                   {/* Repo Selection Dropdown */}
                   <div className="relative">
