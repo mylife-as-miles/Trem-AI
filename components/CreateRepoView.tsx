@@ -482,7 +482,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
                 {/* Asset Modal */}
                 {isAssetModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-12 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-12 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
                         <AssetLibrary
                             isModal={true}
                             onClose={() => setIsAssetModalOpen(false)}

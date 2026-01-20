@@ -5,9 +5,10 @@ import { db, RepoData } from '../utils/db';
 
 interface OrchestratorProps {
   onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
+  onSelectRepo?: (repo: RepoData) => void;
 }
 
-const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
+const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo }) => {
   const [prompt, setPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -106,7 +107,6 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
                       <span>{selectedRepo || "Select Repo"}</span>
                       <span className="material-icons-outlined text-[10px] ml-1 opacity-60">expand_more</span>
                     </button>
-
                     {isRepoDropdownOpen && (
                       <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-surface-card border border-slate-200 dark:border-white/10 rounded-lg shadow-xl z-50 overflow-hidden py-1">
                         {repos.length === 0 && (
@@ -142,6 +142,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
             </div>
           </div>
 
+
           {/* Suggestions */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -170,7 +171,6 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
           </div>
 
 
-
           {/* Recent Repositories */}
           {repos.length > 0 && (
             <div className="space-y-4">
@@ -181,7 +181,9 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
                     key={repo.id}
                     onClick={() => {
                       setSelectedRepo(repo.name);
-                      // Could also navigate to repo view here
+                      if (onSelectRepo) {
+                        onSelectRepo(repo);
+                      }
                     }}
                     className={`bg-white dark:bg-white/5 border rounded-lg p-4 text-left hover:border-primary/50 transition-all flex items-center gap-3 ${selectedRepo === repo.name ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-white/10'}`}
                   >

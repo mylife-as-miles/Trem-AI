@@ -26,7 +26,7 @@ const App: React.FC = () => {
     const renderView = () => {
         switch (currentView) {
             case 'dashboard':
-                return <Orchestrator onNavigate={handleNavigate} />;
+                return <Orchestrator onNavigate={handleNavigate} onSelectRepo={handleSelectRepo} />;
             case 'timeline':
                 return <TimelineEditor onNavigate={handleNavigate} />;
             case 'repo':

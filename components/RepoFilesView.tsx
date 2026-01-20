@@ -187,28 +187,43 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
         ));
     };
 
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+    // ... (rest of logic)
+
     return (
         <div className="flex flex-col h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-white font-sans transition-colors duration-300">
             <TopNavigation onNavigate={onNavigate} />
 
             {/* Toolbar */}
-            <div className="px-6 py-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-black/40">
-                <div className="flex items-center gap-4">
-                    <button onClick={() => onNavigate('repo')} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
-                        <span className="material-icons-outlined">arrow_back</span>
-                        <span className="text-sm font-mono uppercase tracking-wider">Back to Overview</span>
-                    </button>
-                    <div className="h-6 w-px bg-slate-200 dark:bg-white/10"></div>
-                    <h2 className="text-lg font-display font-bold">File Manager</h2>
+            <div className="px-4 md:px-6 py-3 border-b border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center justify-between bg-white dark:bg-black/40 gap-3 md:gap-0">
+                <div className="w-full md:w-auto flex items-center justify-between md:justify-start gap-4">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                            className="md:hidden text-slate-500 dark:text-slate-400"
+                        >
+                            <span className="material-icons-outlined">{isMobileSidebarOpen ? 'menu_open' : 'menu'}</span>
+                        </button>
+
+                        <button onClick={() => onNavigate('repo')} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
+                            <span className="material-icons-outlined">arrow_back</span>
+                            <span className="text-sm font-mono uppercase tracking-wider hidden sm:inline">Back to Overview</span>
+                            <span className="text-sm font-mono uppercase tracking-wider sm:hidden">Back</span>
+                        </button>
+                    </div>
+
+                    <div className="h-6 w-px bg-slate-200 dark:bg-white/10 hidden md:block"></div>
+                    <h2 className="text-lg font-display font-bold truncate">File Manager</h2>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="w-full md:w-auto flex items-center justify-end gap-2">
                     <button
                         onClick={handleDeleteClick}
                         disabled={!selectedFile}
                         className="px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm flex items-center gap-2"
                     >
                         <span className="material-icons-outlined text-sm">delete</span>
-                        Delete
+                        <span className="hidden sm:inline">Delete</span>
                     </button>
                     <button
                         onClick={handleSave}
@@ -216,19 +231,27 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                         className="px-3 py-1.5 rounded-md bg-primary hover:bg-primary_hover text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center gap-2 shadow-sm"
                     >
                         <span className="material-icons-outlined text-sm">save</span>
-                        Save Changes
+                        <span className="hidden sm:inline">Save Changes</span>
                     </button>
                 </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 flex overflow-hidden relative">
                 {/* Sidebar Tree */}
-                <div className="w-64 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 overflow-y-auto p-2">
+                <div className={`w-64 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 overflow-y-auto p-2 absolute md:relative top-0 bottom-0 left-0 z-20 transition-transform duration-300 transform ${isMobileSidebarOpen ? 'translate-x-0 bg-white dark:bg-zinc-900 shadow-xl' : '-translate-x-full md:translate-x-0'}`}>
                     {renderTree(files)}
                 </div>
 
+                {/* Overlay for mobile sidebar */}
+                {isMobileSidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/50 z-10 md:hidden"
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                    ></div>
+                )}
+
                 {/* Editor / Preview Area */}
-                <div className="flex-1 flex flex-col bg-white dark:bg-[#1e1e1e]">
+                <div className="flex-1 flex flex-col bg-white dark:bg-[#1e1e1e] min-w-0">
                     {selectedFile ? (
                         <>
                             <div className="px-4 py-2 bg-slate-100 dark:bg-[#252526] border-b border-slate-200 dark:border-white/5 text-xs font-mono text-slate-500 dark:text-slate-400 flex justify-between">
