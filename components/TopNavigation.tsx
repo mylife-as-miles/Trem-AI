@@ -8,11 +8,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate }) => {
     return (
         <header className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/10 bg-background-light/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-10 flex-shrink-0">
             <div className="flex items-center gap-2">
-                <div className="px-3 py-1 rounded-full bg-slate-200 dark:bg-white/5 text-xs font-mono text-slate-600 dark:text-gray-300 border border-slate-300 dark:border-white/10 flex items-center gap-2 shadow-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                    trem-video-pipeline / production
-                    <span className="material-icons-outlined text-[10px]">expand_more</span>
-                </div>
+                {/* Context switcher removed as per user request */}
             </div>
             <div className="flex items-center gap-4">
                 <div className="flex items-center -space-x-2">
