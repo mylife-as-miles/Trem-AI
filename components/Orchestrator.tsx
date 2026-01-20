@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { interpretAgentCommand } from '../services/geminiService';
 import TopNavigation from './TopNavigation';
+import { db, RepoData } from '../utils/db';
 
 interface OrchestratorProps {
   onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -14,13 +15,22 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
   // Repo Selection State
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
+  const [repos, setRepos] = useState<RepoData[]>([]);
 
-  const repos = [
-    "client/nike-commercial",
-    "internal/podcast-ep-42",
-    "events/techcrunch-2023",
-    "archive/legacy-b-roll"
-  ];
+  useEffect(() => {
+    const loadRepos = async () => {
+      try {
+        const data = await db.getAllRepos();
+        setRepos(data);
+        if (data.length > 0 && !selectedRepo) {
+          // Optionally select the first one, or leave as null
+        }
+      } catch (error) {
+        console.error("Failed to load repos:", error);
+      }
+    };
+    loadRepos();
+  }, []);
 
   const handleSubmit = async () => {
     if (!prompt.trim()) return;
@@ -47,16 +57,14 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
   return (
     <div className="flex flex-col min-h-full">
       {/* Top Navigation Header */}
-      <TopNavigation />
-
-      {/* Main Scrollable Content */}
+      <TopNavigation onNavigate={onNavigate} />
 
       {/* Main Scrollable Content */}
       <div className="flex-1 p-6 md:p-10">
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Page Title */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
+            <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">Orchestrator</h1>
             <p className="text-slate-500 dark:text-gray-400">Manage your asynchronous video agents via natural language.</p>
           </div>
 
@@ -101,17 +109,20 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate }) => {
 
                     {isRepoDropdownOpen && (
                       <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-surface-card border border-slate-200 dark:border-white/10 rounded-lg shadow-xl z-50 overflow-hidden py-1">
+                        {repos.length === 0 && (
+                          <div className="px-4 py-2 text-xs text-slate-400 italic">No repositories found</div>
+                        )}
                         {repos.map(repo => (
                           <button
-                            key={repo}
+                            key={repo.id}
                             onClick={() => {
-                              setSelectedRepo(repo);
+                              setSelectedRepo(repo.name);
                               setIsRepoDropdownOpen(false);
                             }}
-                            className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-white/5 hover:text-primary transition-colors font-mono flex items-center gap-2 ${selectedRepo === repo ? 'text-primary bg-primary/5' : 'text-slate-600 dark:text-gray-300'}`}
+                            className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-white/5 hover:text-primary transition-colors font-mono flex items-center gap-2 ${selectedRepo === repo.name ? 'text-primary bg-primary/5' : 'text-slate-600 dark:text-gray-300'}`}
                           >
-                            <span className={`material-icons-outlined text-[10px] ${selectedRepo === repo ? 'opacity-100' : 'opacity-0'}`}>check</span>
-                            {repo}
+                            <span className={`material-icons-outlined text-[10px] ${selectedRepo === repo.name ? 'opacity-100' : 'opacity-0'}`}>check</span>
+                            {repo.name}
                           </button>
                         ))}
                       </div>
