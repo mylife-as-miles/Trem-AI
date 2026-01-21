@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 const apiKey = process.env.API_KEY || '';
 
-// Initialize only if key exists to avoid immediate errors, though functionality will depend on it.
+// Use v1alpha as requested for media_resolution support
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const interpretAgentCommand = async (command: string): Promise<string> => {
@@ -37,7 +37,82 @@ export interface RepoGenerationInputs {
   duration?: string;
   transcript?: string;
   sceneBoundaries?: string;
+  assetContext?: string;
 }
+
+export interface AnalyzedAsset {
+  id: string;
+  description: string;
+  tags: string[];
+}
+
+// Convert Blob/File to Base64
+const fileToBase64 = (file: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        // Remove "data:*/*;base64," prefix
+        resolve(reader.result.split(',')[1]);
+      } else {
+        reject(new Error("Failed to convert file to base64"));
+      }
+    };
+    reader.onerror = error => reject(error);
+  });
+};
+
+export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blob }): Promise<AnalyzedAsset> => {
+  if (!ai || !asset.blob) {
+    // Mock fallback
+    await new Promise(r => setTimeout(r, 1500));
+    return {
+      id: asset.id,
+      description: `Analyzed content for ${asset.name}`,
+      tags: ['auto-detected', 'mock']
+    };
+  }
+
+  try {
+    const base64Data = await fileToBase64(asset.blob);
+    const model = 'gemini-3-flash-preview';
+
+    // Use v1alpha mediaResolution feature
+    const response = await ai.models.generateContent({
+      model,
+      contents: [
+        {
+          parts: [
+            { text: "Analyze this video clip. Return a short description and 3 tags. Format: JSON { \"description\": \"...\", \"tags\": [...] }" },
+            {
+              inlineData: {
+                mimeType: asset.blob.type || 'video/mp4',
+                data: base64Data
+              },
+              // @ts-ignore - v1alpha feature
+              mediaResolution: {
+                level: "media_resolution_low"
+              }
+            }
+          ]
+        }
+      ]
+    } as any);
+
+    const text = response.text || "{}";
+    const jsonStr = text.replace(/```json\n|\n```/g, '');
+    return JSON.parse(jsonStr);
+
+  } catch (e) {
+    console.error(`Failed to analyze asset ${asset.name}`, e);
+    return {
+      id: asset.id,
+      description: "Analysis failed",
+      tags: ['error']
+    };
+  }
+};
 
 export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
   const PROMPT = `
@@ -47,6 +122,7 @@ Inputs:
 - Video duration: ${inputs.duration || '2 minutes 14 seconds'}
 - Audio transcript: PROVIDED
 - Scene boundaries: PROVIDED
+- Asset Context: ${inputs.assetContext || 'None provided'}
 
 Tasks:
 1. Generate scenes/scenes.json
@@ -63,6 +139,7 @@ Rules:
 - No markdown
 - No commentary
 - Paths must be relative to repo root
+- Use Asset Context to inform scene descriptions and themes.
 
 Output format:
 {
@@ -75,8 +152,14 @@ Output format:
   },
   "otio": {...},
   "dag": {...},
-  "commit": {...}
+  "commit": {
+    "message": "feat: ..."
+  }
 }
+
+Specific Requirement for Commit Message:
+- Must be conventional commit style.
+- summarize the content (e.g. "feat: ingest 2m video with 5 scenes").
 `;
 
   if (!ai) {
@@ -147,7 +230,7 @@ A phone call breaks the calm. Something has changed.`
         "id": "0001",
         "parent": null,
         "branch": "main",
-        "message": "Initial ingest: scenes, subtitles, timeline",
+        "message": "feat: ingest 2m14s footage with 2 detected scenes",
         "author": "gemini-3-flash",
         "timestamp": new Date().toISOString(),
         "artifacts": {

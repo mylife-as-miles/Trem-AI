@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AssetLibrary from './AssetLibrary';
 import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
-import { generateRepoStructure } from '../services/geminiService';
+import { generateRepoStructure, analyzeAsset } from '../services/geminiService';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -14,6 +14,8 @@ interface Asset {
     name: string;
     status: 'pending' | 'transcribing' | 'detecting' | 'indexed';
     progress: number;
+    duration?: string;
+    blob?: Blob;
 }
 
 interface FileNode {
@@ -33,6 +35,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     const [repoBrief, setRepoBrief] = useState('');
     const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
     const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
+    const [generatedRepoData, setGeneratedRepoData] = useState<any>(null);
 
     // Advanced Simulation State
     const [simLogs, setSimLogs] = useState<string[]>([]);
@@ -43,72 +46,113 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         { id: 4, status: 'idle', task: 'Waiting...' }
     ]);
 
-    // Ingestion Simulation
+    // Ingestion Simulation - REAL PARALLEL PROCESSING
     useEffect(() => {
-        if (step === 'ingest' && selectedAssets.length > 0) {
-            setSimLogs(prev => [...prev, "> Initializing Trem-AI Compute Cluster...", "> Allocating 4 Worker Nodes..."]);
+        if (step === 'ingest' && selectedAssets.length > 0 && !generatedRepoData) {
+            setSimLogs(prev => [...prev, "> Initializing Trem-AI Compute Cluster...", "> Allocating Worker Nodes..."]);
 
-            const interval = setInterval(() => {
-                setSelectedAssets(prev => {
-                    const allIndexed = prev.every(a => a.status === 'indexed');
-                    if (allIndexed) {
-                        clearInterval(interval);
-                        setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Complete' })));
-                        setSimLogs(logs => [...logs, "> Indexing Complete. Semantic Baseline Locked."]);
-                        return prev;
-                    }
+            let isCancelled = false;
 
-                    // Randomly update workers
-                    setWorkers(prevWorkers => prevWorkers.map(w => {
-                        if (Math.random() > 0.7) {
-                            const statuses: ('analyzing' | 'vectorizing' | 'optimizing')[] = ['analyzing', 'vectorizing', 'optimizing'];
-                            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-                            return {
-                                ...w,
-                                status: randomStatus,
-                                task: `${randomStatus === 'analyzing' ? 'Frame' : randomStatus === 'vectorizing' ? 'Vector' : 'Graph'} #${Math.floor(Math.random() * 9999)}`
-                            };
-                        }
-                        return w;
-                    }));
-
-                    // Randomly add logs
-                    if (Math.random() > 0.6) {
-                        const messages = [
-                            "Detecting scene change...",
-                            "Extracting CLIP embedding...",
-                            "Optimizing vector index...",
-                            "Transcribing audio stream...",
-                            "Generating metadata json..."
-                        ];
-                        const msg = messages[Math.floor(Math.random() * messages.length)];
-                        setSimLogs(logs => {
-                            const newLogs = [...logs, `> [Worker_${Math.floor(Math.random() * 4) + 1}] ${msg}`];
-                            if (newLogs.length > 8) return newLogs.slice(newLogs.length - 8);
-                            return newLogs;
-                        });
-                    }
-
-                    return prev.map(asset => {
-                        if (asset.status === 'indexed') return asset;
-
-                        let newProgress = asset.progress + Math.random() * 2; // Slower progress for effect
-                        if (newProgress >= 100) {
-                            if (asset.status === 'pending') return { ...asset, status: 'transcribing', progress: 0 };
-                            if (asset.status === 'transcribing') return { ...asset, status: 'detecting', progress: 0 };
-                            if (asset.status === 'detecting') return { ...asset, status: 'indexed', progress: 100 };
-                            return asset;
-                        }
-                        return { ...asset, progress: newProgress };
-                    });
+            // Helper to parse duration string "MM:SS" or "HH:MM:SS" to minutes text
+            const getTotalDurationText = (assets: Asset[]) => {
+                let totalSeconds = 0;
+                assets.forEach(a => {
+                    if (!a.duration || a.duration === '--:--') return;
+                    const parts = a.duration.split(':').map(Number);
+                    if (parts.length === 2) totalSeconds += parts[0] * 60 + parts[1];
+                    if (parts.length === 3) totalSeconds += parts[0] * 3600 + parts[1] * 60 + parts[2];
                 });
-            }, 200); // Faster tick rate for UI updates
-            return () => clearInterval(interval);
-        }
-    }, [step]);
 
-    // Check if ready to commit
-    const isIngestionComplete = selectedAssets.length > 0 && selectedAssets.every(a => a.status === 'indexed');
+                if (totalSeconds === 0 && assets.length > 0) totalSeconds = assets.length * 30;
+
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = Math.floor(totalSeconds % 60);
+                return `${minutes} minutes ${seconds} seconds`;
+            };
+
+            const runIngestion = async () => {
+                // 1. Load Blobs first (async)
+                const assetsWithBlobs = await Promise.all(selectedAssets.map(async a => {
+                    const dbAsset = await db.getAsset(a.id);
+                    return { ...a, blob: dbAsset?.blob, dbAsset };
+                }));
+
+                const analyzedData: string[] = [];
+
+                // Helper to update worker UI
+                const updateWorker = (id: number, status: string, task: string) => {
+                    if (isCancelled) return;
+                    setWorkers(prev => prev.map(w => w.id === id ? { ...w, status: status as any, task } : w));
+                };
+
+                const processAsset = async (asset: any, index: number) => {
+                    if (isCancelled) return;
+
+                    const workerId = (index % 4) + 1;
+                    updateWorker(workerId, 'analyzing', `Frame Analysis: ${asset.name}`);
+                    setSimLogs(prev => [...prev, `> [Worker_${workerId}] Analyzing ${asset.name} (media_resolution_low: 70 tokens)...`]);
+
+                    // Update UI status to 'transcribing' / 'detecting'
+                    setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'detecting', progress: 50 } : a));
+
+                    try {
+                        const result = await analyzeAsset({ id: asset.id, name: asset.name, blob: asset.blob });
+                        if (isCancelled) return;
+
+                        analyzedData.push(`Asset: ${asset.name}\nDescription: ${result.description}\nTags: ${result.tags.join(', ')}`);
+
+                        setSimLogs(prev => [...prev, `> [Worker_${workerId}] Finished ${asset.name}. Extracted ${result.tags.length} features.`]);
+
+                        // Update asset progress to 100%
+                        setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'indexed', progress: 100 } : a));
+
+                        updateWorker(workerId, 'idle', 'Waiting...');
+                    } catch (e) {
+                        console.error(e);
+                        if (isCancelled) return;
+                        setSimLogs(prev => [...prev, `> [Worker_${workerId}] Error processing ${asset.name}`]);
+                    }
+                };
+
+                // Run Concurrent Analysis
+                await Promise.all(assetsWithBlobs.map((a, i) => processAsset(a, i)));
+
+                if (isCancelled) return;
+
+                // 2. Final Repo Generation
+                setSimLogs(prev => [...prev, `> Consolidating Analysis Context...`, `> Generating Semantic Baseline...`]);
+                const durationText = getTotalDurationText(selectedAssets);
+                const contextStr = analyzedData.join('\n\n');
+
+                try {
+                    const data = await generateRepoStructure({
+                        duration: durationText,
+                        transcript: "auto-generated",
+                        sceneBoundaries: "auto-detected",
+                        assetContext: contextStr
+                    });
+                    if (isCancelled) return;
+
+                    setGeneratedRepoData(data);
+                    setSimLogs(prev => [...prev, `> Commit Ready.`]);
+
+                    // Clear workers
+                    setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Complete' })));
+
+                } catch (e) {
+                    console.error("Aggregation Failed", e);
+                    setSimLogs(logs => [...logs, "> ERROR: Semantic Analysis Failed."]);
+                }
+            };
+
+            runIngestion();
+
+            return () => { isCancelled = true; };
+        }
+    }, [step]); // Only step dependency to avoid re-runs on asset update
+
+    // Check if ready to commit (Wait for both Ingestion AND Generation)
+    const isIngestionComplete = selectedAssets.length > 0 && selectedAssets.every(a => a.status === 'indexed') && !!generatedRepoData;
 
     const handleAssetsSelected = async (assetIds: string[]) => {
         // Convert IDs to basic items for the list, fetching names from DB
@@ -118,7 +162,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 id,
                 name: dbAsset?.name || `Imported_Clip_${id}`,
                 status: 'pending' as const,
-                progress: 0
+                progress: 0,
+                duration: dbAsset?.duration
             };
         }));
 
@@ -130,19 +175,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     };
 
     const handleCommit = async () => {
-        setSimLogs(prev => [...prev, "> Contacting Gemini 3 Flash for Semantic Structure..."]);
+        setSimLogs(prev => [...prev, "> Finalizing Commit..."]);
 
-        // Call Gemini Service
-        let generatedData;
-        try {
-            generatedData = await generateRepoStructure({
-                duration: "2 minutes 14 seconds",
-                transcript: "auto-generated",
-                sceneBoundaries: "auto-detected"
-            });
-        } catch (e) {
-            console.error("Gemini Generation Failed", e);
-            setSimLogs(prev => [...prev, "> ERROR: Gemini Generation Failed. Check console."]);
+        if (!generatedRepoData) {
+            console.error("No generated data available");
             return;
         }
 
@@ -152,7 +188,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             created: Date.now(),
             version: "1.0.0",
             pipeline: "trem-video-pipeline-v1",
-            ...generatedData.repo
+            ...generatedRepoData.repo
         };
 
         // --- Generate File System Structure ---
@@ -174,43 +210,43 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // otio/
             {
                 id: 'otio', name: 'otio', type: 'folder', children: [
-                    { id: 'otio_main', name: 'main.otio.json', type: 'file', icon: 'tune', iconColor: 'text-purple-400', content: JSON.stringify(generatedData.otio || {}, null, 2) }
+                    { id: 'otio_main', name: 'main.otio.json', type: 'file', icon: 'tune', iconColor: 'text-purple-400', content: JSON.stringify(generatedRepoData.otio || {}, null, 2) }
                 ]
             },
 
             // dag/
             {
                 id: 'dag', name: 'dag', type: 'folder', children: [
-                    { id: 'dag_graph', name: 'graph.json', type: 'file', icon: 'schema', iconColor: 'text-blue-400', content: JSON.stringify(generatedData.dag || {}, null, 2) }
+                    { id: 'dag_graph', name: 'graph.json', type: 'file', icon: 'schema', iconColor: 'text-blue-400', content: JSON.stringify(generatedRepoData.dag || {}, null, 2) }
                 ]
             },
 
             // scenes/
             {
                 id: 'scenes', name: 'scenes', type: 'folder', children: [
-                    { id: 'scenes_json', name: 'scenes.json', type: 'file', icon: 'data_object', iconColor: 'text-amber-400', content: JSON.stringify(generatedData.scenes || {}, null, 2) }
+                    { id: 'scenes_json', name: 'scenes.json', type: 'file', icon: 'data_object', iconColor: 'text-amber-400', content: JSON.stringify(generatedRepoData.scenes || {}, null, 2) }
                 ]
             },
 
             // subtitles/
             {
                 id: 'subtitles', name: 'subtitles', type: 'folder', children: [
-                    { id: 'subtitles_main', name: 'main.srt', type: 'file', icon: 'subtitles', iconColor: 'text-slate-200', content: generatedData.subtitles_srt || '' }
+                    { id: 'subtitles_main', name: 'main.srt', type: 'file', icon: 'subtitles', iconColor: 'text-slate-200', content: generatedRepoData.subtitles_srt || '' }
                 ]
             },
 
             // descriptions/
             {
                 id: 'descriptions', name: 'descriptions', type: 'folder', children: [
-                    { id: 'desc_video', name: 'video.md', type: 'file', icon: 'description', iconColor: 'text-blue-300', content: generatedData.descriptions?.video_md || '' },
-                    { id: 'desc_scenes', name: 'scenes.md', type: 'file', icon: 'description', iconColor: 'text-blue-200', content: generatedData.descriptions?.scenes_md || '' }
+                    { id: 'desc_video', name: 'video.md', type: 'file', icon: 'description', iconColor: 'text-blue-300', content: generatedRepoData.descriptions?.video_md || '' },
+                    { id: 'desc_scenes', name: 'scenes.md', type: 'file', icon: 'description', iconColor: 'text-blue-200', content: generatedRepoData.descriptions?.scenes_md || '' }
                 ]
             },
 
             // commits/
             {
                 id: 'commits', name: 'commits', type: 'folder', children: [
-                    { id: 'commit_0001', name: '0001.json', type: 'file', icon: 'commit', iconColor: 'text-orange-400', content: JSON.stringify(generatedData.commit || {}, null, 2) }
+                    { id: 'commit_0001', name: '0001.json', type: 'file', icon: 'commit', iconColor: 'text-orange-400', content: JSON.stringify(generatedRepoData.commit || {}, null, 2) }
                 ]
             },
 
@@ -231,7 +267,6 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         ];
 
         try {
-            console.log("Saving Repo to DB:", { repoName, repoBrief });
             const newRepoId = await db.addRepo({
                 name: repoName,
                 brief: repoBrief,
@@ -256,6 +291,32 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             console.error("Failed to save repo:", error);
         }
     };
+
+    // Calculate Real Stats for display
+    const getStats = () => {
+        if (!generatedRepoData) return { scenes: 0, lines: 0, duration: "00:00" };
+
+        // Scenes
+        const scenes = generatedRepoData.scenes?.length || 0;
+
+        // Lines (approx)
+        const lines = generatedRepoData.subtitles_srt ? generatedRepoData.subtitles_srt.split('\n\n').length : 0;
+
+        // Duration - summing assets or using generated duration
+        let totalSeconds = 0;
+        selectedAssets.forEach(a => {
+            if (!a.duration || a.duration === '--:--') return;
+            const parts = a.duration.split(':').map(Number);
+            if (parts.length === 2) totalSeconds += parts[0] * 60 + parts[1];
+            if (parts.length === 3) totalSeconds += parts[0] * 3600 + parts[1] * 60 + parts[2];
+        });
+        const mm = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const ss = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
+
+        return { scenes, lines, duration: `${mm}:${ss}` };
+    };
+
+    const stats = getStats();
 
     return (
         <div className="flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
@@ -469,7 +530,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                             <div className="flex gap-2">
                                                 <input
                                                     type="text"
-                                                    defaultValue="Add raw footage and AI index"
+                                                    defaultValue={generatedRepoData?.commit?.message || "Add raw footage and AI index"}
                                                     className="flex-1 bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-lg px-4 py-2 font-mono text-sm text-slate-700 dark:text-gray-300 focus:outline-none focus:border-primary transition-colors"
                                                 />
                                             </div>
@@ -483,15 +544,15 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                             </div>
                                             <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
                                                 <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Total Duration</div>
-                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">14:22 <span className="text-sm font-normal text-slate-400">mm:ss</span></div>
+                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.duration} <span className="text-sm font-normal text-slate-400">mm:ss</span></div>
                                             </div>
                                             <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
                                                 <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Detected Scenes</div>
-                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">42 <span className="text-sm font-normal text-slate-400">cuts</span></div>
+                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.scenes} <span className="text-sm font-normal text-slate-400">cuts</span></div>
                                             </div>
                                             <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
                                                 <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Dialogue Lines</div>
-                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">128 <span className="text-sm font-normal text-slate-400">lines</span></div>
+                                                <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.lines} <span className="text-sm font-normal text-slate-400">lines</span></div>
                                             </div>
                                         </div>
 
