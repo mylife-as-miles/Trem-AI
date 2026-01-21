@@ -11,9 +11,25 @@ export interface RepoData {
     created: number;
 }
 
+export interface AssetData {
+    id: string;
+    name: string;
+    type: 'video' | 'image' | 'audio';
+    blob?: Blob;
+    url?: string; // For mock or external
+    duration?: string;
+    size?: number;
+    created: number;
+    thumb?: string;
+    tags?: string[];
+    meta?: any;
+    status?: 'pending' | 'uploading' | 'processing' | 'ready' | 'error';
+    progress?: number;
+}
+
 class TremDatabase {
     private dbName = 'TremDB';
-    private version = 1;
+    private version = 2;
     private db: IDBDatabase | null = null;
 
     constructor() {
@@ -38,6 +54,9 @@ class TremDatabase {
                 const db = (event.target as IDBOpenDBRequest).result;
                 if (!db.objectStoreNames.contains('repos')) {
                     db.createObjectStore('repos', { keyPath: 'id', autoIncrement: true });
+                }
+                if (!db.objectStoreNames.contains('assets')) {
+                    db.createObjectStore('assets', { keyPath: 'id' });
                 }
             };
         });
@@ -98,6 +117,69 @@ class TremDatabase {
             request.onerror = () => {
                 reject(request.error);
             };
+        });
+    }
+
+    async addAsset(asset: AssetData): Promise<string> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['assets'], 'readwrite');
+            const store = transaction.objectStore('assets');
+            const request = store.put(asset); // use put to allow updates or inserts based on id
+
+            request.onsuccess = () => {
+                resolve(request.result as string);
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+        });
+    }
+
+    async getAllAssets(): Promise<AssetData[]> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            try {
+                const transaction = db.transaction(['assets'], 'readonly');
+                const store = transaction.objectStore('assets');
+                const request = store.getAll();
+
+                request.onsuccess = () => {
+                    resolve(request.result as AssetData[]);
+                };
+
+                request.onerror = () => {
+                    reject(request.error);
+                };
+            } catch (e) {
+                // Store might not exist if update failed or old version loaded?
+                // Should not happen with onupgradeneeded logic but safe to handle
+                console.warn("Assets store access failed", e);
+                resolve([]);
+            }
+        });
+    }
+
+    async getAsset(id: string): Promise<AssetData | undefined> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            try {
+                const transaction = db.transaction(['assets'], 'readonly');
+                const store = transaction.objectStore('assets');
+                const request = store.get(id);
+
+                request.onsuccess = () => {
+                    resolve(request.result as AssetData);
+                };
+
+                request.onerror = () => {
+                    reject(request.error);
+                };
+            } catch (e) {
+                console.warn("Assets store access failed", e);
+                resolve(undefined);
+            }
         });
     }
 }

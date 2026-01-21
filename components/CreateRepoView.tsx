@@ -110,14 +110,18 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     // Check if ready to commit
     const isIngestionComplete = selectedAssets.length > 0 && selectedAssets.every(a => a.status === 'indexed');
 
-    const handleAssetsSelected = (assetIds: string[]) => {
-        // Convert IDs to basic items for the list
-        const newAssets: Asset[] = assetIds.map(id => ({
-            id,
-            name: `Imported_Clip_${id}`, // Mock name
-            status: 'pending',
-            progress: 0
+    const handleAssetsSelected = async (assetIds: string[]) => {
+        // Convert IDs to basic items for the list, fetching names from DB
+        const newAssets = await Promise.all(assetIds.map(async id => {
+            const dbAsset = await db.getAsset(id);
+            return {
+                id,
+                name: dbAsset?.name || `Imported_Clip_${id}`,
+                status: 'pending' as const,
+                progress: 0
+            };
         }));
+
         setSelectedAssets(newAssets);
         setIsAssetModalOpen(false);
         if (newAssets.length > 0) {

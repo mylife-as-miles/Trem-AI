@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { db, AssetData } from '../utils/db';
 
 interface AssetLibraryProps {
     isModal?: boolean;
@@ -6,10 +7,43 @@ interface AssetLibraryProps {
     onSelect?: (assets: string[]) => void;
 }
 
+const MOCK_ASSETS: AssetData[] = [
+    { id: 'shot_05', name: 'Shot_05_RedShoes', type: 'video', duration: '00:04:12', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_FG3siz-07Zar46PuwVeXadGde8wD1oABlXQRLHcrBqv4ipUuXzt-wiksmm1efukjl7A2RCE8_Vhex7BOgslIXb7jfBughYHpY1QfEmy8hUeD8RQ4EVwH8Vbge-Bo70Y7g4hVqcr9ome6UUUR3MXoHt2NIOaJHIGFHUGyDSDIeqfls_rltYQPaguiZ3-NYvNzRK04K4S9JAVrcrG-XKghqKGIbcFA60Gy0_WWCyqXVALr2ysEmqLlav6sE9WiGB1qr9EgdYbXSZM', tags: ['Rain', 'City', 'Sad', 'Night'], meta: { object: 'red_shoes', motion: 'running' }, size: 0, created: Date.now(), status: 'ready' },
+    { id: 'b_roll_mtn', name: 'B-Roll_Mountain_02', type: 'video', duration: '00:08:22', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIXZ-cPuVPzVLTXOAKmVCTKh-dlGXWTU-kPdah6a1_m_2R1IjtTXBcy4YijkJNiGyZ4wQR2JtlIERvfHiRJlkm6lud55LGQo3EiTJrf4DSjAW7b8EBZNxu5hrQ8ERr1-kbf8un8OFI3nmqKOviwULI3BNakDO-BEMIAthJLy1cbTw61Vu0G54agsoZ1Dh-Y8-5AM_4QJvS3u0QDWAlWan2Dov77rSuYKKmHyFUOZDzyo6U2SRWI7hRSe5Oh2JGSKwFQaZu1S_Dk2Q', size: 0, created: Date.now(), status: 'ready' },
+    { id: 'int_night', name: 'Int_Night_Street', type: 'video', duration: '00:01:45', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDlQnnEBjGcXNaP6m0G4g-7TjUpTDHjrlHe1fjGfkeeunOTCn2nq9C097nwAERUI2uIwIRJzSrGt3CPEdsLMiWyQ8EsmDnTGrNC6tl-XpX43c8o1sVw4TpeZNujy-8V6TA6xXd_LCf7kTToRliZk9vSha9D3chfYA64CRLYhJBV6CiBqXKB6I7x5ToiqO9cv8WoKE6xAjMLdkkWn7W1QPcyCsVbT5a3hWxaMYb8vywpuZbAH86YqoEOlm_CIo4wiTmBRegz7OoAxPo', size: 0, created: Date.now(), status: 'ready' },
+    { id: 'gym_wide', name: 'Gym_Workout_Wide', type: 'video', duration: '00:12:01', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqUmuUTjPu4whb7LtB63lXgMAhV5uj6JOkkluG0jt_zr0-FB9CuDEtpZQgZW2_w9N_bvxQlXwiMSUkCmFoVh1B3uB6Ua0Lv6WM8UF8mORQDRt-SNZF1HRRJq60hNiXVfZGiHm0bX9AfajNv-ELyaXRUgeBZPKiuSADarbaOnsDBMpHDF8cEVeY7VP3l5J4BRw_PfRN0fk3Oj7iQoovOIYHIWz09UQYY2cCIjbL98VXSfGr-5SD1f_Ry9aaznxre9TFvcdUKi_StLk', size: 0, created: Date.now(), status: 'ready' },
+    { id: 'shoe_macro', name: 'Shoe_Detail_Macro', type: 'video', duration: '00:00:30', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCWSK-k3L5C9e9SzUwVK7rgY_Jbuo9Jm3wDl00Z2D9KjG1Uc2Ar4ngCZ9yIYUPElGE4YZF48kKYdMezmX6T2Ed59WIzvNFxINj-WFSi2Hw0ykXP5tz-5ko7ZQGis6Y_k4Dn9AuD8bE8ZNV4MGFNH_14j2217tHKVEx2jXLrnHdVXNio16Hl8n_h19tMRhXEtzbxWGyxkGIcLi5rcHrFkE-LH5pme6oOcdBaJtJAOB2525hIQOKu8_TAbHkyyzLjfHdLWeCsSAESgW8', size: 0, created: Date.now(), status: 'ready' },
+    { id: 'urban_run', name: 'Urban_Running_Tracking', type: 'video', duration: '00:03:15', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAE14UFQg0BB_D4XMRQvtCdsNShp6gkDlXhl6cr3IMUFU3qhZeeDfJA661CbObw74Asjmd7tEVPVqwK8tDyCRVeYLmdr-DPEDOjp6uQoTzcybEL-xiGUiq4_mxnsM6oYxMc43AQ6bvqmGiBKZa4usJB6rJckmZYAdsSciUS5Kt9raO47ULqs1lhfyHA-EFRJZyz0eJBe8gZZSuRWWlTUjy6xHf1Ij7xsiZm1KNsLQP4ofiumXjwiT0V32yx08aBSsXqLC1ifEWrlG4', size: 0, created: Date.now(), status: 'ready' },
+];
+
 const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect }) => {
-    // Determine number of active filters for some visual feedback if needed
     const [activeFilters, setActiveFilters] = useState<string[]>(['Vision_Pro_v4']);
     const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+    const [assets, setAssets] = useState<AssetData[]>([]);
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Load assets from DB
+    const loadAssets = async () => {
+        try {
+            const dbAssets = await db.getAllAssets();
+            // Merge DB assets with Mock assets
+            // Only use Mock if DB is empty or just append? Let's append DB assets to Mock for now to populate view
+            // In a real app, Mock would be initial seed.
+            const merged = [...dbAssets.reverse(), ...MOCK_ASSETS];
+            setAssets(merged);
+        } catch (e) {
+            console.error("Failed to load assets", e);
+            setAssets(MOCK_ASSETS);
+        }
+    };
+
+    useEffect(() => {
+        loadAssets();
+        // Polling for updates (primitive live query)
+        const interval = setInterval(loadAssets, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     const toggleFilter = (filter: string) => {
         if (activeFilters.includes(filter)) {
@@ -33,18 +67,90 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
         }
     };
 
-    // Mock asset data for clearer iteration
-    const assets = [
-        { id: 'shot_05', name: 'Shot_05_RedShoes', duration: '00:04:12', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_FG3siz-07Zar46PuwVeXadGde8wD1oABlXQRLHcrBqv4ipUuXzt-wiksmm1efukjl7A2RCE8_Vhex7BOgslIXb7jfBughYHpY1QfEmy8hUeD8RQ4EVwH8Vbge-Bo70Y7g4hVqcr9ome6UUUR3MXoHt2NIOaJHIGFHUGyDSDIeqfls_rltYQPaguiZ3-NYvNzRK04K4S9JAVrcrG-XKghqKGIbcFA60Gy0_WWCyqXVALr2ysEmqLlav6sE9WiGB1qr9EgdYbXSZM', tags: ['Rain', 'City', 'Sad', 'Night'], meta: { object: 'red_shoes', motion: 'running' } },
-        { id: 'b_roll_mtn', name: 'B-Roll_Mountain_02', duration: '00:08:22', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIXZ-cPuVPzVLTXOAKmVCTKh-dlGXWTU-kPdah6a1_m_2R1IjtTXBcy4YijkJNiGyZ4wQR2JtlIERvfHiRJlkm6lud55LGQo3EiTJrf4DSjAW7b8EBZNxu5hrQ8ERr1-kbf8un8OFI3nmqKOviwULI3BNakDO-BEMIAthJLy1cbTw61Vu0G54agsoZ1Dh-Y8-5AM_4QJvS3u0QDWAlWan2Dov77rSuYKKmHyFUOZDzyo6U2SRWI7hRSe5Oh2JGSKwFQaZu1S_Dk2Q' },
-        { id: 'int_night', name: 'Int_Night_Street', duration: '00:01:45', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDlQnnEBjGcXNaP6m0G4g-7TjUpTDHjrlHe1fjGfkeeunOTCn2nq9C097nwAERUI2uIwIRJzSrGt3CPEdsLMiWyQ8EsmDnTGrNC6tl-XpX43c8o1sVw4TpeZNujy-8V6TA6xXd_LCf7kTToRliZk9vSha9D3chfYA64CRLYhJBV6CiBqXKB6I7x5ToiqO9cv8WoKE6xAjMLdkkWn7W1QPcyCsVbT5a3hWxaMYb8vywpuZbAH86YqoEOlm_CIo4wiTmBRegz7OoAxPo' },
-        { id: 'gym_wide', name: 'Gym_Workout_Wide', duration: '00:12:01', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqUmuUTjPu4whb7LtB63lXgMAhV5uj6JOkkluG0jt_zr0-FB9CuDEtpZQgZW2_w9N_bvxQlXwiMSUkCmFoVh1B3uB6Ua0Lv6WM8UF8mORQDRt-SNZF1HRRJq60hNiXVfZGiHm0bX9AfajNv-ELyaXRUgeBZPKiuSADarbaOnsDBMpHDF8cEVeY7VP3l5J4BRw_PfRN0fk3Oj7iQoovOIYHIWz09UQYY2cCIjbL98VXSfGr-5SD1f_Ry9aaznxre9TFvcdUKi_StLk' },
-        { id: 'shoe_macro', name: 'Shoe_Detail_Macro', duration: '00:00:30', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCWSK-k3L5C9e9SzUwVK7rgY_Jbuo9Jm3wDl00Z2D9KjG1Uc2Ar4ngCZ9yIYUPElGE4YZF48kKYdMezmX6T2Ed59WIzvNFxINj-WFSi2Hw0ykXP5tz-5ko7ZQGis6Y_k4Dn9AuD8bE8ZNV4MGFNH_14j2217tHKVEx2jXLrnHdVXNio16Hl8n_h19tMRhXEtzbxWGyxkGIcLi5rcHrFkE-LH5pme6oOcdBaJtJAOB2525hIQOKu8_TAbHkyyzLjfHdLWeCsSAESgW8' },
-        { id: 'urban_run', name: 'Urban_Running_Tracking', duration: '00:03:15', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAE14UFQg0BB_D4XMRQvtCdsNShp6gkDlXhl6cr3IMUFU3qhZeeDfJA661CbObw74Asjmd7tEVPVqwK8tDyCRVeYLmdr-DPEDOjp6uQoTzcybEL-xiGUiq4_mxnsM6oYxMc43AQ6bvqmGiBKZa4usJB6rJckmZYAdsSciUS5Kt9raO47ULqs1lhfyHA-EFRJZyz0eJBe8gZZSuRWWlTUjy6xHf1Ij7xsiZm1KNsLQP4ofiumXjwiT0V32yx08aBSsXqLC1ifEWrlG4' },
-    ];
+    // File Upload Handlers
+    const handleFiles = async (files: FileList | null) => {
+        if (!files) return;
+
+        const newAssets: AssetData[] = [];
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const isImage = file.type.startsWith('image');
+            const isVideo = file.type.startsWith('video');
+
+            let thumb = undefined;
+            if (isImage) {
+                // Create object URL for immediate display, but for persistence we might want DataURL
+                // For simplicity, we'll assume we can re-create ObjectURL from Blob when rendering if we stored Blob.
+                // But current DB interface stores Blob.
+                // Let's create a temporary thumb URL.
+                thumb = URL.createObjectURL(file);
+            }
+
+            const asset: AssetData = {
+                id: crypto.randomUUID(),
+                name: file.name,
+                type: isImage ? 'image' : isVideo ? 'video' : 'audio',
+                blob: file,
+                size: file.size,
+                created: Date.now(),
+                status: 'ready',
+                thumb: thumb,
+                duration: isVideo ? '--:--' : undefined, // Placeholder
+                tags: ['Uploaded', 'Local']
+            };
+
+            await db.addAsset(asset);
+        }
+        loadAssets(); // Refresh view
+    };
+
+    const onDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const onDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const onDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+        await handleFiles(e.dataTransfer.files);
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
+
 
     return (
-        <div className={`flex bg-background-dark text-white font-sans overflow-hidden selection:bg-primary selection:text-white ${isModal ? 'h-[80vh] w-full rounded-xl border border-white/10 shadow-2xl' : 'h-screen'}`}>
+        <div
+            className={`flex bg-background-dark text-white font-sans overflow-hidden selection:bg-primary selection:text-white ${isModal ? 'h-[80vh] w-full rounded-xl border border-white/10 shadow-2xl' : 'h-screen'}`}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+        >
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                multiple
+                accept="video/*,image/*,audio/*"
+                onChange={(e) => handleFiles(e.target.files)}
+            />
+
+            {/* Drag Overlay */}
+            {isDragging && (
+                <div className="absolute inset-0 z-50 bg-primary/20 backdrop-blur-sm border-4 border-primary border-dashed m-4 rounded-xl flex items-center justify-center pointer-events-none">
+                    <div className="text-center animate-bounce">
+                        <span className="material-icons-outlined text-6xl text-white drop-shadow-lg">cloud_upload</span>
+                        <h2 className="text-2xl font-bold text-white mt-4 drop-shadow-md">Drop Files to Upload</h2>
+                    </div>
+                </div>
+            )}
+
             {/* Sidebar - Hide if modal */}
             {!isModal && (
                 <aside className="w-72 flex-shrink-0 flex flex-col border-r border-white/10 bg-black z-20">
@@ -57,48 +163,13 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                         </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                        {/* Existing Filters - Kept for visual consistency */}
                         <div>
                             <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-4 font-bold flex items-center gap-2">
                                 <span className="material-icons-outlined text-sm">calendar_today</span> Date Uploaded
                             </h3>
                             <ul className="space-y-2 font-mono text-sm text-gray-400">
                                 {['Last 24 Hours', 'Past Week', 'Past Month'].map((label) => (
-                                    <li key={label}
-                                        className={`flex items-center gap-3 cursor-pointer group transition-colors ${activeFilters.includes(label) ? 'text-white' : 'hover:text-primary'}`}
-                                        onClick={() => toggleFilter(label)}
-                                    >
-                                        <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${activeFilters.includes(label) ? 'bg-primary border-primary' : 'border-white/20 group-hover:border-primary'}`}>
-                                            {activeFilters.includes(label) && <span className="material-icons-outlined text-[10px] text-white">check</span>}
-                                        </div>
-                                        <span>{label}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-4 font-bold flex items-center gap-2">
-                                <span className="material-icons-outlined text-sm">smart_toy</span> Agent Tagged
-                            </h3>
-                            <ul className="space-y-2 font-mono text-sm text-gray-400">
-                                {['Vision_Pro_v4', 'Audio_Whisper_en', 'Motion_Tracker_X'].map((label) => (
-                                    <li key={label}
-                                        className={`flex items-center gap-3 cursor-pointer group transition-colors ${activeFilters.includes(label) ? 'text-white' : 'hover:text-primary'}`}
-                                        onClick={() => toggleFilter(label)}
-                                    >
-                                        <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${activeFilters.includes(label) ? 'bg-primary border-primary' : 'border-white/20 group-hover:border-primary'}`}>
-                                            {activeFilters.includes(label) && <span className="material-icons-outlined text-[10px] text-white">check</span>}
-                                        </div>
-                                        <span>{label}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-4 font-bold flex items-center gap-2">
-                                <span className="material-icons-outlined text-sm">memory</span> Worker Pool
-                            </h3>
-                            <ul className="space-y-2 font-mono text-sm text-gray-400">
-                                {['cpu_ingest_01', 'gpu_render_farm'].map((label) => (
                                     <li key={label}
                                         className={`flex items-center gap-3 cursor-pointer group transition-colors ${activeFilters.includes(label) ? 'text-white' : 'hover:text-primary'}`}
                                         onClick={() => toggleFilter(label)}
@@ -164,9 +235,12 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                 </button>
                             </div>
                         ) : (
-                            <button className="bg-primary hover:bg-primary_hover text-white px-5 py-2.5 rounded-lg text-sm font-medium font-display tracking-wide transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
-                                <span className="material-icons-outlined text-lg">sync</span>
-                                Sync Raw Footage
+                            <button
+                                onClick={triggerFileInput}
+                                className="bg-primary hover:bg-primary_hover text-white px-5 py-2.5 rounded-lg text-sm font-medium font-display tracking-wide transition-all flex items-center gap-2 whitespace-nowrap active:scale-95"
+                            >
+                                <span className="material-icons-outlined text-lg">cloud_upload</span>
+                                Upload Files
                             </button>
                         )}
                     </div>
@@ -174,6 +248,18 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
 
                 <div className="flex-1 overflow-y-auto p-8 scroll-smooth">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
+
+                        {/* Upload Placeholder - First Item */}
+                        <div
+                            onClick={triggerFileInput}
+                            className="relative group aspect-[16/9] bg-black rounded-lg overflow-hidden border border-dashed border-white/10 hover:border-primary transition-all duration-300 flex flex-col items-center justify-center cursor-pointer"
+                        >
+                            <div className="text-gray-600 mb-2 group-hover:text-primary transition-colors">
+                                <span className="material-icons-outlined text-4xl">add_circle_outline</span>
+                            </div>
+                            <div className="text-xs font-mono text-gray-500 uppercase tracking-widest group-hover:text-primary transition-colors">Upload New</div>
+                        </div>
+
                         {assets.map((asset) => (
                             <div
                                 key={asset.id}
@@ -188,7 +274,15 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                     ${isModal ? 'cursor-pointer' : ''}
                                 `}
                             >
-                                <div className="absolute inset-0 bg-cover bg-center opacity-80 group-hover:opacity-40 transition-opacity duration-300" style={{ backgroundImage: `url('${asset.thumb}')` }}></div>
+                                {asset.thumb ? (
+                                    <div className="absolute inset-0 bg-cover bg-center opacity-80 group-hover:opacity-40 transition-opacity duration-300" style={{ backgroundImage: `url('${asset.thumb}')` }}></div>
+                                ) : (
+                                    <div className="absolute inset-0 bg-gray-900 flex items-center justify-center opacity-80 group-hover:opacity-40 transition-opacity">
+                                        <span className="material-icons-outlined text-4xl text-gray-600">
+                                            {asset.type === 'image' ? 'image' : 'movie'}
+                                        </span>
+                                    </div>
+                                )}
 
                                 {/* Selection Checkbox Overlay for Modal */}
                                 {isModal && (
@@ -199,11 +293,11 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                     </div>
                                 )}
 
-                                <div className="absolute bottom-3 left-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
-                                    <div className="text-xs font-mono text-white font-bold bg-black/50 px-2 py-1 rounded backdrop-blur-sm border border-white/10">{asset.name}</div>
+                                <div className="absolute bottom-3 left-3 z-10 transition-opacity duration-300 group-hover:opacity-0 w-full pr-6">
+                                    <div className="text-xs font-mono text-white font-bold bg-black/50 px-2 py-1 rounded backdrop-blur-sm border border-white/10 truncate">{asset.name}</div>
                                 </div>
                                 <div className="absolute top-3 right-3 z-10 transition-opacity duration-300 group-hover:opacity-0">
-                                    <div className="text-[10px] font-mono text-gray-300 bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-sm">{asset.duration}</div>
+                                    <div className="text-[10px] font-mono text-gray-300 bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-sm">{asset.duration || asset.type}</div>
                                 </div>
 
                                 {/* Detail Overlay - Only show in non-modal or if not interfering with selection */}
@@ -230,14 +324,6 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                 )}
                             </div>
                         ))}
-
-                        {/* Upload Placeholder - Simple version for modal */}
-                        <div className="relative group aspect-[16/9] bg-black rounded-lg overflow-hidden border border-dashed border-white/10 hover:border-primary transition-all duration-300 flex flex-col items-center justify-center cursor-pointer">
-                            <div className="text-gray-600 mb-2 group-hover:text-primary transition-colors">
-                                <span className="material-icons-outlined text-4xl">add_circle_outline</span>
-                            </div>
-                            <div className="text-xs font-mono text-gray-500 uppercase tracking-widest group-hover:text-primary transition-colors">Upload New</div>
-                        </div>
                     </div>
                 </div>
             </main>
