@@ -26,7 +26,7 @@ export type { RepoData };
 
 interface VideoRepoOverviewProps {
   repoData?: RepoData | null;
-  onNavigate?: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files') => void;
+  onNavigate?: (view: string) => void;
 }
 
 // --- Mock Data ---
@@ -184,16 +184,39 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
     setShowDeleteDialog(false);
   };
 
-  const handleCommitClick = (commitData: any) => {
-    setSelectedCommit(commitData);
+  const handleCommitClick = (activityEntry: ActivityLogEntry) => {
+    // Find the full commit data from the file system
+    if (repoData?.fileSystem) {
+      const commitsFolder = repoData.fileSystem.find((node: FileNode) => node.name === 'commits');
+      if (commitsFolder && commitsFolder.children) {
+        const commitFile = commitsFolder.children.find((file: FileNode) => {
+          if (file.type === 'file' && file.content) {
+            try {
+              const data = JSON.parse(file.content);
+              return data.timestamp === activityEntry.timestamp;
+            } catch (e) {
+              return false;
+            }
+          }
+          return false;
+        });
+
+        if (commitFile && commitFile.content) {
+          try {
+            const fullCommitData = JSON.parse(commitFile.content);
+            setSelectedCommit(fullCommitData);
+          } catch (e) {
+            console.error('Failed to parse commit data:', e);
+          }
+        }
+      }
+    }
   };
 
   const handleViewFullLogs = () => {
     // Navigate to activity logs page
     if (repoData?.id && onNavigate) {
-      window.history.pushState({}, '', `/repo/${repoData.id}/logs`);
-      // For now, just alert - we'll implement the full page next
-      alert('Activity Logs page will be created next!');
+      onNavigate(`repo/${repoData.id}/logs`);
     }
   };
 

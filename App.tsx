@@ -7,11 +7,13 @@ import CompareDiffView from './components/CompareDiffView';
 import AssetLibrary from './components/AssetLibrary';
 import CreateRepoView from './components/CreateRepoView';
 import RepoFilesView from './components/RepoFilesView';
+import ActivityLogsView from './components/ActivityLogsView';
 
 import { db, RepoData } from './utils/db';
 
 const App: React.FC = () => {
-    const [currentView, setCurrentView] = useState<'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files'>('dashboard');
+    type ViewType = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files' | 'repo-logs';
+    const [currentView, setCurrentView] = useState<ViewType>('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [repoData, setRepoData] = useState<RepoData | null>(null);
 
@@ -37,6 +39,8 @@ const App: React.FC = () => {
                             setRepoData(data);
                             if (path.endsWith('/files')) {
                                 setCurrentView('repo-files');
+                            } else if (path.endsWith('/logs')) {
+                                setCurrentView('repo-logs');
                             } else {
                                 setCurrentView('repo');
                             }
@@ -66,7 +70,7 @@ const App: React.FC = () => {
         return () => window.removeEventListener('popstate', onPopState);
     }, []); // Run once on mount
 
-    const handleNavigate = (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files') => {
+    const handleNavigate = (view: ViewType | string) => {
         let url = '/orchestrator';
 
         switch (view) {
@@ -82,12 +86,24 @@ const App: React.FC = () => {
             case 'repo-files':
                 if (repoData?.id) url = `/repo/${repoData.id}/files`;
                 break;
+            default:
+                // Handle dynamic routes like repo/:id/logs
+                if (typeof view === 'string' && view.startsWith('repo/')) {
+                    url = `/${view}`;
+                }
+                break;
         }
 
         if (window.location.pathname !== url) {
             window.history.pushState({}, '', url);
         }
-        setCurrentView(view);
+
+        // Determine the actual view to set
+        if (typeof view === 'string' && view.includes('/logs')) {
+            setCurrentView('repo-logs');
+        } else if (view !== currentView) {
+            setCurrentView(view as ViewType);
+        }
         setIsSidebarOpen(false);
     };
 
@@ -121,6 +137,11 @@ const App: React.FC = () => {
                 return <CreateRepoView onNavigate={handleNavigate} onCreateRepo={handleCreateRepo} />;
             case 'repo-files':
                 return <RepoFilesView onNavigate={handleNavigate} repoData={repoData} />;
+            case 'repo-logs':
+                return <ActivityLogsView repoData={repoData} onNavigate={handleNavigate} onSelectCommit={(commit) => {
+                    // Open commit details modal - for now just console log
+                    console.log('Commit selected:', commit);
+                }} />;
             default:
                 return <Orchestrator onNavigate={handleNavigate} />;
         }
