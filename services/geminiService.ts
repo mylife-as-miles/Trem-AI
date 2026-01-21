@@ -78,22 +78,23 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
     const base64Data = await fileToBase64(asset.blob);
     const model = 'gemini-3-flash-preview';
 
-    // Use v1alpha mediaResolution feature
+    // Correct structure for Gemini 3 Flash with media_resolution
     const response = await ai.models.generateContent({
       model,
       contents: [
         {
+          role: 'user',
           parts: [
-            { text: "Analyze this video clip. Return a short description and 3 tags. Format: JSON { \"description\": \"...\", \"tags\": [...] }" },
+            {
+              text: "Analyze this video clip. Return a short description and 3 tags. Format: JSON { \"description\": \"...\", \"tags\": [...] }"
+            },
             {
               inlineData: {
                 mimeType: asset.blob.type || 'video/mp4',
                 data: base64Data
               },
-              // @ts-ignore - v1alpha feature
-              mediaResolution: {
-                level: "media_resolution_low"
-              }
+              // @ts-ignore - v1beta feature
+              media_resolution: "media_resolution_low"
             }
           ]
         }
