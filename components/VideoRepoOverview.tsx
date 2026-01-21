@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 // --- Types ---
 import TopNavigation from './TopNavigation';
 import SimpleMarkdown from './SimpleMarkdown';
+import CommitDetailsView from './CommitDetailsView';
+import AlertDialog from './AlertDialog';
+import { db } from '../utils/db';
 
 export interface FileNode {
   id: string;
@@ -78,6 +81,10 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
   const [selectedId, setSelectedId] = useState<string>('timelines');
   const [fileSystem, setFileSystem] = useState<FileNode[]>(defaultFileSystem);
   const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
+  const [selectedCommit, setSelectedCommit] = useState<any | null>(null);
+  const [isEditingBrief, setIsEditingBrief] = useState(false);
+  const [editedBrief, setEditedBrief] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Update filesystem to match the Repo data - checks for existing structure first
   useEffect(() => {
@@ -142,6 +149,53 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
       }
     }
   }, [repoData]);
+
+  // Handler functions
+  const handleEditBrief = () => {
+    setEditedBrief(briefContent || '');
+    setIsEditingBrief(true);
+  };
+
+  const handleSaveBrief = async () => {
+    if (repoData?.id) {
+      try {
+        await db.updateRepo(repoData.id, { brief: editedBrief });
+        // Force parent to reload repo data
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to update brief:', error);
+      }
+    }
+    setIsEditingBrief(false);
+  };
+
+  const handleDelete = async () => {
+    if (repoData?.id) {
+      try {
+        await db.deleteRepo(repoData.id);
+        // Navigate back to dashboard
+        if (onNavigate) {
+          onNavigate('dashboard');
+        }
+      } catch (error) {
+        console.error('Failed to delete repository:', error);
+      }
+    }
+    setShowDeleteDialog(false);
+  };
+
+  const handleCommitClick = (commitData: any) => {
+    setSelectedCommit(commitData);
+  };
+
+  const handleViewFullLogs = () => {
+    // Navigate to activity logs page
+    if (repoData?.id && onNavigate) {
+      window.history.pushState({}, '', `/repo/${repoData.id}/logs`);
+      // For now, just alert - we'll implement the full page next
+      alert('Activity Logs page will be created next!');
+    }
+  };
 
   // Helper to find path to selected item for breadcrumbs
   const findPath = (nodes: FileNode[], targetId: string, currentPath: FileNode[] = []): FileNode[] | null => {
@@ -250,15 +304,55 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
               </div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-primary font-semibold">{repoData?.name ? `Brief: ${repoData.name}` : 'Creative Brief'}</h2>
-                <button className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                  <span className="material-icons-outlined text-lg">edit</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  {!isEditingBrief ? (
+                    <>
+                      <button
+                        onClick={handleEditBrief}
+                        className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-primary transition-colors"
+                        title="Edit Brief"
+                      >
+                        <span className="material-icons-outlined text-lg">edit</span>
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteDialog(true)}
+                        className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600 transition-colors"
+                        title="Delete Repository"
+                      >
+                        <span className="material-icons-outlined text-lg">delete</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleSaveBrief}
+                        className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary_hover text-white text-sm font-medium transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setIsEditingBrief(false)}
+                        className="px-4 py-1.5 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-slate-700 dark:text-white text-sm font-medium transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
               <div className="flex-1 flex flex-col relative z-10 overflow-y-auto pr-2 custom-scrollbar">
-                <SimpleMarkdown className="text-slate-900 dark:text-white leading-relaxed">
-                  {briefContent || (
-                    `# High-Energy 30s Spot
+                {isEditingBrief ? (
+                  <textarea
+                    className="flex-1 w-full p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white font-mono text-sm resize-none focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    value={editedBrief}
+                    onChange={(e) => setEditedBrief(e.target.value)}
+                    placeholder="Enter creative brief in markdown format..."
+                  />
+                ) : (
+                  <SimpleMarkdown className="text-slate-900 dark:text-white leading-relaxed">
+                    {briefContent || (
+                      `# High-Energy 30s Spot
 
 **Client:** Nike  
 **Campaign:** Urban Flow Q3  
@@ -275,8 +369,9 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
 3.  Slow-motion jump (120fps)
 
 > "Motion is the key emotion here. Keep it moving." - *Creative Director*`
-                  )}
-                </SimpleMarkdown>
+                    )}
+                  </SimpleMarkdown>
+                )}
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
                 {['#social-media', '#high-contrast', '#vertical'].map(tag => (
@@ -336,7 +431,12 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-display font-medium text-slate-900 dark:text-white">Latest Activity</h2>
-              <button className="text-xs text-primary font-mono hover:text-primary_hover transition-colors">VIEW FULL LOG</button>
+              <button
+                onClick={handleViewFullLogs}
+                className="text-xs text-primary font-mono hover:text-primary_hover transition-colors"
+              >
+                VIEW FULL LOG
+              </button>
             </div>
             <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto">
               <table className="w-full text-left text-sm font-mono min-w-[600px]">
@@ -358,7 +458,23 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                       else timeStr = `${Math.floor(timeAgo / 86400)}d ago`;
 
                       return (
-                        <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+                        <tr
+                          key={idx}
+                          onClick={() => {
+                            // Find full commit data from fileSystem
+                            const commitsFolder = repoData?.fileSystem?.find((n: FileNode) => n.name === 'commits');
+                            const commitFile = commitsFolder?.children?.[idx];
+                            if (commitFile?.content) {
+                              try {
+                                const commitData = JSON.parse(commitFile.content);
+                                handleCommitClick(commitData);
+                              } catch (e) {
+                                console.error('Failed to parse commit', e);
+                              }
+                            }
+                          }}
+                          className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group cursor-pointer"
+                        >
                           <td className="px-6 py-4 flex items-center gap-3">
                             <span className="w-2 h-2 rounded-full bg-primary"></span>
                             <span className="text-primary font-bold">{entry.agent}</span>
@@ -383,6 +499,29 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
           </div>
         </div>
       </div>
+
+      {/* Commit Details Modal */}
+      {selectedCommit && (
+        <CommitDetailsView
+          commit={selectedCommit}
+          repoName={repoData?.name}
+          onClose={() => setSelectedCommit(null)}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <AlertDialog
+          isOpen={showDeleteDialog}
+          title="Delete Repository?"
+          description={`Are you sure you want to permanently delete "${repoData?.name}"? This action cannot be undone.`}
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteDialog(false)}
+          confirmText="Delete"
+          cancelText="Cancel"
+          type="danger"
+        />
+      )}
     </div>
   );
 };
