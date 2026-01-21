@@ -27,9 +27,6 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
     const loadAssets = async () => {
         try {
             const dbAssets = await db.getAllAssets();
-            // Merge DB assets with Mock assets
-            // Only use Mock if DB is empty or just append? Let's append DB assets to Mock for now to populate view
-            // In a real app, Mock would be initial seed.
             const merged = [...dbAssets.reverse(), ...MOCK_ASSETS];
             setAssets(merged);
         } catch (e) {
@@ -40,7 +37,6 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
 
     useEffect(() => {
         loadAssets();
-        // Polling for updates (primitive live query)
         const interval = setInterval(loadAssets, 5000);
         return () => clearInterval(interval);
     }, []);
@@ -67,23 +63,83 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
         }
     };
 
+    // Helper to extract video metadata
+    const processVideoFile = (file: File): Promise<{ duration: string, thumb: string }> => {
+        return new Promise((resolve) => {
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.muted = true;
+            video.playsInline = true;
+            const url = URL.createObjectURL(file);
+            video.src = url;
+
+            // Timeout fallback
+            const timeout = setTimeout(() => {
+                resolve({ duration: '--:--', thumb: '' });
+                URL.revokeObjectURL(url);
+            }, 3000);
+
+            video.onloadeddata = () => {
+                if (video.duration > 1) {
+                    video.currentTime = 1.0;
+                } else {
+                    video.currentTime = 0;
+                }
+            };
+
+            video.onseeked = () => {
+                clearTimeout(timeout);
+
+                // Duration
+                const seconds = Math.floor(video.duration);
+                const mm = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const ss = (seconds % 60).toString().padStart(2, '0');
+                const durationStr = `${mm}:${ss}`;
+
+                // Thumbnail
+                const canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 180; // 16:9 aspect
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const thumbData = canvas.toDataURL('image/jpeg', 0.7);
+
+                    resolve({ duration: durationStr, thumb: thumbData });
+                } else {
+                    resolve({ duration: durationStr, thumb: '' });
+                }
+
+                URL.revokeObjectURL(url);
+            };
+
+            video.onerror = () => {
+                clearTimeout(timeout);
+                console.warn("Could not process video file:", file.name);
+                resolve({ duration: '--:--', thumb: '' });
+                URL.revokeObjectURL(url);
+            };
+        });
+    };
+
     // File Upload Handlers
     const handleFiles = async (files: FileList | null) => {
         if (!files) return;
 
-        const newAssets: AssetData[] = [];
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const isImage = file.type.startsWith('image');
             const isVideo = file.type.startsWith('video');
 
             let thumb = undefined;
+            let duration = undefined;
+
             if (isImage) {
-                // Create object URL for immediate display, but for persistence we might want DataURL
-                // For simplicity, we'll assume we can re-create ObjectURL from Blob when rendering if we stored Blob.
-                // But current DB interface stores Blob.
-                // Let's create a temporary thumb URL.
                 thumb = URL.createObjectURL(file);
+            } else if (isVideo) {
+                const meta = await processVideoFile(file);
+                thumb = meta.thumb;
+                duration = meta.duration;
             }
 
             const asset: AssetData = {
@@ -95,7 +151,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                 created: Date.now(),
                 status: 'ready',
                 thumb: thumb,
-                duration: isVideo ? '--:--' : undefined, // Placeholder
+                duration: duration || (isVideo ? '00:00' : undefined),
                 tags: ['Uploaded', 'Local']
             };
 
