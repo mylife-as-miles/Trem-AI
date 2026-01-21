@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AssetLibrary from './AssetLibrary';
 import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
+import { generateRepoStructure } from '../services/geminiService';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -15,78 +16,19 @@ interface Asset {
     progress: number;
 }
 
+interface FileNode {
+    id: string;
+    name: string;
+    type: 'folder' | 'file';
+    children?: FileNode[];
+    locked?: boolean;
+    icon?: string;
+    iconColor?: string;
+    content?: string;
+}
+
 const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRepo }) => {
     const [step, setStep] = useState<'details' | 'ingest' | 'commit'>('details');
-    // ... rest of state
-
-
-    // ... (existing helper interface for FileNode, locally defined or we can import if we move it. For now I will define local interface to match structure)
-    interface FileNode {
-        id: string;
-        name: string;
-        type: 'folder' | 'file';
-        children?: FileNode[];
-        locked?: boolean;
-        icon?: string;
-        iconColor?: string;
-        content?: string; // Content for the new file management
-    }
-
-    // ...
-
-    const handleCommit = async () => {
-        // Generate File System Structure
-        const newFS: FileNode[] = [
-            { id: 'config', name: 'trem.json', type: 'file', icon: 'settings', iconColor: 'text-slate-400', content: JSON.stringify({ name: repoName, created: Date.now() }, null, 2) },
-            {
-                id: 'media', name: 'media', type: 'folder', locked: true, children: [
-                    {
-                        id: 'raw_footage', name: 'raw_footage', type: 'folder', children: selectedAssets.map(asset => ({
-                            id: asset.id, name: asset.name || asset.id, type: 'file', icon: 'movie', iconColor: 'text-emerald-400'
-                        }))
-                    },
-                    { id: 'audio', name: 'audio', type: 'folder', children: [] },
-                    { id: 'images', name: 'images', type: 'folder', children: [] },
-                ]
-            },
-            {
-                id: 'meta', name: 'meta', type: 'folder', children: selectedAssets.map(asset => ({
-                    id: `meta_${asset.id}`, name: `${asset.id}.json`, type: 'file', icon: 'description', iconColor: 'text-amber-400', content: '{}'
-                }))
-            },
-            { id: 'timelines', name: 'timelines', type: 'folder', children: [] },
-            { id: 'story', name: 'story', type: 'folder', children: [] },
-            { id: 'renders', name: 'renders', type: 'folder', children: [] },
-            { id: 'lockfile', name: 'trem.lock', type: 'file', locked: true, icon: 'lock', iconColor: 'text-slate-500', content: 'LOCKED' }
-        ];
-
-        try {
-            console.log("Saving Repo to DB:", { repoName, repoBrief });
-            const newRepoId = await db.addRepo({
-                name: repoName,
-                brief: repoBrief,
-                created: Date.now(),
-                assets: selectedAssets,
-                fileSystem: newFS
-            });
-
-            if (onCreateRepo) {
-                onCreateRepo({
-                    id: newRepoId,
-                    name: repoName,
-                    brief: repoBrief,
-                    assets: selectedAssets,
-                    fileSystem: newFS,
-                    created: Date.now()
-                });
-            } else {
-                onNavigate('repo');
-            }
-        } catch (error) {
-            console.error("Failed to save repo:", error);
-            // Optionally set error state to show to user
-        }
-    };
     const [repoName, setRepoName] = useState('');
     const [repoBrief, setRepoBrief] = useState('');
     const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
@@ -183,7 +125,133 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         }
     };
 
+    const handleCommit = async () => {
+        setSimLogs(prev => [...prev, "> Contacting Gemini 3 Flash for Semantic Structure..."]);
 
+        // Call Gemini Service
+        let generatedData;
+        try {
+            generatedData = await generateRepoStructure({
+                duration: "2 minutes 14 seconds",
+                transcript: "auto-generated",
+                sceneBoundaries: "auto-detected"
+            });
+        } catch (e) {
+            console.error("Gemini Generation Failed", e);
+            setSimLogs(prev => [...prev, "> ERROR: Gemini Generation Failed. Check console."]);
+            return;
+        }
+
+        const repoJson = {
+            name: repoName,
+            brief: repoBrief,
+            created: Date.now(),
+            version: "1.0.0",
+            pipeline: "trem-video-pipeline-v1",
+            ...generatedData.repo
+        };
+
+        // --- Generate File System Structure ---
+        const newFS: FileNode[] = [
+            { id: 'config', name: 'repo.json', type: 'file', icon: 'settings', iconColor: 'text-slate-400', content: JSON.stringify(repoJson, null, 2) },
+
+            // media/
+            {
+                id: 'media', name: 'media', type: 'folder', locked: true, children: [
+                    {
+                        id: 'media_raw', name: 'raw', type: 'folder', children: selectedAssets.map(asset => ({
+                            id: asset.id, name: asset.name || `${asset.id}.mp4`, type: 'file', icon: 'movie', iconColor: 'text-emerald-400'
+                        }))
+                    },
+                    { id: 'media_proxies', name: 'proxies', type: 'folder', children: [] }
+                ]
+            },
+
+            // otio/
+            {
+                id: 'otio', name: 'otio', type: 'folder', children: [
+                    { id: 'otio_main', name: 'main.otio.json', type: 'file', icon: 'tune', iconColor: 'text-purple-400', content: JSON.stringify(generatedData.otio || {}, null, 2) }
+                ]
+            },
+
+            // dag/
+            {
+                id: 'dag', name: 'dag', type: 'folder', children: [
+                    { id: 'dag_graph', name: 'graph.json', type: 'file', icon: 'schema', iconColor: 'text-blue-400', content: JSON.stringify(generatedData.dag || {}, null, 2) }
+                ]
+            },
+
+            // scenes/
+            {
+                id: 'scenes', name: 'scenes', type: 'folder', children: [
+                    { id: 'scenes_json', name: 'scenes.json', type: 'file', icon: 'data_object', iconColor: 'text-amber-400', content: JSON.stringify(generatedData.scenes || {}, null, 2) }
+                ]
+            },
+
+            // subtitles/
+            {
+                id: 'subtitles', name: 'subtitles', type: 'folder', children: [
+                    { id: 'subtitles_main', name: 'main.srt', type: 'file', icon: 'subtitles', iconColor: 'text-slate-200', content: generatedData.subtitles_srt || '' }
+                ]
+            },
+
+            // descriptions/
+            {
+                id: 'descriptions', name: 'descriptions', type: 'folder', children: [
+                    { id: 'desc_video', name: 'video.md', type: 'file', icon: 'description', iconColor: 'text-blue-300', content: generatedData.descriptions?.video_md || '' },
+                    { id: 'desc_scenes', name: 'scenes.md', type: 'file', icon: 'description', iconColor: 'text-blue-200', content: generatedData.descriptions?.scenes_md || '' }
+                ]
+            },
+
+            // commits/
+            {
+                id: 'commits', name: 'commits', type: 'folder', children: [
+                    { id: 'commit_0001', name: '0001.json', type: 'file', icon: 'commit', iconColor: 'text-orange-400', content: JSON.stringify(generatedData.commit || {}, null, 2) }
+                ]
+            },
+
+            // builds/
+            {
+                id: 'builds', name: 'builds', type: 'folder', children: [
+                    { id: 'build_draft', name: 'draft.mp4', type: 'file', icon: 'movie', iconColor: 'text-slate-500', locked: true }
+                ]
+            },
+
+            // ai/
+            {
+                id: 'ai', name: 'ai', type: 'folder', children: [
+                    { id: 'ai_prompts', name: 'prompts', type: 'folder', children: [] },
+                    { id: 'ai_cache', name: 'cache', type: 'folder', children: [] }
+                ]
+            }
+        ];
+
+        try {
+            console.log("Saving Repo to DB:", { repoName, repoBrief });
+            const newRepoId = await db.addRepo({
+                name: repoName,
+                brief: repoBrief,
+                created: Date.now(),
+                assets: selectedAssets,
+                fileSystem: newFS
+            });
+
+            if (onCreateRepo) {
+                onCreateRepo({
+                    id: newRepoId,
+                    name: repoName,
+                    brief: repoBrief,
+                    assets: selectedAssets,
+                    fileSystem: newFS,
+                    created: Date.now()
+                });
+            } else {
+                onNavigate('repo');
+            }
+        } catch (error) {
+            console.error("Failed to save repo:", error);
+        }
+    };
 
     return (
         <div className="flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
@@ -378,7 +446,6 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             )}
                         </section>
 
-                        {/* Step 3: Commit */}
                         {/* Step 3: Commit */}
                         {isIngestionComplete && (
                             <section className="animate-fade-in-up space-y-6">

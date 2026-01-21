@@ -208,6 +208,13 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
     });
   };
 
+  const briefContent = React.useMemo(() => {
+    if (!repoData?.fileSystem) return repoData?.brief;
+    const descriptions = repoData.fileSystem.find(n => n.name === 'descriptions');
+    const videoMd = descriptions?.children?.find(n => n.name === 'video.md');
+    return videoMd?.content || repoData.brief;
+  }, [repoData]);
+
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-black">
       <TopNavigation onNavigate={onNavigate} />
@@ -229,7 +236,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
 
               <div className="flex-1 flex flex-col relative z-10 overflow-y-auto pr-2 custom-scrollbar">
                 <SimpleMarkdown className="text-slate-900 dark:text-white leading-relaxed">
-                  {repoData?.brief || (
+                  {briefContent || (
                     `# High-Energy 30s Spot
 
 **Client:** Nike  
