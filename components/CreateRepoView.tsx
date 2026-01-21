@@ -3,6 +3,8 @@ import AssetLibrary from './AssetLibrary';
 import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
 import { generateRepoStructure, analyzeAsset } from '../services/geminiService';
+import { extractAudioFromVideo } from '../utils/audioExtractor';
+import { transcribeAudio } from '../services/whisperService';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -16,6 +18,8 @@ interface Asset {
     progress: number;
     duration?: string;
     blob?: Blob;
+    transcript?: string;
+    srt?: string;
 }
 
 interface FileNode {
@@ -93,18 +97,56 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     setSimLogs(prev => [...prev, `> [Worker_${workerId}] Analyzing ${asset.name} (media_resolution_low: 70 tokens)...`]);
 
                     // Update UI status to 'transcribing' / 'detecting'
-                    setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'detecting', progress: 50 } : a));
+                    setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'detecting', progress: 20 } : a));
 
                     try {
-                        const result = await analyzeAsset({ id: asset.id, name: asset.name, blob: asset.blob });
+                        // 1. Video Analysis with Gemini
+                        const analysisPromise = analyzeAsset({ id: asset.id, name: asset.name, blob: asset.blob });
+
+                        // 2. Audio Transcription (Parallel)
+                        updateWorker(workerId, 'transcribing', `Audio Extraction: ${asset.name}`);
+                        setSimLogs(prev => [...prev, `> [Worker_${workerId}] Extracting audio track...`]);
+
+                        let audioBlob: Blob | null = null;
+                        try {
+                            if (asset.blob) {
+                                audioBlob = await extractAudioFromVideo(asset.blob);
+                            }
+                        } catch (e) {
+                            console.warn("Audio extraction failed (might be image or silent video)", e);
+                        }
+
+                        let transcriptionResult = { text: "", srt: "" };
+                        if (audioBlob) {
+                            setSimLogs(prev => [...prev, `> [Worker_${workerId}] Audio Extracted. Requesting Whisper API...`]);
+                            setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'transcribing', progress: 50 } : a));
+
+                            try {
+                                transcriptionResult = await transcribeAudio(audioBlob);
+                                setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription Complete.`]);
+                            } catch (e) {
+                                console.error("Transcription failed", e);
+                                setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription failed. Proceeding without audio.`]);
+                            }
+                        }
+
+                        // Await Gemini Analysis
+                        const result = await analysisPromise;
+
                         if (isCancelled) return;
 
-                        analyzedData.push(`Asset: ${asset.name}\nDescription: ${result.description}\nTags: ${result.tags.join(', ')}`);
+                        analyzedData.push(`Asset: ${asset.name}\nDescription: ${result.description}\nTags: ${result.tags.join(', ')}\nTranscript: ${transcriptionResult.text}`);
 
                         setSimLogs(prev => [...prev, `> [Worker_${workerId}] Finished ${asset.name}. Extracted ${result.tags.length} features.`]);
 
                         // Update asset progress to 100%
-                        setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'indexed', progress: 100 } : a));
+                        setSelectedAssets(prev => prev.map(a => a.id === asset.id ? {
+                            ...a,
+                            status: 'indexed',
+                            progress: 100,
+                            transcript: transcriptionResult.text,
+                            srt: transcriptionResult.srt
+                        } : a));
 
                         updateWorker(workerId, 'idle', 'Waiting...');
                     } catch (e) {
@@ -124,10 +166,15 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 const durationText = getTotalDurationText(selectedAssets);
                 const contextStr = analyzedData.join('\n\n');
 
+                const fullTranscript = selectedAssets
+                    .map(a => a.srt || "")
+                    .filter(t => t.length > 0)
+                    .join("\n\n");
+
                 try {
                     const data = await generateRepoStructure({
                         duration: durationText,
-                        transcript: "auto-generated",
+                        transcript: fullTranscript || "No dialogue detected.",
                         sceneBoundaries: "auto-detected",
                         assetContext: contextStr
                     });
@@ -231,7 +278,22 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // subtitles/
             {
                 id: 'subtitles', name: 'subtitles', type: 'folder', children: [
-                    { id: 'subtitles_main', name: 'main.srt', type: 'file', icon: 'subtitles', iconColor: 'text-slate-200', content: generatedRepoData.subtitles_srt || '' }
+                    {
+                        id: 'subtitles_main',
+                        name: 'main.srt',
+                        type: 'file',
+                        icon: 'subtitles',
+                        iconColor: 'text-slate-200',
+                        content: selectedAssets.map(a => a.srt).join('\n\n') || generatedRepoData.subtitles_srt || ''
+                    },
+                    ...selectedAssets.map((asset, idx) => ({
+                        id: `sub_asset_${idx}`,
+                        name: `${asset.name}.srt`,
+                        type: 'file' as const,
+                        icon: 'subtitles',
+                        iconColor: 'text-slate-400',
+                        content: asset.srt || ''
+                    }))
                 ]
             },
 
