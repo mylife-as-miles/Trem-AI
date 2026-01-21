@@ -132,7 +132,7 @@ Tasks:
 4. Generate descriptions/scenes.md
 5. Generate otio/main.otio.json
 6. Generate dag/graph.json
-7. Generate commits/0001.json
+7. Generate commits/0001.json with AI-generated hashtags
 8. Generate repo.json
 
 Rules:
@@ -154,13 +154,21 @@ Output format:
   "otio": {...},
   "dag": {...},
   "commit": {
-    "message": "feat: ..."
+    "message": "feat: ...",
+    "hashtags": ["#tag1", "#tag2"]
   }
 }
 
-Specific Requirement for Commit Message:
+Specific Requirements for Commit Message:
 - Must be conventional commit style.
-- summarize the content (e.g. "feat: ingest 2m video with 5 scenes").
+- Summarize the content (e.g. "feat: ingest 2m video with 5 scenes").
+- Generate 3-5 relevant hashtags based on content analysis:
+  * Video format tags: #vertical, #horizontal, #square
+  * Style tags: #high-contrast, #low-key, #cinematic, #documentary
+  * Purpose tags: #social-media, #advertisement, #tutorial, #vlog
+  * Content tags: #action, #dialogue, #b-roll, #timelapse
+- Hashtags should be lowercase with hyphens, start with #
+- Base hashtags on actual video content, duration, and asset context
 `;
 
   if (!ai) {
@@ -232,6 +240,7 @@ A phone call breaks the calm. Something has changed.`
         "parent": null,
         "branch": "main",
         "message": "feat: ingest 2m14s footage with 2 detected scenes",
+        "hashtags": ["#cinematic", "#low-key", "#dialogue", "#social-media"],
         "author": "gemini-3-flash",
         "timestamp": new Date().toISOString(),
         "artifacts": {

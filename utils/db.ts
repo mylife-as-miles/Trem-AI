@@ -120,6 +120,47 @@ class TremDatabase {
         });
     }
 
+    async updateRepo(id: number, updates: Partial<RepoData>): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['repos'], 'readwrite');
+            const store = transaction.objectStore('repos');
+            const getRequest = store.get(id);
+
+            getRequest.onsuccess = () => {
+                const repo = getRequest.result;
+                if (repo) {
+                    const updatedRepo = { ...repo, ...updates };
+                    const putRequest = store.put(updatedRepo);
+
+                    putRequest.onsuccess = () => resolve();
+                    putRequest.onerror = () => reject(putRequest.error);
+                } else {
+                    reject(new Error('Repository not found'));
+                }
+            };
+
+            getRequest.onerror = () => reject(getRequest.error);
+        });
+    }
+
+    async deleteRepo(id: number): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['repos'], 'readwrite');
+            const store = transaction.objectStore('repos');
+            const request = store.delete(id);
+
+            request.onsuccess = () => {
+                resolve();
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+        });
+    }
+
     async addAsset(asset: AssetData): Promise<string> {
         const db = await this.ensureDb();
         return new Promise((resolve, reject) => {
