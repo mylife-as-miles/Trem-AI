@@ -12,6 +12,7 @@ export interface FileNode {
   locked?: boolean;
   icon?: string;
   iconColor?: string;
+  content?: string;
 }
 
 import { RepoData } from '../utils/db';
@@ -66,58 +67,78 @@ const defaultFileSystem: FileNode[] = [
   }
 ];
 
+interface ActivityLogEntry {
+  agent: string;
+  message: string;
+  timestamp: number;
+}
+
 const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavigate }) => {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(['timelines', 'media']));
   const [selectedId, setSelectedId] = useState<string>('timelines');
   const [fileSystem, setFileSystem] = useState<FileNode[]>(defaultFileSystem);
+  const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
 
   // Update filesystem to match the Repo data - checks for existing structure first
   useEffect(() => {
     if (repoData) {
       if (repoData.fileSystem) {
         setFileSystem(repoData.fileSystem);
-      } else if (repoData.assets) {
-        // Fallback for mock data without FS
-        const repoName = repoData.name || 'new-repo';
-        const newFS: FileNode[] = [
-          { id: 'config', name: 'trem.json', type: 'file', icon: 'settings', iconColor: 'text-slate-400' },
-          {
-            id: 'media', name: 'media', type: 'folder', locked: true, children: [
-              {
-                id: 'raw_footage', name: 'raw_footage', type: 'folder', children: repoData.assets.map((asset: any) => ({
-                  id: asset.id,
-                  name: asset.name || asset.id,
-                  type: 'file',
-                  icon: 'movie',
-                  iconColor: 'text-emerald-400'
-                }))
-              },
-              { id: 'audio', name: 'audio', type: 'folder', children: [] },
-              { id: 'images', name: 'images', type: 'folder', children: [] },
-            ]
-          },
-          {
-            id: 'meta',
-            name: 'meta',
-            type: 'folder',
-            children: repoData.assets.map((asset: any) => ({
-              id: `meta_${asset.id}`,
-              name: `${asset.id}.json`,
-              type: 'file',
-              icon: 'description',
-              iconColor: 'text-amber-400'
-            }))
-          },
-          { id: 'timelines', name: 'timelines', type: 'folder', children: [] },
-          {
-            id: 'story', name: 'story', type: 'folder', children: [
-              { id: 'dag_logic', name: 'main_flow.dag', type: 'file', icon: 'account_tree', iconColor: 'text-blue-400' }
-            ]
-          },
-          { id: 'renders', name: 'renders', type: 'folder', children: [] },
-          { id: 'lockfile', name: 'trem.lock', type: 'file', locked: true, icon: 'lock', iconColor: 'text-slate-500' }
-        ];
-        setFileSystem(newFS);
+
+        // Extract activity log from commits folder
+        const commitsFolder = repoData.fileSystem.find((node: FileNode) => node.name === 'commits');
+        if (commitsFolder && commitsFolder.children) {
+          const activities: ActivityLogEntry[] = commitsFolder.children
+            .map((commitFile: FileNode) => {
+              if (commitFile.type === 'file' && commitFile.content) {
+                try {
+                  const commitData = JSON.parse(commitFile.content);
+                  return {
+                    agent: commitData.author || 'Trem-AI',
+                    message: commitData.message || 'Repository update',
+                    timestamp: commitData.timestamp || Date.now()
+                  };
+                } catch (e) {
+                  return null;
+                }
+              }
+              return null;
+            })
+            .filter((entry): entry is ActivityLogEntry => entry !== null)
+            .sort((a, b) => b.timestamp - a.timestamp); // Most recent first
+
+          setActivityLog(activities);
+        }
+      } else {
+        // Fallback to legacy format if fileSystem is missing
+        const timelineFolderExists = defaultFileSystem.find(n => n.name === 'timelines');
+        if (!timelineFolderExists) {
+          const newFS = [
+            {
+              id: 'media',
+              name: 'media',
+              type: 'folder' as const,
+              locked: true,
+              children: [
+                {
+                  id: 'raw_footage',
+                  name: 'raw_footage',
+                  type: 'folder' as const,
+                  children: repoData.assets?.map((a: any) => ({
+                    id: a.id,
+                    name: a.name || `${a.id}.mp4`,
+                    type: 'file' as const,
+                    icon: 'movie',
+                    iconColor: 'text-blue-400'
+                  })) || []
+                },
+                { id: 'proxies', name: 'proxies', type: 'folder' as const, children: [] }
+              ]
+            },
+            ...defaultFileSystem.filter(n => n.name !== 'media')
+          ];
+          setFileSystem(newFS);
+        }
       }
     }
   }, [repoData]);
@@ -327,17 +348,35 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-white/5 text-slate-700 dark:text-slate-300">
-                  <tr className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-primary"></span>
-                      <span className="text-primary font-bold">Agent_GPT4</span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                      trimmed silence <span className="text-slate-400 dark:text-slate-600 px-1">-&gt;</span> <span className="bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">timeline: Main_Cut_v2</span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-slate-500">2m ago</td>
-                  </tr>
-                  {/* ... other log rows ... */}
+                  {activityLog.length > 0 ? (
+                    activityLog.slice(0, 5).map((entry, idx) => {
+                      const timeAgo = Math.floor((Date.now() - entry.timestamp) / 1000);
+                      let timeStr = 'just now';
+                      if (timeAgo < 60) timeStr = `${timeAgo}s ago`;
+                      else if (timeAgo < 3600) timeStr = `${Math.floor(timeAgo / 60)}m ago`;
+                      else if (timeAgo < 86400) timeStr = `${Math.floor(timeAgo / 3600)}h ago`;
+                      else timeStr = `${Math.floor(timeAgo / 86400)}d ago`;
+
+                      return (
+                        <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group">
+                          <td className="px-6 py-4 flex items-center gap-3">
+                            <span className="w-2 h-2 rounded-full bg-primary"></span>
+                            <span className="text-primary font-bold">{entry.agent}</span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                            {entry.message}
+                          </td>
+                          <td className="px-6 py-4 text-right text-slate-500">{timeStr}</td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-8 text-center text-slate-400 dark:text-slate-500 italic">
+                        No activity yet. Commits will appear here.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
