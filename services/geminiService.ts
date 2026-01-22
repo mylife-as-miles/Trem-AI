@@ -115,7 +115,21 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
   }
 };
 
+// Helper for Exponential Backoff
+const retryWithBackoff = async <T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> => {
+  try {
+    return await fn();
+  } catch (error: any) {
+    if (retries === 0 || error?.status !== 503) throw error;
+
+    console.warn(`Gemini 503 Overload. Retrying in ${delay}ms... (${retries} attempts left)`);
+    await new Promise(r => setTimeout(r, delay));
+    return retryWithBackoff(fn, retries - 1, delay * 2);
+  }
+};
+
 export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
+  // ... (Prompt string logic remains the same, I'm just replacing the implementation part) ...
   const PROMPT = `
 You are initializing an AI-native video repository.
 
@@ -258,16 +272,18 @@ A phone call breaks the calm. Something has changed.`
   }
 
   try {
-    const response = await ai.models.generateContent({
+    const config = {
       model: 'gemini-3-flash-preview',
       contents: PROMPT,
       config: {
         thinkingConfig: { thinkingLevel: 'medium' }
-      } as any // Cast because type def might not have thinkingConfig yet
-    });
+      } as any
+    };
+
+    // Use retry wrapper
+    const response = await retryWithBackoff(() => ai.models.generateContent(config));
 
     const text = response.text || "{}";
-    // Parse potentially markdown-wrapped JSON
     const jsonStr = text.replace(/```json\n|\n```/g, '');
     return JSON.parse(jsonStr);
 

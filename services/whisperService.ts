@@ -114,7 +114,21 @@ const pollPrediction = async (predictionId: string, maxAttempts = 60): Promise<a
 const parseWhisperOutput = (output: any): WhisperTranscription => {
     // Whisper returns SRT format string
     const srt = output.transcription || output;
-    const segments = parseSRT(srt);
+
+    // Use native segments if available, otherwise parse SRT
+    let segments: WhisperSegment[] = [];
+    if (output.segments && Array.isArray(output.segments)) {
+        segments = output.segments.map((s: any) => ({
+            id: s.id,
+            start: s.start,
+            end: s.end,
+            text: s.text.trim()
+        }));
+    } else {
+        segments = parseSRT(srt);
+    }
+
+    // Construct full text if not present or just to be safe
     const text = segments.map(s => s.text).join(' ');
 
     return {
