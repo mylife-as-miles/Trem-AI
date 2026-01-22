@@ -62,9 +62,21 @@ export const transcribeAudio = async (
         });
 
         if (!response.ok) {
+            // Try to parse error details
+            let errorDetails = {};
+            try {
+                errorDetails = await response.json();
+            } catch (e) {
+                // Ignore json parse error if body is not json
+            }
+
             // Check if it's a configuration error
             if (response.status === 500) {
-                console.warn('Server error (likely missing API token). Using mock transcription.');
+                // @ts-ignore
+                if (errorDetails.error === 'Server configuration error') {
+                    console.error('CRITICAL: Missing REPLICATE_API_TOKEN in Vercel environment variables. Please check VERCEL_SETUP.md.');
+                }
+                console.warn('Server error. Using mock transcription as fallback.');
                 return mockTranscription();
             }
             throw new Error(`Replicate API error: ${response.statusText}`);
