@@ -33,22 +33,14 @@ export const transcribeAudio = async (
         translate?: boolean;
     } = {}
 ): Promise<WhisperTranscription> => {
-    const apiToken = (import.meta as any).env?.VITE_REPLICATE_API_TOKEN;
-
-    if (!apiToken || apiToken === 'your_replicate_api_token_here') {
-        console.warn('Replicate API token not configured. Using mock transcription.');
-        return mockTranscription();
-    }
-
     try {
         // Convert blob to base64 data URL
         const base64Audio = await blobToDataURL(audioBlob);
 
-        // Call Replicate API
-        const response = await fetch('https://api.replicate.com/v1/predictions', {
+        // Call API Proxy
+        const response = await fetch('/api/predictions', {
             method: 'POST',
             headers: {
-                'Authorization': `Token ${apiToken}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -70,13 +62,18 @@ export const transcribeAudio = async (
         });
 
         if (!response.ok) {
+            // Check if it's a configuration error
+            if (response.status === 500) {
+                console.warn('Server error (likely missing API token). Using mock transcription.');
+                return mockTranscription();
+            }
             throw new Error(`Replicate API error: ${response.statusText}`);
         }
 
         const prediction = await response.json();
 
         // Poll for completion
-        const result = await pollPrediction(prediction.id, apiToken);
+        const result = await pollPrediction(prediction.id);
 
         return parseWhisperOutput(result.output);
 
@@ -90,13 +87,9 @@ export const transcribeAudio = async (
 /**
  * Poll Replicate prediction until complete
  */
-const pollPrediction = async (predictionId: string, apiToken: string, maxAttempts = 60): Promise<any> => {
+const pollPrediction = async (predictionId: string, maxAttempts = 60): Promise<any> => {
     for (let i = 0; i < maxAttempts; i++) {
-        const response = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
-            headers: {
-                'Authorization': `Token ${apiToken}`,
-            }
-        });
+        const response = await fetch(`/api/predictions/${predictionId}`);
 
         const prediction = await response.json();
 
