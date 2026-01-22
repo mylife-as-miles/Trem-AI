@@ -81,6 +81,9 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
     // Correct structure for Gemini 3 Flash with media_resolution
     const response = await ai.models.generateContent({
       model,
+      generationConfig: {
+        responseMimeType: 'application/json'
+      },
       contents: [
         {
           role: 'user',
@@ -102,8 +105,7 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
     } as any);
 
     const text = response.text || "{}";
-    const jsonStr = text.replace(/```json\n|\n```/g, '');
-    return JSON.parse(jsonStr);
+    return extractJSON(text);
 
   } catch (e) {
     console.error(`Failed to analyze asset ${asset.name}`, e);
@@ -128,7 +130,38 @@ const retryWithBackoff = async <T>(fn: () => Promise<T>, retries = 3, delay = 10
   }
 };
 
+// Helper to strip markdown and extract JSON
+const extractJSON = (text: string): any => {
+  try {
+    // 1. Try direct parse
+    return JSON.parse(text);
+  } catch (e) {
+    // 2. Try stripping markdown code blocks
+    const markdownMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```([\s\S]*?)```/);
+    if (markdownMatch && markdownMatch[1]) {
+      try {
+        return JSON.parse(markdownMatch[1]);
+      } catch (e2) {
+        // continue
+      }
+    }
+
+    // 3. Try finding the first '{' and last '}'
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch (e3) {
+        throw new Error("Failed to extract valid JSON from response");
+      }
+    }
+
+    throw new Error("No JSON found in response");
+  }
+};
+
 export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
+  // ... (Prompt string logic remains the same) ...
   const PROMPT = `
 # Identity
 You are Trem, a highly advanced Video Intelligence Engine designed for the Trem AI video editing platform. Your purpose is to analyze video content and generate a comprehensive, AI-native repository structure that enables intelligent video editing workflows.
@@ -325,17 +358,17 @@ A phone call breaks the calm. Something has changed.`
     const config = {
       model: 'gemini-3-flash-preview',
       contents: PROMPT,
-      config: {
-        thinkingConfig: { thinkingLevel: 'medium' }
-      } as any
+      generationConfig: {
+        responseMimeType: 'application/json'
+      }
     };
 
     // Use retry wrapper
-    const response = await retryWithBackoff(() => ai.models.generateContent(config));
+    // @ts-ignore - config type mismatch with simple wrapper
+    const response = await retryWithBackoff(() => ai.models.generateContent(config as any));
 
     const text = response.text || "{}";
-    const jsonStr = text.replace(/```json\n|\n```/g, '');
-    return JSON.parse(jsonStr);
+    return extractJSON(text);
 
   } catch (error) {
     console.error("Gemini Generation Error:", error);
