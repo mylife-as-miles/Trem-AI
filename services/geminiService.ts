@@ -182,21 +182,15 @@ You excel at:
 
 ---
 
-# Scene Detection Rules (CRITICAL)
-You MUST follow these rules for scene segmentation:
-
-1.  **Granularity is paramount.** Aim for **at least 1 scene per 3-5 seconds** of video content. For a 14-second clip, you should detect **4-7 scenes minimum**.
-2.  **A new scene starts when ANY of the following occur:**
-    - Hard cut or transition (fade, wipe, dissolve)
-    - Significant camera motion change (static to pan, zoom start/end)
-    - Major lighting or color grade shift
-    - Audio transition (music drop, silence, new speaker)
-    - Subject or character change within the frame
-    - Location or background change
-3.  **Do NOT merge scenes.** If in doubt, split rather than combine.
-4.  **Each scene must have a distinct summary** describing the visual action.
-
----
+# Tasks
+1. Generate scenes/scenes.json
+2. Generate captions/captions.srt
+3. Generate metadata/video.md
+4. Generate metadata/scenes.md
+5. Generate timeline/base.otio.json
+6. Generate dag/ingest.json
+7. Generate commits/0001.json
+8. Generate repo.json
 
 # Output Schema (Strict JSON)
 You MUST output ONLY valid JSON matching this exact structure. No markdown, no commentary.
@@ -225,28 +219,29 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
       }
     ]
   },
-  "subtitles_srt": "string (valid SRT format)",
-  "descriptions": {
+  "captions_srt": "string (valid SRT format)",
+  "metadata": {
     "video_md": "string (Markdown video overview)",
     "scenes_md": "string (Markdown scene-by-scene breakdown)"
   },
-  "otio": {},
+  "timeline": {},
   "dag": {},
   "commit": {
     "id": "0001",
     "parent": null,
-    "branch": "main",
-    "message": "string (conventional commit: feat: ingest Xm video with Y scenes)",
-    "hashtags": ["#tag1", "#tag2", "#tag3"],
-    "author": "trem-intelligence-v2",
     "timestamp": "string (ISO 8601)",
-    "artifacts": {
-      "otio": "otio/main.otio.json",
-      "dag": "dag/graph.json",
+    "message": "string (conventional commit: feat: ingest 14s makeup transformation...)",
+    "state": {
+      "timeline": "timeline/base.otio.json",
       "scenes": "scenes/scenes.json",
-      "subtitles": "subtitles/main.srt",
-      "descriptions": ["descriptions/video.md", "descriptions/scenes.md"]
-    }
+      "captions": "captions/captions.srt",
+      "metadata": [
+        "metadata/video.md",
+        "metadata/scenes.md"
+      ],
+      "dag": "dag/ingest.json"
+    },
+    "hashtags": ["#tag1", "#tag2", "#tag3"]
   }
 }
 
@@ -305,14 +300,14 @@ Generate 4-6 hashtags based on actual content analysis:
           }
         ]
       },
-      subtitles_srt: `1
+      captions_srt: `1
 00:00:03,000 --> 00:00:06,200
 I didn’t expect the house to feel this empty.
 
 2
 00:00:18,500 --> 00:00:21,000
 Hello?`,
-      descriptions: {
+      metadata: {
         video_md: `# Video Description
 
 A quiet, emotionally grounded short film exploring isolation and interruption.
@@ -330,26 +325,24 @@ Clara wakes up in silence. The room feels larger than it should.
 ## Scene 2 (0:18–0:42)
 A phone call breaks the calm. Something has changed.`
       },
-      otio: {},
+      timeline: {},
       dag: {},
       commit: {
         "id": "0001",
         "parent": null,
-        "branch": "main",
-        "message": "feat: ingest 2m14s footage with 2 detected scenes",
-        "hashtags": ["#cinematic", "#low-key", "#dialogue", "#social-media"],
-        "author": "gemini-3-flash",
         "timestamp": new Date().toISOString(),
-        "artifacts": {
-          "otio": "otio/main.otio.json",
-          "dag": "dag/graph.json",
+        "message": "feat: ingest 2m14s footage with 2 detected scenes",
+        "state": {
+          "timeline": "timeline/base.otio.json",
           "scenes": "scenes/scenes.json",
-          "subtitles": "subtitles/main.srt",
-          "descriptions": [
-            "descriptions/video.md",
-            "descriptions/scenes.md"
-          ]
-        }
+          "captions": "captions/captions.srt",
+          "metadata": [
+            "metadata/video.md",
+            "metadata/scenes.md"
+          ],
+          "dag": "dag/ingest.json"
+        },
+        "hashtags": ["#cinematic", "#low-key", "#dialogue", "#social-media"]
       }
     };
   }
