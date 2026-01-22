@@ -186,9 +186,14 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     // Clear workers
                     setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Complete' })));
 
-                } catch (e) {
+                } catch (e: any) {
                     console.error("Aggregation Failed", e);
-                    setSimLogs(logs => [...logs, "> ERROR: Semantic Analysis Failed."]);
+                    setSimLogs(logs => [...logs, `> CRITICAL ERROR: ${e.message || "Semantic Analysis Failed."}`, "> Process Terminated."]);
+                    // Mark workers as failed
+                    setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Failed' })));
+
+                    // Optional: You could add a UI state here to show a retry button or error banner, 
+                    // but for now the logs will show the critical error.
                 }
             };
 

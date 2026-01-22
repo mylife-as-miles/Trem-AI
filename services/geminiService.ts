@@ -264,87 +264,8 @@ Generate 4-6 hashtags based on actual content analysis:
 `;
 
   if (!ai) {
-    console.warn("Gemini API Key missing. Using Mock Data.");
-    // Simulate delay
-    await new Promise(r => setTimeout(r, 2000));
-
-    // Return Mock Data (v1 Structure)
-    return {
-      repo: {
-        name: "video-repo",
-        brief: "A quiet, emotionally grounded short film exploring isolation and interruption.",
-        created: Date.now(),
-        version: "1.0.0",
-        pipeline: "trem-video-pipeline-v1"
-      },
-      scenes: {
-        "scenes": [
-          {
-            "id": "scene-001",
-            "start": 0.0,
-            "end": 18.2,
-            "summary": "Character wakes up alone, quiet morning light",
-            "emotion": "melancholy",
-            "characters": ["Clara"],
-            "visual_notes": ["soft light", "static camera"],
-            "audio_notes": ["room tone", "no dialogue"]
-          },
-          {
-            "id": "scene-002",
-            "start": 18.2,
-            "end": 42.7,
-            "summary": "Phone rings, disruption",
-            "emotion": "unease",
-            "characters": ["Clara"],
-            "audio_notes": ["ringtone", "sharp cut"]
-          }
-        ]
-      },
-      captions_srt: `1
-00:00:03,000 --> 00:00:06,200
-I didn’t expect the house to feel this empty.
-
-2
-00:00:18,500 --> 00:00:21,000
-Hello?`,
-      metadata: {
-        video_md: `# Video Description
-
-A quiet, emotionally grounded short film exploring isolation and interruption.
-
-## Themes
-- Grief
-- Routine
-- Sudden disruption
-
-## Runtime
-2 minutes 14 seconds`,
-        scenes_md: `## Scene 1 (0:00–0:18)
-Clara wakes up in silence. The room feels larger than it should.
-
-## Scene 2 (0:18–0:42)
-A phone call breaks the calm. Something has changed.`
-      },
-      timeline: {},
-      dag: {},
-      commit: {
-        "id": "0001",
-        "parent": null,
-        "timestamp": new Date().toISOString(),
-        "message": "feat: ingest 2m14s footage with 2 detected scenes",
-        "state": {
-          "timeline": "timeline/base.otio.json",
-          "scenes": "scenes/scenes.json",
-          "captions": "captions/captions.srt",
-          "metadata": [
-            "metadata/video.md",
-            "metadata/scenes.md"
-          ],
-          "dag": "dag/ingest.json"
-        },
-        "hashtags": ["#cinematic", "#low-key", "#dialogue", "#social-media"]
-      }
-    };
+    console.warn("Gemini API Key missing.");
+    throw new Error("Gemini API Key is missing. Please configure GEMINI_API_KEY in your environment to use AI features.");
   }
 
   try {
