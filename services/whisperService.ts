@@ -122,6 +122,9 @@ const pollPrediction = async (predictionId: string, maxAttempts = 60): Promise<a
         // Check content type
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
+            // Log the body to understand what we received (e.g. is it index.html?)
+            const text = await response.text();
+            console.warn(`Poll API returned non-JSON (${contentType}). Body preview:`, text.substring(0, 150));
             throw new Error(`Poll API returned non-JSON: ${contentType}`);
         }
 
