@@ -65,12 +65,18 @@ export const transcribeAudio = async (
             // Try to parse error details
             let errorDetails = {};
             try {
-                errorDetails = await response.json();
+                const text = await response.text();
+                try {
+                    errorDetails = JSON.parse(text);
+                } catch {
+                    // Not JSON, likely HTML error page
+                    console.warn('API returned non-JSON error response:', text.substring(0, 100));
+                }
             } catch (e) {
-                // Ignore json parse error if body is not json
+                // Ignore read error
             }
 
-            // Check if it's a configuration error
+            // Check if it's a configuration error from our API
             if (response.status === 500) {
                 // @ts-ignore
                 if (errorDetails.error === 'Server configuration error') {
@@ -80,6 +86,16 @@ export const transcribeAudio = async (
                 return mockTranscription();
             }
             throw new Error(`Replicate API error: ${response.statusText}`);
+        }
+
+        // Verify content type is valid JSON before parsing
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.warn(`API returned unexpected content-type: ${contentType}. Likely SPA fallback or 404.`);
+            // Log the first few chars to debug
+            const text = await response.text();
+            console.warn('Response preview:', text.substring(0, 100));
+            return mockTranscription();
         }
 
         const prediction = await response.json();
@@ -102,6 +118,12 @@ export const transcribeAudio = async (
 const pollPrediction = async (predictionId: string, maxAttempts = 60): Promise<any> => {
     for (let i = 0; i < maxAttempts; i++) {
         const response = await fetch(`/api/predictions/${predictionId}`);
+
+        // Check content type
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error(`Poll API returned non-JSON: ${contentType}`);
+        }
 
         const prediction = await response.json();
 
