@@ -176,8 +176,8 @@ You excel at:
 
 # Inputs
 - **Video Duration**: ${inputs.duration || '2 minutes 14 seconds'}
-- **Audio Transcript**: ${inputs.transcript || 'PROVIDED (use for dialogue detection)'}
-- **Scene Boundaries**: ${inputs.sceneBoundaries || 'PROVIDED (raw visual cuts)'}
+- **Audio Transcript**: ${inputs.transcript || 'None (detect from context)'}
+- **Scene Boundaries**: ${inputs.sceneBoundaries !== 'auto-detected' ? inputs.sceneBoundaries : 'AUTO-DETECT (Analyze visual cues to find cuts)'}
 - **Asset Context**: ${inputs.assetContext || 'None provided'}
 
 ---
@@ -187,7 +187,7 @@ You excel at:
 2. Generate captions/captions.srt
 3. Generate metadata/video.md
 4. Generate metadata/scenes.md
-5. Generate timeline/base.otio.json
+5. Generate timeline/base.otio.json (Valid OTIO Schema)
 6. Generate dag/ingest.json
 7. Generate commits/0001.json
 8. Generate repo.json
@@ -224,7 +224,24 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
     "video_md": "string (Markdown video overview)",
     "scenes_md": "string (Markdown scene-by-scene breakdown)"
   },
-  "timeline": {},
+  "timeline": {
+    "OTIO_SCHEMA": "OpenTimelineIO.v1",
+    "tracks": {
+        "children": [
+            {
+                "OTIO_SCHEMA": "Track.v1",
+                "kind": "Video",
+                "children": [
+                    {
+                        "OTIO_SCHEMA": "Clip.v1",
+                        "name": "Clip_001",
+                        "source_range": { "start_time": 0.0, "duration": 3.5 }
+                    }
+                ]
+            }
+        ]
+    }
+  },
   "dag": {},
   "commit": {
     "id": "0001",
