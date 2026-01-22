@@ -9,80 +9,39 @@
  * @returns Audio blob in WAV format
  */
 export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-        try {
-            // Create video element
-            const video = document.createElement('video');
-            const videoURL = URL.createObjectURL(videoBlob);
-            video.src = videoURL;
-            video.muted = true;
-            video.playsInline = true;
+    try {
+        const base64Video = await blobToDataURL(videoBlob);
 
-            video.onloadedmetadata = async () => {
-                try {
-                    // Create audio context
-                    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const response = await fetch('/api/extract-audio', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ file: base64Video }),
+        });
 
-                    // Create media element source
-                    const source = audioContext.createMediaElementSource(video);
-
-                    // Create destination for recording
-                    const destination = audioContext.createMediaStreamDestination();
-                    source.connect(destination);
-
-                    // Set up MediaRecorder
-                    const mediaRecorder = new MediaRecorder(destination.stream, {
-                        mimeType: 'audio/webm;codecs=opus'
-                    });
-
-                    const audioChunks: Blob[] = [];
-
-                    mediaRecorder.ondataavailable = (event) => {
-                        if (event.data.size > 0) {
-                            audioChunks.push(event.data);
-                        }
-                    };
-
-                    mediaRecorder.onstop = async () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        URL.revokeObjectURL(videoURL);
-                        await audioContext.close();
-                        resolve(audioBlob);
-                    };
-
-                    mediaRecorder.onerror = (error) => {
-                        console.error('MediaRecorder error:', error);
-                        URL.revokeObjectURL(videoURL);
-                        audioContext.close();
-                        reject(error);
-                    };
-
-                    // Play video and record audio
-                    mediaRecorder.start();
-                    video.play();
-
-                    // Stop recording when video ends
-                    video.onended = () => {
-                        mediaRecorder.stop();
-                    };
-
-                } catch (error) {
-                    console.error('Audio extraction error:', error);
-                    URL.revokeObjectURL(videoURL);
-                    reject(error);
-                }
-            };
-
-            video.onerror = (error) => {
-                console.error('Video loading error:', error);
-                URL.revokeObjectURL(videoURL);
-                reject(error);
-            };
-
-        } catch (error) {
-            console.error('Audio extractor initialization error:', error);
-            reject(error);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Audio extraction failed');
         }
+
+        const data = await response.json();
+        // create blob from base64 response
+        const res = await fetch(data.audio);
+        return await res.blob();
+
+    } catch (error) {
+        console.error('Audio extraction error:', error);
+        throw error;
+    }
+};
+
+const blobToDataURL = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
     });
 };
 
