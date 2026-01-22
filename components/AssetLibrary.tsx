@@ -370,6 +370,26 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                     </div>
                                 )}
 
+                                {/* Delete Button - Non-Modal Only */}
+                                {!isModal && (
+                                    <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (window.confirm('Delete this asset permanently?')) {
+                                                    db.deleteAsset(asset.id).then(() => {
+                                                        loadAssets();
+                                                    });
+                                                }
+                                            }}
+                                            className="w-8 h-8 rounded-full bg-black/60 hover:bg-red-500/80 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white transition-all shadow-lg"
+                                            title="Delete Asset"
+                                        >
+                                            <span className="material-icons-outlined text-sm">delete</span>
+                                        </button>
+                                    </div>
+                                )}
+
                                 <div className="absolute bottom-3 left-3 z-10 transition-opacity duration-300 group-hover:opacity-0 w-full pr-6">
                                     <div className="text-xs font-mono text-white font-bold bg-black/50 px-2 py-1 rounded backdrop-blur-sm border border-white/10 truncate">{asset.name}</div>
                                 </div>

@@ -61,19 +61,16 @@ export const transcribeAudio = async (
             })
         });
 
+        // Read full response text ONCE to avoid "body stream already read" errors
+        const responseText = await response.text();
+
+        // 1. Check for HTTP errors
         if (!response.ok) {
-            // Try to parse error details
             let errorDetails = {};
             try {
-                const text = await response.text();
-                try {
-                    errorDetails = JSON.parse(text);
-                } catch {
-                    // Not JSON, likely HTML error page
-                    console.warn('API returned non-JSON error response:', text.substring(0, 100));
-                }
-            } catch (e) {
-                // Ignore read error
+                errorDetails = JSON.parse(responseText);
+            } catch {
+                console.warn('API returned non-JSON error response:', responseText.substring(0, 100));
             }
 
             // Check if it's a configuration error from our API
@@ -88,21 +85,22 @@ export const transcribeAudio = async (
             throw new Error(`Replicate API error: ${response.statusText}`);
         }
 
-        // Verify content type is valid JSON before parsing
+        // 2. Validate JSON Content-Type (optional but good practice)
         const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
+        if (contentType && !contentType.includes("application/json")) {
             console.warn(`API returned unexpected content-type: ${contentType}. Likely SPA fallback or 404.`);
-            // Log the first few chars to debug
-            const text = await response.text();
-            console.warn('Response preview:', text.substring(0, 100));
+            console.warn('Response preview:', responseText.substring(0, 100));
             return mockTranscription();
         }
 
-        const prediction = await response.json();
-
-        // Poll for completion
-        // Direct result from Replicate SDK
-        const output = await response.json();
+        // 3. Parse JSON safely
+        let output;
+        try {
+            output = JSON.parse(responseText);
+        } catch (e) {
+            console.warn('Failed to parse successful response as JSON:', responseText.substring(0, 100));
+            return mockTranscription();
+        }
 
         return parseWhisperOutput(output);
 

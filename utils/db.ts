@@ -223,6 +223,23 @@ class TremDatabase {
             }
         });
     }
+
+    async deleteAsset(id: string): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['assets'], 'readwrite');
+            const store = transaction.objectStore('assets');
+            const request = store.delete(id);
+
+            request.onsuccess = () => {
+                resolve();
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+        });
+    }
 }
 
 export const db = new TremDatabase();
