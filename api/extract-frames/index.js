@@ -35,9 +35,9 @@ export default async function handler(req, res) {
 
         await new Promise((resolve, reject) => {
             ffmpeg(inputPath)
-                // Extract 1 frame every 5 seconds (1/5 fps) = 0.2 fps
-                // Adjust this rate as needed for granularity vs token count
-                .outputOptions(['-vf', 'fps=1/5'])
+                // Extract 1 frame every 1 second (1 fps)
+                // User requested 10-20 frames for 10s video -> 1-2 fps
+                .outputOptions(['-vf', 'fps=1'])
                 .on('end', resolve)
                 .on('error', reject)
                 .save(outputPattern);

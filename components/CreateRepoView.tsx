@@ -4,6 +4,7 @@ import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
 import { generateRepoStructure, analyzeAsset } from '../services/geminiService';
 import { extractAudioFromVideo } from '../utils/audioExtractor';
+import { extractFramesFromVideo } from '../utils/frameExtractor';
 import { transcribeAudio } from '../services/whisperService';
 
 interface CreateRepoViewProps {
@@ -101,7 +102,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
                     try {
                         // ... imports
-                        import { extractFramesFromVideo } from '../utils/frameExtractor';
+
 
                         // ... (props/interfaces)
 
