@@ -101,48 +101,16 @@ export const transcribeAudio = async (
         const prediction = await response.json();
 
         // Poll for completion
-        const result = await pollPrediction(prediction.id);
+        // Direct result from Replicate SDK
+        const output = await response.json();
 
-        return parseWhisperOutput(result.output);
+        return parseWhisperOutput(output);
 
     } catch (error) {
         console.error('Whisper transcription error:', error);
         // Fallback to mock
         return mockTranscription();
     }
-};
-
-/**
- * Poll Replicate prediction until complete
- */
-const pollPrediction = async (predictionId: string, maxAttempts = 60): Promise<any> => {
-    for (let i = 0; i < maxAttempts; i++) {
-        const response = await fetch(`/api/predictions/${predictionId}`);
-
-        // Check content type
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            // Log the body to understand what we received (e.g. is it index.html?)
-            const text = await response.text();
-            console.warn(`Poll API returned non-JSON (${contentType}). Body preview:`, text.substring(0, 150));
-            throw new Error(`Poll API returned non-JSON: ${contentType}`);
-        }
-
-        const prediction = await response.json();
-
-        if (prediction.status === 'succeeded') {
-            return prediction;
-        }
-
-        if (prediction.status === 'failed') {
-            throw new Error('Prediction failed');
-        }
-
-        // Wait 2 seconds before next poll
-        await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-
-    throw new Error('Prediction timeout');
 };
 
 /**
