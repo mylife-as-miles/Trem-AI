@@ -64,7 +64,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
     };
 
     // Helper to extract video metadata
-    const processVideoFile = (file: File): Promise<{ duration: string, thumb: string }> => {
+    const processVideoFile = (file: File): Promise<{ duration: string, thumb: string, width: number, height: number }> => {
         return new Promise((resolve) => {
             const video = document.createElement('video');
             video.preload = 'metadata';
@@ -75,7 +75,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
 
             // Timeout fallback
             const timeout = setTimeout(() => {
-                resolve({ duration: '--:--', thumb: '' });
+                resolve({ duration: '--:--', thumb: '', width: 1920, height: 1080 });
                 URL.revokeObjectURL(url);
             }, 3000);
 
@@ -96,18 +96,24 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                 const ss = (seconds % 60).toString().padStart(2, '0');
                 const durationStr = `${mm}:${ss}`;
 
+                // Dimensions & Aspect Ratio
+                const { videoWidth, videoHeight } = video;
+
                 // Thumbnail
                 const canvas = document.createElement('canvas');
-                canvas.width = 320;
-                canvas.height = 180; // 16:9 aspect
+                // Scale down but maintain aspect ratio
+                const scale = Math.min(320 / videoWidth, 480 / videoHeight); // Max width 320, Max height 480
+                canvas.width = videoWidth * scale;
+                canvas.height = videoHeight * scale;
+
                 const ctx = canvas.getContext('2d');
                 if (ctx) {
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                     const thumbData = canvas.toDataURL('image/jpeg', 0.7);
 
-                    resolve({ duration: durationStr, thumb: thumbData });
+                    resolve({ duration: durationStr, thumb: thumbData, width: videoWidth, height: videoHeight });
                 } else {
-                    resolve({ duration: durationStr, thumb: '' });
+                    resolve({ duration: durationStr, thumb: '', width: videoWidth, height: videoHeight });
                 }
 
                 URL.revokeObjectURL(url);
@@ -116,7 +122,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
             video.onerror = () => {
                 clearTimeout(timeout);
                 console.warn("Could not process video file:", file.name);
-                resolve({ duration: '--:--', thumb: '' });
+                resolve({ duration: '--:--', thumb: '', width: 0, height: 0 });
                 URL.revokeObjectURL(url);
             };
         });
@@ -133,13 +139,15 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
 
             let thumb = undefined;
             let duration = undefined;
+            let meta = { width: 0, height: 0 };
 
             if (isImage) {
                 thumb = URL.createObjectURL(file);
             } else if (isVideo) {
-                const meta = await processVideoFile(file);
-                thumb = meta.thumb;
-                duration = meta.duration;
+                const videoData = await processVideoFile(file);
+                thumb = videoData.thumb;
+                duration = videoData.duration;
+                meta = { width: videoData.width, height: videoData.height };
             }
 
             const asset: AssetData = {
@@ -152,7 +160,8 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                 status: 'ready',
                 thumb: thumb,
                 duration: duration || (isVideo ? '00:00' : undefined),
-                tags: ['Uploaded', 'Local']
+                tags: ['Uploaded', 'Local'],
+                meta: isVideo ? { original_width: meta.width, original_height: meta.height } : undefined
             };
 
             await db.addAsset(asset);
@@ -303,12 +312,13 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                 </header>
 
                 <div className="flex-1 overflow-y-auto p-8 scroll-smooth">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
+                    {/* Masonry Layout Container */}
+                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 pb-20 space-y-6">
 
                         {/* Upload Placeholder - First Item */}
                         <div
                             onClick={triggerFileInput}
-                            className="relative group aspect-[16/9] bg-black rounded-lg overflow-hidden border border-dashed border-white/10 hover:border-primary transition-all duration-300 flex flex-col items-center justify-center cursor-pointer"
+                            className="relative group w-full aspect-[16/9] bg-black rounded-lg overflow-hidden border border-dashed border-white/10 hover:border-primary transition-all duration-300 flex flex-col items-center justify-center cursor-pointer mb-6 break-inside-avoid"
                         >
                             <div className="text-gray-600 mb-2 group-hover:text-primary transition-colors">
                                 <span className="material-icons-outlined text-4xl">add_circle_outline</span>
@@ -321,7 +331,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                 key={asset.id}
                                 onClick={() => isModal && toggleAssetSelection(asset.id)}
                                 className={`
-                                    relative group aspect-[16/9] bg-black rounded-lg overflow-hidden border transition-all duration-300
+                                    relative group w-full bg-black rounded-lg overflow-hidden border transition-all duration-300 mb-6 break-inside-avoid
                                     ${isModal && selectedAssets.includes(asset.id)
                                         ? 'border-primary ring-2 ring-primary/50 shadow-lg scale-[1.02]'
                                         : 'border-white/10 hover:border-primary'
@@ -330,15 +340,26 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                     ${isModal ? 'cursor-pointer' : ''}
                                 `}
                             >
-                                {asset.thumb ? (
-                                    <div className="absolute inset-0 bg-cover bg-center opacity-80 group-hover:opacity-40 transition-opacity duration-300" style={{ backgroundImage: `url('${asset.thumb}')` }}></div>
-                                ) : (
-                                    <div className="absolute inset-0 bg-gray-900 flex items-center justify-center opacity-80 group-hover:opacity-40 transition-opacity">
-                                        <span className="material-icons-outlined text-4xl text-gray-600">
-                                            {asset.type === 'image' ? 'image' : 'movie'}
-                                        </span>
-                                    </div>
-                                )}
+                                {/* Thumbnail Container with Natural Aspect Ratio */}
+                                <div className="relative w-full">
+                                    {asset.thumb ? (
+                                        <img
+                                            src={asset.thumb}
+                                            alt={asset.name}
+                                            className="w-full h-auto object-cover block"
+                                            loading="lazy"
+                                        />
+                                    ) : (
+                                        <div className="w-full aspect-video bg-gray-900 flex items-center justify-center">
+                                            <span className="material-icons-outlined text-4xl text-gray-600">
+                                                {asset.type === 'image' ? 'image' : 'movie'}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Gradient Overlay for Readability */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                                </div>
 
                                 {/* Selection Checkbox Overlay for Modal */}
                                 {isModal && (

@@ -289,7 +289,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         type: 'file',
                         icon: 'subtitles',
                         iconColor: 'text-slate-200',
-                        content: selectedAssets.map(a => a.srt).join('\n\n') || generatedRepoData.subtitles_srt || ''
+                        content: selectedAssets.map(a => a.srt).join('\n\n') || generatedRepoData.captions_srt || generatedRepoData.subtitles_srt || ''
                     },
                     ...selectedAssets.map((asset, idx) => ({
                         id: `sub_asset_${idx}`,
