@@ -117,23 +117,31 @@ export const transcribeAudio = async (
  * Parse Whisper API output into structured format
  */
 const parseWhisperOutput = (output: any): WhisperTranscription => {
-    // Whisper returns SRT format string
-    const srt = output.transcription || output;
-
-    // Use native segments if available, otherwise parse SRT
+    // 1. Try to get native segments
     let segments: WhisperSegment[] = [];
     if (output.segments && Array.isArray(output.segments)) {
         segments = output.segments.map((s: any) => ({
             id: s.id,
             start: s.start,
             end: s.end,
-            text: s.text.trim()
+            text: (s.text || "").trim()
         }));
-    } else {
+    }
+
+    // 2. Determine SRT
+    // Use provided transcription if it looks like SRT, otherwise generate from segments
+    let srt = output.transcription || "";
+    const isSRT = srt.includes('-->');
+
+    if (!isSRT && segments.length > 0) {
+        srt = generateSRT(segments);
+    }
+    else if (isSRT && segments.length === 0) {
+        // Fallback: Parse SRT if no segments provided
         segments = parseSRT(srt);
     }
 
-    // Construct full text if not present or just to be safe
+    // 3. Construct full text
     const text = segments.map(s => s.text).join(' ');
 
     return {
@@ -145,21 +153,53 @@ const parseWhisperOutput = (output: any): WhisperTranscription => {
 };
 
 /**
+ * Generate SRT string from segments
+ */
+const generateSRT = (segments: WhisperSegment[]): string => {
+    return segments.map((seg, i) => {
+        const start = formatTime(seg.start);
+        const end = formatTime(seg.end);
+        return `${i + 1}\n${start} --> ${end}\n${seg.text}\n\n`;
+    }).join("");
+};
+
+/**
+ * Format seconds to SRT timestamp (HH:MM:SS,ms)
+ */
+const formatTime = (seconds: number): string => {
+    const date = new Date(seconds * 1000);
+    const hh = String(Math.floor(seconds / 3600)).padStart(2, "0"); // Handle hours manually for >24h support safety
+    const mm = String(date.getUTCMinutes()).padStart(2, "0");
+    const ss = String(date.getUTCSeconds()).padStart(2, "0");
+    const ms = String(date.getUTCMilliseconds()).padStart(3, "0");
+    return `${hh}:${mm}:${ss},${ms}`;
+};
+
+/**
  * Parse SRT format into segments
  */
 const parseSRT = (srt: string): WhisperSegment[] => {
+    if (!srt) return [];
+
     const segments: WhisperSegment[] = [];
-    const blocks = srt.trim().split('\n\n');
+    const blocks = srt.trim().split(/\n\s*\n/); // Split by empty lines
 
     for (const block of blocks) {
         const lines = block.split('\n');
         if (lines.length < 3) continue;
 
-        const id = parseInt(lines[0]);
-        const timeParts = lines[1].split(' --> ');
+        // Handle cases where ID might be merged or missing
+        let timeLineIndex = 1;
+        if (!lines[1].includes('-->')) {
+            timeLineIndex = 0; // Maybe no ID
+            if (!lines[0].includes('-->')) continue; // Invalid block
+        }
+
+        const id = timeLineIndex === 1 ? parseInt(lines[0]) : segments.length + 1;
+        const timeParts = lines[timeLineIndex].split(' --> ');
         const start = srtTimeToSeconds(timeParts[0]);
         const end = srtTimeToSeconds(timeParts[1]);
-        const text = lines.slice(2).join('\n');
+        const text = lines.slice(timeLineIndex + 1).join('\n');
 
         segments.push({ id, start, end, text });
     }
@@ -171,6 +211,7 @@ const parseSRT = (srt: string): WhisperSegment[] => {
  * Convert SRT timestamp to seconds
  */
 const srtTimeToSeconds = (timeStr: string): number => {
+    if (!timeStr) return 0;
     const [hours, minutes, seconds] = timeStr.split(':');
     const [secs, millis] = seconds.split(',');
     return parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(secs) + parseInt(millis || '0') / 1000;
@@ -192,26 +233,16 @@ const blobToDataURL = (blob: Blob): Promise<string> => {
  * Mock transcription for testing without API
  */
 const mockTranscription = (): WhisperTranscription => {
-    const srt = `1
-00:00:00,000 --> 00:00:03,500
-Welcome to this video demonstration.
-
-2
-00:00:03,500 --> 00:00:07,000
-This is an automatically generated transcript.
-
-3
-00:00:07,000 --> 00:00:11,200
-In production, this would be real Whisper AI transcription.`;
+    const segments = [
+        { id: 1, start: 0, end: 3.5, text: 'Welcome to this video demonstration.' },
+        { id: 2, start: 3.5, end: 7.0, text: 'This is an automatically generated transcript.' },
+        { id: 3, start: 7.0, end: 11.2, text: 'In production, this would be real Whisper AI transcription.' }
+    ];
 
     return {
         text: 'Welcome to this video demonstration. This is an automatically generated transcript. In production, this would be real Whisper AI transcription.',
-        segments: [
-            { id: 1, start: 0, end: 3.5, text: 'Welcome to this video demonstration.' },
-            { id: 2, start: 3.5, end: 7.0, text: 'This is an automatically generated transcript.' },
-            { id: 3, start: 7.0, end: 11.2, text: 'In production, this would be real Whisper AI transcription.' }
-        ],
-        srt,
+        segments,
+        srt: generateSRT(segments),
         language: 'en'
     };
 };
