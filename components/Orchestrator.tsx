@@ -18,6 +18,8 @@ const SUGGESTIONS = [
   "Sync audio tracks"
 ];
 
+const MODES = ["Interactive plan", "Review", "Start"];
+
 const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo }) => {
   const [prompt, setPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -33,6 +35,10 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
   const [repos, setRepos] = useState<RepoData[]>([]);
+
+  // Mode Selection State
+  const [selectedMode, setSelectedMode] = useState<string>("Interactive plan");
+  const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
 
   useEffect(() => {
     const loadRepos = async () => {
@@ -174,6 +180,35 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
                           >
                             <span className={`material-icons-outlined text-[10px] ${selectedRepo === repo.name ? 'opacity-100' : 'opacity-0'}`}>check</span>
                             {repo.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mode Selection Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-gray-400 hover:border-primary/50 hover:text-primary transition-colors"
+                    >
+                      <span className="material-icons-outlined text-sm text-primary">layers</span>
+                      <span>{selectedMode}</span>
+                      <span className="material-icons-outlined text-[10px] ml-1 opacity-60">expand_more</span>
+                    </button>
+                    {isModeDropdownOpen && (
+                      <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-surface-card border border-slate-200 dark:border-white/10 rounded-lg shadow-xl z-50 overflow-hidden py-1">
+                        {MODES.map(mode => (
+                          <button
+                            key={mode}
+                            onClick={() => {
+                              setSelectedMode(mode);
+                              setIsModeDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-white/5 hover:text-primary transition-colors font-mono flex items-center gap-2 ${selectedMode === mode ? 'text-primary bg-primary/5' : 'text-slate-600 dark:text-gray-300'}`}
+                          >
+                            <span className={`material-icons-outlined text-[10px] ${selectedMode === mode ? 'opacity-100' : 'opacity-0'}`}>check</span>
+                            {mode}
                           </button>
                         ))}
                       </div>
