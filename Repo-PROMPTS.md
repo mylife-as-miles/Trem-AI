@@ -14,7 +14,7 @@ You excel at:
 - **Audio Transcript**: ${inputs.transcript || 'None (detect from context)'}
 - **Scene Boundaries**: ${inputs.sceneBoundaries !== 'auto-detected' ? inputs.sceneBoundaries : 'AUTO-DETECT (Analyze visual cues to find cuts)'}
 - **Asset Context**: ${inputs.assetContext || 'None provided'}
-- **Visual Context**: ${inputs.images?.length || 0} keyframes provided. Use these to identify scenes, lighting, and composition.
+- **Visual Context**: I have attached ${inputs.images?.length || 0} keyframes from the video. Correlate these visual frames with the timestamps in the transcript to determine scene changes.
 
 ---
 
@@ -111,6 +111,7 @@ Generate 4-6 hashtags based on actual content analysis:
 
 # Final Reminders
 - Output ONLY the JSON object. No explanation, no markdown fences.
+- IMPORTANT: For the 'captions_srt' and 'metadata' fields, you must properly escape all newlines (\n) and double quotes (\") so the JSON remains valid.
 - Scenes array must contain **multiple scenes** proportional to video length.
 - Be precise with timestamps (use decimals like 3.5, 7.25).
 - Use the Asset Context to inform descriptions and tags.
