@@ -7,15 +7,6 @@ interface AssetLibraryProps {
     onSelect?: (assets: string[]) => void;
 }
 
-const MOCK_ASSETS: AssetData[] = [
-    { id: 'shot_05', name: 'Shot_05_RedShoes', type: 'video', duration: '00:04:12', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_FG3siz-07Zar46PuwVeXadGde8wD1oABlXQRLHcrBqv4ipUuXzt-wiksmm1efukjl7A2RCE8_Vhex7BOgslIXb7jfBughYHpY1QfEmy8hUeD8RQ4EVwH8Vbge-Bo70Y7g4hVqcr9ome6UUUR3MXoHt2NIOaJHIGFHUGyDSDIeqfls_rltYQPaguiZ3-NYvNzRK04K4S9JAVrcrG-XKghqKGIbcFA60Gy0_WWCyqXVALr2ysEmqLlav6sE9WiGB1qr9EgdYbXSZM', tags: ['Rain', 'City', 'Sad', 'Night'], meta: { object: 'red_shoes', motion: 'running' }, size: 0, created: Date.now(), status: 'ready' },
-    { id: 'b_roll_mtn', name: 'B-Roll_Mountain_02', type: 'video', duration: '00:08:22', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIXZ-cPuVPzVLTXOAKmVCTKh-dlGXWTU-kPdah6a1_m_2R1IjtTXBcy4YijkJNiGyZ4wQR2JtlIERvfHiRJlkm6lud55LGQo3EiTJrf4DSjAW7b8EBZNxu5hrQ8ERr1-kbf8un8OFI3nmqKOviwULI3BNakDO-BEMIAthJLy1cbTw61Vu0G54agsoZ1Dh-Y8-5AM_4QJvS3u0QDWAlWan2Dov77rSuYKKmHyFUOZDzyo6U2SRWI7hRSe5Oh2JGSKwFQaZu1S_Dk2Q', size: 0, created: Date.now(), status: 'ready' },
-    { id: 'int_night', name: 'Int_Night_Street', type: 'video', duration: '00:01:45', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDlQnnEBjGcXNaP6m0G4g-7TjUpTDHjrlHe1fjGfkeeunOTCn2nq9C097nwAERUI2uIwIRJzSrGt3CPEdsLMiWyQ8EsmDnTGrNC6tl-XpX43c8o1sVw4TpeZNujy-8V6TA6xXd_LCf7kTToRliZk9vSha9D3chfYA64CRLYhJBV6CiBqXKB6I7x5ToiqO9cv8WoKE6xAjMLdkkWn7W1QPcyCsVbT5a3hWxaMYb8vywpuZbAH86YqoEOlm_CIo4wiTmBRegz7OoAxPo', size: 0, created: Date.now(), status: 'ready' },
-    { id: 'gym_wide', name: 'Gym_Workout_Wide', type: 'video', duration: '00:12:01', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAqUmuUTjPu4whb7LtB63lXgMAhV5uj6JOkkluG0jt_zr0-FB9CuDEtpZQgZW2_w9N_bvxQlXwiMSUkCmFoVh1B3uB6Ua0Lv6WM8UF8mORQDRt-SNZF1HRRJq60hNiXVfZGiHm0bX9AfajNv-ELyaXRUgeBZPKiuSADarbaOnsDBMpHDF8cEVeY7VP3l5J4BRw_PfRN0fk3Oj7iQoovOIYHIWz09UQYY2cCIjbL98VXSfGr-5SD1f_Ry9aaznxre9TFvcdUKi_StLk', size: 0, created: Date.now(), status: 'ready' },
-    { id: 'shoe_macro', name: 'Shoe_Detail_Macro', type: 'video', duration: '00:00:30', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCWSK-k3L5C9e9SzUwVK7rgY_Jbuo9Jm3wDl00Z2D9KjG1Uc2Ar4ngCZ9yIYUPElGE4YZF48kKYdMezmX6T2Ed59WIzvNFxINj-WFSi2Hw0ykXP5tz-5ko7ZQGis6Y_k4Dn9AuD8bE8ZNV4MGFNH_14j2217tHKVEx2jXLrnHdVXNio16Hl8n_h19tMRhXEtzbxWGyxkGIcLi5rcHrFkE-LH5pme6oOcdBaJtJAOB2525hIQOKu8_TAbHkyyzLjfHdLWeCsSAESgW8', size: 0, created: Date.now(), status: 'ready' },
-    { id: 'urban_run', name: 'Urban_Running_Tracking', type: 'video', duration: '00:03:15', thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAE14UFQg0BB_D4XMRQvtCdsNShp6gkDlXhl6cr3IMUFU3qhZeeDfJA661CbObw74Asjmd7tEVPVqwK8tDyCRVeYLmdr-DPEDOjp6uQoTzcybEL-xiGUiq4_mxnsM6oYxMc43AQ6bvqmGiBKZa4usJB6rJckmZYAdsSciUS5Kt9raO47ULqs1lhfyHA-EFRJZyz0eJBe8gZZSuRWWlTUjy6xHf1Ij7xsiZm1KNsLQP4ofiumXjwiT0V32yx08aBSsXqLC1ifEWrlG4', size: 0, created: Date.now(), status: 'ready' },
-];
-
 const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect }) => {
     const [activeFilters, setActiveFilters] = useState<string[]>(['Vision_Pro_v4']);
     const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
@@ -27,11 +18,10 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
     const loadAssets = async () => {
         try {
             const dbAssets = await db.getAllAssets();
-            const merged = [...dbAssets.reverse(), ...MOCK_ASSETS];
-            setAssets(merged);
+            setAssets(dbAssets.reverse());
         } catch (e) {
             console.error("Failed to load assets", e);
-            setAssets(MOCK_ASSETS);
+            setAssets([]);
         }
     };
 

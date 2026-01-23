@@ -335,24 +335,24 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             </div>
 
             {/* Mobile Tab Navigation */}
-            <div className="lg:hidden h-14 bg-zinc-900 border-t border-white/10 flex items-center justify-around px-4 z-40">
+            <div className="lg:hidden h-14 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 flex items-center justify-around px-4 z-40">
                 <button
                     onClick={() => setActiveTab('instructions')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-primary' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">list</span>
                     <span className="text-[10px]">Stack</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('timeline')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'timeline' ? 'text-primary' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'timeline' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">movie</span>
                     <span className="text-[10px]">Timeline</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('copilot')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'copilot' ? 'text-primary' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'copilot' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">smart_toy</span>
                     <span className="text-[10px]">AI Co-pilot</span>
