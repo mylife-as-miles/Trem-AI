@@ -8,10 +8,26 @@ interface OrchestratorProps {
   onSelectRepo?: (repo: RepoData) => void;
 }
 
+const SUGGESTIONS = [
+  "Auto-edit the highlights from yesterday's raw footage and apply the 'Cinematic' LUT",
+  "Generate highlights from raw footage",
+  "Add subtitles to all clips",
+  "Apply color grading LUT",
+  "Detect and cut silence",
+  "Create social media cuts",
+  "Sync audio tracks"
+];
+
 const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo }) => {
   const [prompt, setPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Typewriter State
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Repo Selection State
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
@@ -32,6 +48,44 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
     };
     loadRepos();
   }, []);
+
+  // Typewriter Effect
+  useEffect(() => {
+    const currentText = SUGGESTIONS[suggestionIndex];
+    let timer: NodeJS.Timeout;
+
+    if (isPaused) {
+      timer = setTimeout(() => {
+        setIsPaused(false);
+        setIsDeleting(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+
+    if (isDeleting) {
+      if (charIndex > 0) {
+        timer = setTimeout(() => {
+          setCharIndex((prev) => prev - 1);
+        }, 30);
+      } else {
+        setIsDeleting(false);
+        setSuggestionIndex((prev) => (prev + 1) % SUGGESTIONS.length);
+      }
+    } else {
+      if (charIndex < currentText.length) {
+        timer = setTimeout(() => {
+          setCharIndex((prev) => prev + 1);
+        }, 50);
+      } else {
+        setIsPaused(true);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [charIndex, isDeleting, isPaused, suggestionIndex]);
+
+  const displayedPlaceholder = "Example: " + SUGGESTIONS[suggestionIndex].substring(0, charIndex);
+
 
   const handleSubmit = async () => {
     if (!prompt.trim()) return;
@@ -65,8 +119,8 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Page Title */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">Orchestrator</h1>
-            <p className="text-slate-500 dark:text-gray-400">Manage your asynchronous video agents via natural language.</p>
+            <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">Meet Trem Edit: your autonomous video editor</h1>
+            <p className="text-slate-500 dark:text-gray-400">Trem Edit works asynchronously, watches your footage, understands scenes, generates transcripts, timelines, and edits then assembles the final video for review. You focus on creative direction or grab a coffee while Trem Edit handles the execution</p>
           </div>
 
           {/* Command Input */}
@@ -77,7 +131,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
                 <span className="pt-2 text-primary font-mono text-lg select-none font-bold">&gt;</span>
                 <textarea
                   className="w-full bg-transparent border-none focus:ring-0 text-lg md:text-xl font-display text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-gray-600 resize-none h-24 p-1 leading-relaxed caret-primary font-medium outline-none"
-                  placeholder="Example: Auto-edit the highlights from yesterday's raw footage and apply the 'Cinematic' LUT..."
+                  placeholder={displayedPlaceholder}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -147,14 +201,7 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
               <span className="text-[10px] font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20">AI-POWERED</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {[
-                "Generate highlights from raw footage",
-                "Add subtitles to all clips",
-                "Apply color grading LUT",
-                "Detect and cut silence",
-                "Create social media cuts",
-                "Sync audio tracks"
-              ].map((suggestion, i) => (
+              {SUGGESTIONS.map((suggestion, i) => (
                 <button
                   key={i}
                   onClick={() => setPrompt(suggestion)}
