@@ -193,6 +193,12 @@ You must strictly adhere to these values for metadata fields to ensure downstrea
 You MUST output ONLY valid JSON matching this exact structure. No markdown, no commentary.
 
 {
+  "provenance": {
+    "model": "string (e.g. gemini-3-flash-preview)",
+    "timestamp": "string (ISO 8601)",
+    "input_hash": "string (sha256 of inputs)",
+    "agent_version": "string (e.g. trem-core-v1)"
+  },
   "confidence": 0.0,
   "detection_method": "string (vision+audio, vision-only, or audio-only)",
   "repo": {
@@ -215,7 +221,8 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
         "audio_cues": ["string (music, dialogue, ambient, silence)"],
         "characters": ["string (detected characters or subjects)"],
         "visual_notes": ["string (lighting, color grade, composition notes)"],
-        "confidence": "number (0.0 - 1.0 confidence in scene boundaries and content)"
+        "confidence": "number (0.0 - 1.0 confidence in scene boundaries and content)",
+        "agent_annotations": {}
       }
     ]
   },
