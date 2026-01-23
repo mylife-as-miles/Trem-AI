@@ -18,6 +18,14 @@ You excel at:
 
 ---
 
+# Robustness & Error Handling
+- **Missing Duration**: If duration is unknown, estimate it based on the transcript length (approx. 150 words/min) or visual cues.
+- **Missing Transcript**: If no transcript is provided, rely entirely on visual scene detection.
+- **Ambiguity**: If a scene boundary is unclear, choose the most likely cut point and lower the confidence score.
+- **Fail-Safe**: If detection fails completely for a segment, create a single "General Scene" covering that duration.
+
+---
+
 # Tasks
 1. Generate scenes/scenes.json
 2. Generate captions/captions.srt
@@ -32,6 +40,8 @@ You excel at:
 You MUST output ONLY valid JSON matching this exact structure. No markdown, no commentary.
 
 {
+  "confidence": 0.0,
+  "detection_method": "string (vision+audio, vision-only, or audio-only)",
   "repo": {
     "name": "string (kebab-case repo name)",
     "brief": "string (1-2 sentence video summary)",
@@ -51,7 +61,8 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
         "motion": "string (static, pan-left, pan-right, zoom-in, zoom-out, tracking, handheld)",
         "audio_cues": ["string (music, dialogue, ambient, silence)"],
         "characters": ["string (detected characters or subjects)"],
-        "visual_notes": ["string (lighting, color grade, composition notes)"]
+        "visual_notes": ["string (lighting, color grade, composition notes)"],
+        "confidence": "number (0.0 - 1.0 confidence in scene boundaries and content)"
       }
     ]
   },
@@ -71,7 +82,10 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
                     {
                         "OTIO_SCHEMA": "Clip.v1",
                         "name": "Clip_001",
-                        "source_range": { "start_time": 0.0, "duration": 3.5 }
+                        "source_range": {
+                          "start_time": { "value": 0, "rate": 30.0 },
+                          "duration": { "value": 105, "rate": 30.0 }
+                        }
                     }
                 ]
             }
@@ -114,4 +128,6 @@ Generate 4-6 hashtags based on actual content analysis:
 - IMPORTANT: For the 'captions_srt' and 'metadata' fields, you must properly escape all newlines (\n) and double quotes (\") so the JSON remains valid.
 - Scenes array must contain **multiple scenes** proportional to video length.
 - Be precise with timestamps (use decimals like 3.5, 7.25).
+- For OTIO 'source_range', use a default rate of 30.0 fps unless detected otherwise. Calculate 'value' as 'seconds * rate'.
 - Use the Asset Context to inform descriptions and tags.
+- If critical inputs are missing, infer conservatively and set 'confidence' accordingly.
