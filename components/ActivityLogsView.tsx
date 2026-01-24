@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTremStore } from '../store/useTremStore';
 
 interface ActivityLogsViewProps {
-    repoData: any;
+    repoData?: any;
     onNavigate?: (view: string) => void;
     onSelectCommit?: (commit: any) => void;
 }
@@ -17,10 +18,23 @@ interface CommitEntry {
     artifacts?: Record<string, any>;
 }
 
-const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigate, onSelectCommit }) => {
+const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
+    // Access global store
+    const { repoData: storeRepoData, setCurrentView } = useTremStore();
+
+    // Use props if provided (legacy/wrapper), otherwise fallback to store
+    const repoData = props.repoData || storeRepoData;
+
+    // Internal state
     const [commits, setCommits] = useState<CommitEntry[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedAuthor, setSelectedAuthor] = useState<string>('all');
+
+    // Handle Back Navigation
+    const handleBack = () => {
+        // "Back" should return to the Repo Overview
+        setCurrentView('repo');
+    };
 
     // Compute derived state
     const { filteredCommits, stats, groupedCommits, authors } = useMemo(() => {
@@ -47,8 +61,14 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
         // Grouping
         const groups: Record<string, CommitEntry[]> = {};
         filtered.forEach(commit => {
-            const date = new Date(commit.timestamp);
-            const key = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            // Safe timestamp handling
+            const ts = commit.timestamp || Date.now();
+            const date = new Date(ts);
+
+            // Validate date
+            const validDate = isNaN(date.getTime()) ? new Date() : date;
+
+            const key = validDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             if (!groups[key]) groups[key] = [];
             groups[key].push(commit);
         });
@@ -74,15 +94,27 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
                         return null;
                     })
                     .filter((c: any) => c !== null)
-                    .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+                    .sort((a: any, b: any) => {
+                        const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+                        const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+                        return timeB - timeA;
+                    });
                 setCommits(extracted);
             }
         }
     }, [repoData]);
 
     const formatTime = (ts: string | number) => {
-        return new Date(ts).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        if (!ts) return "Just now";
+        const date = new Date(ts);
+        return isNaN(date.getTime())
+            ? "Just now"
+            : date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     };
+
+    if (!repoData) {
+        return <div className="p-8 text-center text-slate-500">Repository data not found.</div>;
+    }
 
     return (
         <div className="h-full flex flex-col bg-slate-50 dark:bg-black p-6 lg:p-10 overflow-hidden">
@@ -92,7 +124,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <button
-                            onClick={() => onNavigate?.(`repo/${repoData?.id}`)}
+                            onClick={handleBack}
                             className="p-1.5 -ml-2 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 transition-colors"
                         >
                             <span className="material-icons-outlined">arrow_back</span>
@@ -172,7 +204,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
                                     return (
                                         <div
                                             key={commit.id}
-                                            onClick={() => onSelectCommit?.(commit)}
+                                            onClick={() => props.onSelectCommit?.(commit)}
                                             className="group relative flex items-start gap-6 cursor-pointer"
                                         >
                                             {/* Timeline Node */}

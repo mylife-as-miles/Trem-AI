@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Orchestrator from './components/Orchestrator';
 import TimelineEditor from './components/TimelineEditor';
@@ -10,12 +10,18 @@ import RepoFilesView from './components/RepoFilesView';
 import ActivityLogsView from './components/ActivityLogsView';
 
 import { db, RepoData } from './utils/db';
+import { useTremStore, ViewType } from './store/useTremStore';
 
 const App: React.FC = () => {
-    type ViewType = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files' | 'repo-logs';
-    const [currentView, setCurrentView] = useState<ViewType>('dashboard');
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [repoData, setRepoData] = useState<RepoData | null>(null);
+    // Global State
+    const {
+        currentView,
+        repoData,
+        isSidebarOpen,
+        setCurrentView,
+        setRepoData,
+        setIsSidebarOpen
+    } = useTremStore();
 
     // Initial Route Handling & PopState Listener
     useEffect(() => {
@@ -26,7 +32,7 @@ const App: React.FC = () => {
             else if (path === '/diff') setCurrentView('diff');
             else if (path === '/assets') setCurrentView('assets');
             else if (path === '/create-repo') setCurrentView('create-repo');
-            else if (path === '/repo-files' && repoData) setCurrentView('repo-files'); // Fallback if data exists
+            else if (path === '/repo-files' && repoData) setCurrentView('repo-files');
             else if (path.startsWith('/repo/')) {
                 const parts = path.split('/');
                 const id = parts[2] ? parseInt(parts[2]) : null;
@@ -138,10 +144,7 @@ const App: React.FC = () => {
             case 'repo-files':
                 return <RepoFilesView onNavigate={handleNavigate} repoData={repoData} />;
             case 'repo-logs':
-                return <ActivityLogsView repoData={repoData} onNavigate={handleNavigate} onSelectCommit={(commit) => {
-                    // Open commit details modal - for now just console log
-                    console.log('Commit selected:', commit);
-                }} />;
+                return <ActivityLogsView />; // No props needed, uses store
             default:
                 return <Orchestrator onNavigate={handleNavigate} />;
         }
