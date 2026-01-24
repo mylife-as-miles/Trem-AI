@@ -39,6 +39,7 @@ export interface RepoGenerationInputs {
   sceneBoundaries?: string;
   assetContext?: string;
   images?: string[]; // Array of base64 strings (keyframes)
+  previousState?: string; // Optional JSON string of the previous commit state
 }
 
 export interface AnalyzedAsset {
@@ -155,6 +156,7 @@ You excel at:
 - **Scene Boundaries**: ${inputs.sceneBoundaries !== 'auto-detected' ? inputs.sceneBoundaries : 'AUTO-DETECT (Analyze visual cues to find cuts)'}
 - **Asset Context**: ${inputs.assetContext || 'None provided'}
 - **Visual Context**: I have attached ${inputs.images?.length || 0} keyframes from the video. Correlate these visual frames with the timestamps in the transcript to determine scene changes.
+- **Previous State**: ${inputs.previousState ? 'Provided (see context)' : 'None (Initial Commit)'}
 
 ---
 
@@ -201,6 +203,13 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
   },
   "confidence": 0.0,
   "detection_method": "string (vision+audio, vision-only, or audio-only)",
+  "captions": [
+    {
+      "start": 0.0,
+      "end": 2.5,
+      "text": "string (caption text)"
+    }
+  ],
   "repo": {
     "name": "string (kebab-case repo name)",
     "brief": "string (1-2 sentence video summary)",
@@ -226,7 +235,6 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
       }
     ]
   },
-  "captions_srt": "string (valid SRT format)",
   "metadata": {
     "video_md": "string (Markdown video overview)",
     "scenes_md": "string (Markdown scene-by-scene breakdown)"
@@ -261,7 +269,7 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
     "state": {
       "timeline": "timeline/base.otio.json",
       "scenes": "scenes/scenes.json",
-      "captions": "captions/captions.srt",
+      "captions": "captions/captions.json",
       "metadata": [
         "metadata/video.md",
         "metadata/scenes.md"
@@ -285,10 +293,10 @@ Generate 4-6 hashtags based on actual content analysis:
 
 # Final Reminders
 - Output ONLY the JSON object. No explanation, no markdown fences.
-- IMPORTANT: For the 'captions_srt' and 'metadata' fields, you must properly escape all newlines (\n) and double quotes (\") so the JSON remains valid.
+- IMPORTANT: For 'metadata' fields (Markdown), you must properly escape all newlines (\n) and double quotes (\") so the JSON remains valid.
 - Scenes array must contain **multiple scenes** proportional to video length.
 - Be precise with timestamps (use decimals like 3.5, 7.25).
-- For OTIO 'source_range', use a default rate of 30.0 fps unless detected otherwise. Calculate 'value' as 'seconds * rate'.
+- For OTIO 'source_range', use a default rate of 30.0 fps unless detected otherwise. Calculate 'value' as 'seconds * rate' and ROUND TO THE NEAREST INTEGER.
 - Use the Asset Context to inform descriptions and tags.
 - If critical inputs are missing, infer conservatively and set 'confidence' accordingly.
 `;
