@@ -333,7 +333,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // otio/
             {
                 id: 'otio', name: 'otio', type: 'folder', children: [
-                    { id: 'otio_main', name: 'main.otio.json', type: 'file', icon: 'tune', iconColor: 'text-purple-400', content: JSON.stringify(generatedRepoData.otio || {}, null, 2) }
+                    { id: 'otio_main', name: 'main.otio.json', type: 'file', icon: 'tune', iconColor: 'text-purple-400', content: JSON.stringify(generatedRepoData.timeline || {}, null, 2) }
                 ]
             },
 
@@ -360,7 +360,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         type: 'file',
                         icon: 'subtitles',
                         iconColor: 'text-slate-200',
-                        content: selectedAssets.map(a => a.srt).join('\n\n') || generatedRepoData.captions_srt || generatedRepoData.subtitles_srt || ''
+                        content: selectedAssets.map(a => a.srt).join('\n\n') || generatedRepoData.captions_srt || ''
                     },
                     ...selectedAssets.map((asset, idx) => ({
                         id: `sub_asset_${idx}`,
@@ -376,8 +376,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // descriptions/
             {
                 id: 'descriptions', name: 'descriptions', type: 'folder', children: [
-                    { id: 'desc_video', name: 'video.md', type: 'file', icon: 'description', iconColor: 'text-blue-300', content: generatedRepoData.descriptions?.video_md || '' },
-                    { id: 'desc_scenes', name: 'scenes.md', type: 'file', icon: 'description', iconColor: 'text-blue-200', content: generatedRepoData.descriptions?.scenes_md || '' }
+                    { id: 'desc_video', name: 'video.md', type: 'file', icon: 'description', iconColor: 'text-blue-300', content: generatedRepoData.metadata?.video_md || '' },
+                    { id: 'desc_scenes', name: 'scenes.md', type: 'file', icon: 'description', iconColor: 'text-blue-200', content: generatedRepoData.metadata?.scenes_md || '' }
                 ]
             },
 
@@ -435,10 +435,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         if (!generatedRepoData) return { scenes: 0, lines: 0, duration: "00:00" };
 
         // Scenes
-        const scenes = generatedRepoData.scenes?.length || 0;
+        const scenes = generatedRepoData.scenes?.scenes?.length || 0;
 
         // Lines (approx)
-        const lines = generatedRepoData.subtitles_srt ? generatedRepoData.subtitles_srt.split('\n\n').length : 0;
+        const lines = generatedRepoData.captions_srt ? generatedRepoData.captions_srt.split('\n\n').length : 0;
 
         // Duration - summing assets or using generated duration
         let totalSeconds = 0;
