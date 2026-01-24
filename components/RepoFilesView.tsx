@@ -216,6 +216,40 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
 
     // ... (rest of logic)
 
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    // Handle Media Previews (Blob URL generation)
+    useEffect(() => {
+        if (!selectedFile) {
+            setPreviewUrl(null);
+            return;
+        }
+
+        let url: string | null = null;
+        let isBlob = false;
+
+        // Check if file is linked to an asset
+        // We match by ID. CreateRepoView sets file ID = asset ID for media files.
+        const asset = repoData?.assets?.find((a: any) => a.id === selectedFile.id);
+
+        if (asset) {
+            if (asset.blob) {
+                url = URL.createObjectURL(asset.blob);
+                isBlob = true;
+            } else if (asset.url) {
+                url = asset.url;
+            }
+        }
+
+        setPreviewUrl(url);
+
+        return () => {
+            if (url && isBlob) {
+                URL.revokeObjectURL(url);
+            }
+        };
+    }, [selectedFile, repoData]); // Re-run if selection or data changes
+
     return (
         <div className="flex flex-col h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-white font-sans transition-colors duration-300">
             <TopNavigation onNavigate={onNavigate} />
@@ -285,30 +319,63 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                             </div>
 
                             {/* Content Renderer */}
-                            <div className="flex-1 overflow-hidden relative">
+                            <div className="flex-1 overflow-hidden relative flex flex-col">
                                 {['mp4', 'mov', 'webm'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
                                     <div className="w-full h-full flex items-center justify-center bg-black">
-                                        {/* In a real app, src would be a blob URL or server path. For mock, we show a placeholder player */}
-                                        <div className="text-center text-white/50">
-                                            <span className="material-icons-outlined text-6xl">play_circle_outline</span>
-                                            <p className="mt-4 font-mono text-sm">Preview: {selectedFile.name}</p>
-                                            <p className="text-xs opacity-50">(Media playback simulation)</p>
-                                        </div>
+                                        {previewUrl ? (
+                                            <video
+                                                src={previewUrl}
+                                                controls
+                                                className="max-w-full max-h-full outline-none"
+                                                autoPlay={false}
+                                            />
+                                        ) : (
+                                            <div className="text-center text-white/50">
+                                                <span className="material-icons-outlined text-6xl">play_circle_outline</span>
+                                                <p className="mt-4 font-mono text-sm">Preview: {selectedFile.name}</p>
+                                                <p className="text-xs opacity-50">(Media source not found)</p>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
                                     <div className="w-full h-full flex items-center justify-center bg-black/90 p-8">
-                                        <div className="text-center text-white/50">
-                                            <span className="material-icons-outlined text-6xl">image</span>
-                                            <p className="mt-4 font-mono text-sm">Image Preview: {selectedFile.name}</p>
-                                        </div>
+                                        {previewUrl ? (
+                                            <img
+                                                src={previewUrl}
+                                                alt={selectedFile.name}
+                                                className="max-w-full max-h-full object-contain"
+                                            />
+                                        ) : (
+                                            <div className="text-center text-white/50">
+                                                <span className="material-icons-outlined text-6xl">image</span>
+                                                <p className="mt-4 font-mono text-sm">Image Preview: {selectedFile.name}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : ['mp3', 'wav', 'aac'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
                                     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white">
-                                        <span className="material-icons-outlined text-6xl mb-4 text-primary animate-pulse">graphic_eq</span>
-                                        <p className="font-mono">{selectedFile.name}</p>
-                                        <div className="w-64 h-1 bg-slate-700 mt-6 rounded-full overflow-hidden">
-                                            <div className="h-full bg-primary w-1/3"></div>
-                                        </div>
+                                        {previewUrl ? (
+                                            <div className="w-full max-w-md p-8 bg-slate-800 rounded-xl">
+                                                <div className="flex items-center gap-4 mb-6">
+                                                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                                                        <span className="material-icons-outlined text-primary">music_note</span>
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-medium truncate">{selectedFile.name}</h3>
+                                                        <p className="text-xs text-slate-400">Audio Clip</p>
+                                                    </div>
+                                                </div>
+                                                <audio src={previewUrl} controls className="w-full" />
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span className="material-icons-outlined text-6xl mb-4 text-primary animate-pulse">graphic_eq</span>
+                                                <p className="font-mono">{selectedFile.name}</p>
+                                                <div className="w-64 h-1 bg-slate-700 mt-6 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-primary w-1/3"></div>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 ) : (
                                     <textarea
