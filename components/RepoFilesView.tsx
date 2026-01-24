@@ -78,22 +78,6 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
 
     // --- CRUD Operations ---
 
-    const handleSave = () => {
-        if (selectedFile) {
-            setFiles(files.map(n => n.id === selectedFile.id ? { ...n, content: editorContent } : n)); // Simplified Update
-            // In real recursio, use updateFileContent helper
-            setIsDirty(false);
-            // Ideally also commit this change? 
-            createCommit(`feat: updated ${selectedFile.name}`, files);
-        }
-    };
-
-    const handleDeleteClick = () => {
-        if (selectedFile) {
-            setDeleteDialogOpen(true);
-        }
-    };
-
     // Auto-Commit System
     const createCommit = async (message: string, updatedFS: FileNode[]) => {
         if (!repoData?.id) return;
@@ -189,6 +173,20 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
 
         await createCommit(`chore: deleted ${selectedFile.name}`, newFS);
         setIsProcessing(false);
+    };
+
+    const handleSave = () => {
+        if (selectedFile) {
+            setFiles(files.map(n => n.id === selectedFile.id ? { ...n, content: editorContent } : n));
+            setIsDirty(false);
+            createCommit(`feat: updated ${selectedFile.name}`, files);
+        }
+    };
+
+    const handleDeleteClick = () => {
+        if (selectedFile) {
+            setDeleteDialogOpen(true);
+        }
     };
 
     const handleCreateItem = async (type: 'folder' | 'file') => {
@@ -333,26 +331,63 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
             addLog(`Analysis Complete: ${analysisResult?.tags?.join(', ')}`);
 
             // 5. Create Metadata File
+            const metaNodeName = `${assetId}.json`;
             const metaNode: FileNode = {
                 id: `meta_${assetId}`,
-                name: `${assetId}.json`,
+                name: metaNodeName,
                 type: 'file',
                 content: JSON.stringify({
                     asset_id: assetId,
                     original_name: file.name,
                     analysis: analysisResult,
                     transcript: transcriptText,
-                    processed_at: Date.now()
+                    processed_at: Date.now(),
+                    history: [{ timestamp: Date.now(), action: 'ingested' }]
                 }, null, 2)
             };
 
-            // Add meta to 'meta' folder or root
+            // Add meta to 'meta' folder
             const metaFolder = findNode('meta', currentFS);
             if (metaFolder) {
                 currentFS = addToFolder(currentFS, metaFolder.id, metaNode);
             }
 
-            // 6. Commit
+            // 6. AGGREGATE UPDATE: scenes.json
+            // We want to ADD this asset's analysis to the global scenes.json
+            const scenesNode = findNode('scenes_json', currentFS) || findNode('scenes.json', currentFS);
+
+            if (scenesNode && scenesNode.content) {
+                try {
+                    const scenesData = JSON.parse(scenesNode.content);
+                    // Check if 'assets' array exists, if not create
+                    if (!scenesData.assets) scenesData.assets = [];
+
+                    // Add new asset data
+                    scenesData.assets.push({
+                        id: assetId,
+                        name: file.name,
+                        description: analysisResult?.description || "Inferred context",
+                        tags: analysisResult?.tags || []
+                    });
+
+                    // Update the node content in FS
+                    // Helper to update specific node content
+                    const updateNodeContent = (nodes: FileNode[], id: string, content: string): FileNode[] => {
+                        return nodes.map(n => {
+                            if (n.id === id) return { ...n, content };
+                            if (n.children) return { ...n, children: updateNodeContent(n.children, id, content) };
+                            return n;
+                        });
+                    };
+                    currentFS = updateNodeContent(currentFS, scenesNode.id, JSON.stringify(scenesData, null, 2));
+                    addLog("Updated Global Context (scenes.json)");
+
+                } catch (e) {
+                    console.warn("Failed to update scenes.json", e);
+                }
+            }
+
+            // 7. Commit
             await createCommit(`feat: ingested ${file.name} (AI Index v2)`, currentFS);
         }
 
