@@ -435,29 +435,29 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
     const renderTree = (nodes: FileNode[], depth = 0) => {
         return nodes.map(node => {
             let iconName = 'description';
-            let iconColorClass = 'text-slate-400';
+            let iconColorClass = 'text-zinc-500';
 
             if (node.type === 'folder') {
                 iconName = node.isOpen ? 'folder_open' : 'folder';
-                iconColorClass = 'text-amber-400';
+                iconColorClass = 'text-amber-500/80';
             } else if (node.icon) {
                 iconName = node.icon;
-                iconColorClass = node.iconColor || 'text-slate-400';
+                iconColorClass = node.iconColor || 'text-zinc-500';
             }
+
+            const isSelected = selectedFile?.id === node.id;
 
             return (
                 <div key={node.id}>
                     <div
-                        className={`flex items-center gap-2 py-1 px-2 cursor-pointer text-sm font-mono border-l-2 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors ${selectedFile?.id === node.id ? 'bg-primary/10 border-primary text-slate-900 dark:text-white font-bold' : 'border-transparent text-slate-600 dark:text-slate-400'} ${node.locked ? 'opacity-60' : ''}`}
-                        style={{ paddingLeft: `${depth * 12 + 8}px` }}
+                        className={`flex items-center gap-2.5 py-1.5 px-3 cursor-pointer text-sm font-sans tracking-tight transition-all relative group
+                            ${isSelected ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'}
+                            ${node.locked ? 'opacity-50' : ''}
+                        `}
+                        style={{ paddingLeft: `${depth * 12 + 12}px` }}
                         onClick={() => {
                             if (node.type === 'folder') {
-                                // Simple toggle logic needs access to modifying 'files' state deeply
-                                // For this Refactor, to keep it clean, we should assume 'files' is the source of truth
-                                // Immutability is hard with deepest recursion without a helper. 
-                                // Let's simplify: We won't toggle open/close in this MVP, just assume open or use a local 'UI State' map for Folder Openness separate from Data
-                                // Actually, let's just toggle the 'isOpen' prop in local state copy
-                                const newFiles = JSON.parse(JSON.stringify(files)); // deep clone
+                                const newFiles = JSON.parse(JSON.stringify(files));
                                 const target = findNode(node.id, newFiles);
                                 if (target) target.isOpen = !target.isOpen;
                                 setFiles(newFiles);
@@ -469,14 +469,16 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                             }
                         }}
                     >
-                        <span className={`material-icons-outlined text-base ${iconColorClass}`}>
+                        {/* Interactive Background */}
+                        <div className={`absolute inset-0 mx-2 rounded-md -z-10 transition-colors ${isSelected ? 'bg-white/10' : 'group-hover:bg-white/5'}`}></div>
+
+                        <span className={`material-icons-outlined text-[18px] transition-colors ${isSelected ? 'text-primary' : iconColorClass}`}>
                             {iconName}
                         </span>
-                        <span className="truncate">{node.name}</span>
-                        {node.locked && <span className="material-icons-outlined text-xs text-slate-400 ml-auto">lock</span>}
+                        <span className={`truncate ${isSelected ? 'font-medium' : 'font-normal'}`}>{node.name}</span>
+                        {node.locked && <span className="material-icons-outlined text-[10px] text-zinc-600 ml-auto">lock</span>}
                     </div>
                     {node.type === 'folder' && (node.isOpen !== false) && node.children && (
-                        // Default open if undefined
                         <div>{renderTree(node.children, depth + 1)}</div>
                     )}
                 </div>
@@ -485,123 +487,143 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-white font-sans transition-colors duration-300">
+        <div className="flex flex-col h-full bg-black text-white font-sans selection:bg-primary/30">
             <TopNavigation onNavigate={onNavigate} />
 
             {/* Hidden Inputs */}
             <input type="file" ref={fileInputRef} hidden multiple onChange={handleFileUpload} accept="video/*,audio/*,image/*" />
 
             {/* Toolbar */}
-            <div className="px-4 md:px-6 py-3 border-b border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center justify-between bg-white dark:bg-black/40 gap-3 md:gap-0">
+            <div className="h-14 px-4 flex items-center justify-between bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-30">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => onNavigate('repo')} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
-                        <span className="material-icons-outlined">arrow_back</span>
-                        <span className="text-sm font-mono uppercase tracking-wider hidden sm:inline">Back</span>
+                    <button onClick={() => onNavigate('repo')} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group">
+                        <span className="material-icons-outlined group-hover:-translate-x-0.5 transition-transform text-lg">arrow_back</span>
+                        <span className="text-xs font-mono font-medium tracking-wider uppercase">Back</span>
                     </button>
-                    <h2 className="text-lg font-display font-bold truncate">File Manager <span className="text-xs font-normal text-primary border border-primary/30 px-2 py-0.5 rounded-full ml-2">PRO</span></h2>
+                    <div className="h-4 w-px bg-white/10 mx-2"></div>
+                    <h2 className="text-sm font-medium text-white tracking-tight flex items-center gap-2">
+                        <span className="material-icons-outlined text-base text-primary">folder_open</span>
+                        File Manager
+                    </h2>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    {/* New Actions */}
-                    <div className="flex items-center bg-slate-100 dark:bg-white/5 rounded-lg p-1 mr-2">
-                        <button onClick={() => fileInputRef.current?.click()} className="p-1.5 hover:bg-white dark:hover:bg-white/10 rounded-md transition-colors text-slate-500 dark:text-slate-300" title="Upload Media">
-                            <span className="material-icons-outlined">cloud_upload</span>
+                <div className="flex items-center gap-3">
+                    {/* New Actions Group */}
+                    <div className="flex items-center bg-white/5 rounded-lg p-0.5 border border-white/5">
+                        <button onClick={() => fileInputRef.current?.click()} className="p-1.5 hover:bg-white/10 rounded-md transition-all text-zinc-400 hover:text-white relative group" title="Upload Media">
+                            <span className="material-icons-outlined text-lg">cloud_upload</span>
                         </button>
-                        <button onClick={() => setNewFolderDialogOpen(true)} className="p-1.5 hover:bg-white dark:hover:bg-white/10 rounded-md transition-colors text-slate-500 dark:text-slate-300" title="New Folder">
-                            <span className="material-icons-outlined">create_new_folder</span>
+                        <div className="w-px h-4 bg-white/10 mx-1"></div>
+                        <button onClick={() => setNewFolderDialogOpen(true)} className="p-1.5 hover:bg-white/10 rounded-md transition-all text-zinc-400 hover:text-white" title="New Folder">
+                            <span className="material-icons-outlined text-lg">create_new_folder</span>
                         </button>
-                        <button onClick={() => { setNewFileDialogOpen(true); }} className="p-1.5 hover:bg-white dark:hover:bg-white/10 rounded-md transition-colors text-slate-500 dark:text-slate-300" title="New File">
-                            <span className="material-icons-outlined">note_add</span>
+                        <button onClick={() => { setNewFileDialogOpen(true); }} className="p-1.5 hover:bg-white/10 rounded-md transition-all text-zinc-400 hover:text-white" title="New File">
+                            <span className="material-icons-outlined text-lg">note_add</span>
                         </button>
                     </div>
+
+                    <div className="h-4 w-px bg-white/10"></div>
 
                     <button
                         onClick={handleDeleteClick}
                         disabled={!selectedFile}
-                        className="px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors text-sm flex items-center gap-2"
+                        className="px-3 py-1.5 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40 disabled:opacity-30 disabled:hover:bg-transparent transition-all text-xs font-medium flex items-center gap-2"
                     >
                         <span className="material-icons-outlined text-sm">delete</span>
                         <span className="hidden sm:inline">Delete</span>
                     </button>
                     <button
-                        onClick={handleSave} // Only saves content edits, distinct from auto-commits
+                        onClick={handleSave}
                         disabled={!isDirty}
-                        className="px-3 py-1.5 rounded-md bg-primary hover:bg-primary_hover text-white disabled:opacity-50 transition-colors text-sm font-medium flex items-center gap-2 shadow-sm"
+                        className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary_hover text-white disabled:opacity-50 disabled:grayscale transition-all text-xs font-bold tracking-wide flex items-center gap-2 shadow-lg shadow-primary/20"
                     >
                         <span className="material-icons-outlined text-sm">save</span>
-                        <span className="hidden sm:inline">Save</span>
+                        <span className="hidden sm:inline">Save Changes</span>
                     </button>
                 </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden relative">
+            <div className="flex-1 flex overflow-hidden relative bg-black">
                 {/* Sidebar Tree */}
-                <div className={`w-72 border-r border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 overflow-y-auto p-2 flex-shrink-0 relative`}>
+                <div className={`w-80 border-r border-white/5 bg-[#0A0A0A] overflow-y-auto p-3 flex-shrink-0 flex flex-col gap-4`}>
 
-                    <div className="mb-2 px-2 text-xs font-mono font-bold text-slate-400 uppercase tracking-wider flex justify-between items-center">
+                    <div className="px-2 pb-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex justify-between items-center border-b border-white/5">
                         <span>Explorer</span>
-                        <button onClick={() => setFiles(files)} className="hover:text-primary"><span className="material-icons-outlined text-xs">refresh</span></button>
+                        <button onClick={() => setFiles(files)} className="hover:text-white transition-colors"><span className="material-icons-outlined text-sm">refresh</span></button>
                     </div>
 
-                    {renderTree(files)}
+                    <div className="flex-1 -mx-2">
+                        {renderTree(files)}
+                    </div>
                 </div>
 
                 {/* Editor / Preview Area */}
-                <div className="flex-1 flex flex-col bg-white dark:bg-[#1e1e1e] min-w-0 relative">
+                <div className="flex-1 flex flex-col bg-[#09090b] min-w-0 relative">
                     {selectedFile ? (
                         <>
-                            <div className="px-4 py-2 bg-slate-100 dark:bg-[#252526] border-b border-slate-200 dark:border-white/5 text-xs font-mono text-slate-500 dark:text-slate-400 flex justify-between items-center">
-                                <span className="flex items-center gap-2">
-                                    <span className="material-icons-outlined text-sm">description</span>
+                            <div className="h-10 px-4 flex items-center justify-between bg-[#0A0A0A] border-b border-white/5">
+                                <span className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+                                    <span className="material-icons-outlined text-sm text-zinc-500">description</span>
                                     {selectedFile.name}
                                 </span>
-                                <span className="opacity-50">{selectedFile.id}</span>
+                                <span className="text-[10px] uppercase font-mono text-zinc-600">{selectedFile.id}</span>
                             </div>
 
-                            <div className="flex-1 overflow-hidden relative flex flex-col">
+                            <div className="flex-1 overflow-hidden relative flex flex-col bg-[#050505]">
                                 {/* Media Rendering Logic */}
                                 {['mp4', 'mov', 'webm'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
-                                    <div className="w-full h-full flex items-center justify-center bg-black">
+                                    <div className="w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-sm">
                                         {previewUrl ? (
-                                            <video src={previewUrl} controls className="max-w-full max-h-full outline-none" />
+                                            <video src={previewUrl} controls className="max-w-full max-h-full rounded-lg shadow-2xl" />
                                         ) : (
-                                            <div className="text-center text-white/50"><span className="material-icons-outlined text-4xl animate-spin">sync</span></div>
+                                            <div className="text-center text-zinc-600"><span className="material-icons-outlined text-4xl animate-spin">sync</span></div>
                                         )}
                                     </div>
                                 ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
-                                    <div className="w-full h-full flex items-center justify-center bg-black/90 p-8">
-                                        {previewUrl && <img src={previewUrl} className="max-w-full max-h-full object-contain" />}
+                                    <div className="w-full h-full flex items-center justify-center p-8 bg-[url('https://transparenttextures.com/patterns/dark-matter.png')]">
+                                        {previewUrl && <img src={previewUrl} className="max-w-full max-h-full object-contain rounded-md shadow-2xl border border-white/10" />}
                                     </div>
                                 ) : (
                                     <textarea
                                         value={editorContent}
                                         onChange={(e) => { setEditorContent(e.target.value); setIsDirty(true); }}
-                                        className="w-full h-full p-4 bg-transparent outline-none font-mono text-sm resize-none text-slate-800 dark:text-[#d4d4d4] leading-relaxed"
+                                        className="w-full h-full p-6 bg-transparent outline-none font-mono text-sm resize-none text-zinc-300 leading-relaxed custom-scrollbar"
                                         spellCheck={false}
                                     />
                                 )}
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-slate-300 dark:text-slate-600">
-                            <span className="material-icons-outlined text-6xl mb-4 text-slate-200 dark:text-slate-800">code_off</span>
-                            <p>Select a file to manage</p>
+                        <div className="flex-1 flex flex-col items-center justify-center text-zinc-700 select-none">
+                            <div className="w-24 h-24 rounded-3xl bg-white/5 flex items-center justify-center mb-6 ring-1 ring-white/5">
+                                <span className="material-icons-outlined text-6xl text-zinc-800">grid_view</span>
+                            </div>
+                            <p className="text-zinc-500 font-medium tracking-tight">Select a file to view content</p>
+                            <p className="text-zinc-700 text-sm mt-2">or press <span className="bg-white/10 px-1.5 py-0.5 rounded text-zinc-500 font-mono text-xs">Cmd+P</span> to search</p>
                         </div>
                     )}
 
                     {/* Terminal Panel */}
                     {(showTerminal || isProcessing) && (
-                        <div className="h-64 border-t border-slate-200 dark:border-white/10 bg-slate-900 text-slate-300 font-mono text-xs flex flex-col transition-all duration-300">
-                            <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-black/20">
-                                <span className="font-bold flex items-center gap-2">
-                                    <span className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-amber-400 animate-pulse' : 'bg-green-400'}`}></span>
-                                    Trem-AI Terminal
+                        <div className="h-64 border-t border-white/10 bg-[#0c0c0c] text-zinc-300 font-mono text-xs flex flex-col absolute bottom-0 left-0 right-0 z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                            <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between bg-white/5">
+                                <span className="font-bold flex items-center gap-2 text-zinc-100">
+                                    <span className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-emerald-500'}`}></span>
+                                    TERMINAL
                                 </span>
-                                <button onClick={() => setShowTerminal(false)} className="hover:text-white"><span className="material-icons-outlined text-sm">close</span></button>
+                                <div className="flex gap-2">
+                                    <button className="hover:text-white text-zinc-500 transition-colors"><span className="material-icons-outlined text-sm">remove</span></button>
+                                    <button onClick={() => setShowTerminal(false)} className="hover:text-white text-zinc-500 transition-colors"><span className="material-icons-outlined text-sm">close</span></button>
+                                </div>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-4 space-y-1 custom-scrollbar">
-                                {terminalLogs.map((log, i) => <div key={i}>{log}</div>)}
-                                {isProcessing && <div className="animate-pulse text-amber-500">_ Processing...</div>}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar font-medium bg-[#0A0A0A]">
+                                {terminalLogs.map((log, i) => (
+                                    <div key={i} className="flex gap-2">
+                                        <span className="text-zinc-600 select-none">$</span>
+                                        <span className={log.includes('Msg:') ? 'text-blue-400' : log.includes('Error') ? 'text-red-400' : 'text-zinc-300'}>{log.replace('> ', '')}</span>
+                                    </div>
+                                ))}
+                                {isProcessing && <div className="animate-pulse text-amber-500 flex gap-2"><span className="text-zinc-600">$</span> <span>Processing...</span></div>}
                             </div>
                         </div>
                     )}
@@ -611,36 +633,37 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
             {/* Dialogs */}
             <AlertDialog
                 isOpen={deleteDialogOpen}
-                title="Confirm Selection Deletion"
-                description={<span>Deleting <strong className="text-white">{selectedFile?.name}</strong> will create a new commit.</span>}
-                confirmText="Delete & Commit"
+                title="Delete File"
+                description={<span>Are you sure you want to delete <strong className="text-white">{selectedFile?.name}</strong>? This will create a snapshot in git history.</span>}
+                confirmText="Delete"
                 cancelText="Cancel"
                 type="danger"
                 onConfirm={handleDelete}
                 onCancel={() => setDeleteDialogOpen(false)}
             />
 
-            {/* Simple New Folder/File Prompts (Reuse AlertDialog or simplified inline? Using prompt for speed now, ideally proper modal) */}
             {newFolderDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="bg-slate-900 border border-white/10 p-6 rounded-xl w-96 shadow-2xl">
-                        <h3 className="text-lg font-bold text-white mb-4">New Folder</h3>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-black/50 border border-white/20 rounded p-2 text-white mb-4" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-[#111] border border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-white/5">
+                        <h3 className="text-lg font-bold text-white mb-1">New Folder</h3>
+                        <p className="text-sm text-zinc-500 mb-6">Create a new directory in the root.</p>
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-black/50 border border-white/10 focus:border-primary/50 rounded-lg p-3 text-white mb-6 outline-none transition-all placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setNewFolderDialogOpen(false)} className="px-3 py-1 text-slate-400">Cancel</button>
-                            <button onClick={() => handleCreateItem('folder')} className="px-3 py-1 bg-primary text-white rounded">Create</button>
+                            <button onClick={() => setNewFolderDialogOpen(false)} className="px-4 py-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium">Cancel</button>
+                            <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-primary/20 transition-all">Create Folder</button>
                         </div>
                     </div>
                 </div>
             )}
             {newFileDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="bg-slate-900 border border-white/10 p-6 rounded-xl w-96 shadow-2xl">
-                        <h3 className="text-lg font-bold text-white mb-4">New File</h3>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-black/50 border border-white/20 rounded p-2 text-white mb-4" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-[#111] border border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-white/5">
+                        <h3 className="text-lg font-bold text-white mb-1">New File</h3>
+                        <p className="text-sm text-zinc-500 mb-6">Create a new file in the root.</p>
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-black/50 border border-white/10 focus:border-primary/50 rounded-lg p-3 text-white mb-6 outline-none transition-all placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setNewFileDialogOpen(false)} className="px-3 py-1 text-slate-400">Cancel</button>
-                            <button onClick={() => handleCreateItem('file')} className="px-3 py-1 bg-primary text-white rounded">Create</button>
+                            <button onClick={() => setNewFileDialogOpen(false)} className="px-4 py-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium">Cancel</button>
+                            <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-primary/20 transition-all">Create File</button>
                         </div>
                     </div>
                 </div>
