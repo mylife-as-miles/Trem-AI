@@ -384,7 +384,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // commits/
             {
                 id: 'commits', name: 'commits', type: 'folder', children: [
-                    { id: 'commit_0001', name: '0001.json', type: 'file', icon: 'commit', iconColor: 'text-orange-400', content: JSON.stringify(generatedRepoData.commit || {}, null, 2) }
+                    { id: 'commit_0001', name: '0001.json', type: 'file', icon: 'commit', iconColor: 'text-orange-400', content: JSON.stringify({ ...generatedRepoData.commit, timestamp: Date.now() } || {}, null, 2) }
                 ]
             },
 
