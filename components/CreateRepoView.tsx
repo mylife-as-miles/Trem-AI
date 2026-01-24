@@ -245,6 +245,13 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     if (isCancelled) return;
 
                     setGeneratedRepoData(data);
+
+                    // Auto-populate Repo Details from AI
+                    if (data.repo) {
+                        if (data.repo.name) setRepoName(data.repo.name);
+                        if (data.repo.brief) setRepoBrief(data.repo.brief);
+                    }
+
                     setSimLogs(prev => [...prev, `> Commit Ready.`]);
 
                     // Clear workers
