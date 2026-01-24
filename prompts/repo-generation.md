@@ -10,11 +10,11 @@ You excel at:
 ---
 
 # Inputs
-- **Video Duration**: ${inputs.duration || 'Unknown'}
-- **Audio Transcript**: ${inputs.transcript || 'None (detect from context)'}
-- **Scene Boundaries**: ${inputs.sceneBoundaries !== 'auto-detected' ? inputs.sceneBoundaries : 'AUTO-DETECT (Analyze visual cues to find cuts)'}
-- **Asset Context**: ${inputs.assetContext || 'None provided'}
-- **Visual Context**: I have attached ${inputs.images?.length || 0} keyframes from the video. Correlate these visual frames with the timestamps in the transcript to determine scene changes.
+- **Video Duration**: {{DURATION}}
+- **Audio Transcript**: {{TRANSCRIPT}}
+- **Scene Boundaries**: {{SCENE_BOUNDARIES}}
+- **Asset Context**: {{ASSET_CONTEXT}}
+- **Visual Context**: I have attached {{VISUAL_CONTEXT_COUNT}} keyframes from the video. Correlate these visual frames with the timestamps in the transcript to determine scene changes.
 
 ---
 
