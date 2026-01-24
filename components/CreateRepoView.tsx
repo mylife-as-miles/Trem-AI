@@ -286,7 +286,9 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 name: dbAsset?.name || `Imported_Clip_${id}`,
                 status: 'pending' as const,
                 progress: 0,
-                duration: dbAsset?.duration
+                duration: dbAsset?.duration,
+                blob: dbAsset?.blob,
+                url: dbAsset?.url
             };
         }));
 
