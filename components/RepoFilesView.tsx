@@ -435,14 +435,14 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
     const renderTree = (nodes: FileNode[], depth = 0) => {
         return nodes.map(node => {
             let iconName = 'description';
-            let iconColorClass = 'text-zinc-500';
+            let iconColorClass = 'text-slate-400 dark:text-zinc-500';
 
             if (node.type === 'folder') {
                 iconName = node.isOpen ? 'folder_open' : 'folder';
                 iconColorClass = 'text-amber-500/80';
             } else if (node.icon) {
                 iconName = node.icon;
-                iconColorClass = node.iconColor || 'text-zinc-500';
+                iconColorClass = node.iconColor || 'text-slate-400 dark:text-zinc-500';
             }
 
             const isSelected = selectedFile?.id === node.id;
@@ -451,7 +451,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 <div key={node.id}>
                     <div
                         className={`flex items-center gap-2.5 py-1.5 px-3 cursor-pointer text-sm font-sans tracking-tight transition-all relative group
-                            ${isSelected ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'}
+                            ${isSelected ? 'text-blue-600 dark:text-white font-medium' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200'}
                             ${node.locked ? 'opacity-50' : ''}
                         `}
                         style={{ paddingLeft: `${depth * 12 + 12}px` }}
@@ -470,13 +470,13 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                         }}
                     >
                         {/* Interactive Background */}
-                        <div className={`absolute inset-0 mx-2 rounded-md -z-10 transition-colors ${isSelected ? 'bg-white/10' : 'group-hover:bg-white/5'}`}></div>
+                        <div className={`absolute inset-0 mx-2 rounded-md -z-10 transition-colors ${isSelected ? 'bg-blue-50 dark:bg-white/10' : 'group-hover:bg-slate-100 dark:group-hover:bg-white/5'}`}></div>
 
-                        <span className={`material-icons-outlined text-[18px] transition-colors ${isSelected ? 'text-primary' : iconColorClass}`}>
+                        <span className={`material-icons-outlined text-[18px] transition-colors ${isSelected ? 'text-blue-500 dark:text-primary' : iconColorClass}`}>
                             {iconName}
                         </span>
-                        <span className={`truncate ${isSelected ? 'font-medium' : 'font-normal'}`}>{node.name}</span>
-                        {node.locked && <span className="material-icons-outlined text-[10px] text-zinc-600 ml-auto">lock</span>}
+                        <span className="truncate">{node.name}</span>
+                        {node.locked && <span className="material-icons-outlined text-[10px] text-zinc-400 ml-auto">lock</span>}
                     </div>
                     {node.type === 'folder' && (node.isOpen !== false) && node.children && (
                         <div>{renderTree(node.children, depth + 1)}</div>
@@ -487,47 +487,47 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
     };
 
     return (
-        <div className="flex flex-col h-full bg-black text-white font-sans selection:bg-primary/30">
+        <div className="flex flex-col h-full bg-slate-50 dark:bg-black text-slate-900 dark:text-white font-sans transition-colors duration-300">
             <TopNavigation onNavigate={onNavigate} />
 
             {/* Hidden Inputs */}
             <input type="file" ref={fileInputRef} hidden multiple onChange={handleFileUpload} accept="video/*,audio/*,image/*" />
 
             {/* Toolbar */}
-            <div className="h-14 px-4 flex items-center justify-between bg-[#09090b]/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-30">
+            <div className="h-14 px-4 flex items-center justify-between bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 sticky top-0 z-30 transition-colors duration-300">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => onNavigate('repo')} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group">
+                    <button onClick={() => onNavigate('repo')} className="flex items-center gap-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors group">
                         <span className="material-icons-outlined group-hover:-translate-x-0.5 transition-transform text-lg">arrow_back</span>
                         <span className="text-xs font-mono font-medium tracking-wider uppercase">Back</span>
                     </button>
-                    <div className="h-4 w-px bg-white/10 mx-2"></div>
-                    <h2 className="text-sm font-medium text-white tracking-tight flex items-center gap-2">
-                        <span className="material-icons-outlined text-base text-primary">folder_open</span>
+                    <div className="h-4 w-px bg-slate-200 dark:bg-white/10 mx-2"></div>
+                    <h2 className="text-sm font-medium text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                        <span className="material-icons-outlined text-base text-blue-500 dark:text-primary">folder_open</span>
                         File Manager
                     </h2>
                 </div>
 
                 <div className="flex items-center gap-3">
                     {/* New Actions Group */}
-                    <div className="flex items-center bg-white/5 rounded-lg p-0.5 border border-white/5">
-                        <button onClick={() => fileInputRef.current?.click()} className="p-1.5 hover:bg-white/10 rounded-md transition-all text-zinc-400 hover:text-white relative group" title="Upload Media">
+                    <div className="flex items-center bg-slate-100 dark:bg-white/5 rounded-lg p-0.5 border border-slate-200 dark:border-white/5">
+                        <button onClick={() => fileInputRef.current?.click()} className="p-1.5 hover:bg-white dark:hover:bg-white/10 rounded-md transition-all text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white relative group" title="Upload Media">
                             <span className="material-icons-outlined text-lg">cloud_upload</span>
                         </button>
-                        <div className="w-px h-4 bg-white/10 mx-1"></div>
-                        <button onClick={() => setNewFolderDialogOpen(true)} className="p-1.5 hover:bg-white/10 rounded-md transition-all text-zinc-400 hover:text-white" title="New Folder">
+                        <div className="w-px h-4 bg-slate-200 dark:bg-white/10 mx-1"></div>
+                        <button onClick={() => setNewFolderDialogOpen(true)} className="p-1.5 hover:bg-white dark:hover:bg-white/10 rounded-md transition-all text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white" title="New Folder">
                             <span className="material-icons-outlined text-lg">create_new_folder</span>
                         </button>
-                        <button onClick={() => { setNewFileDialogOpen(true); }} className="p-1.5 hover:bg-white/10 rounded-md transition-all text-zinc-400 hover:text-white" title="New File">
+                        <button onClick={() => { setNewFileDialogOpen(true); }} className="p-1.5 hover:bg-white dark:hover:bg-white/10 rounded-md transition-all text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white" title="New File">
                             <span className="material-icons-outlined text-lg">note_add</span>
                         </button>
                     </div>
 
-                    <div className="h-4 w-px bg-white/10"></div>
+                    <div className="h-4 w-px bg-slate-200 dark:bg-white/10"></div>
 
                     <button
                         onClick={handleDeleteClick}
                         disabled={!selectedFile}
-                        className="px-3 py-1.5 rounded-lg border border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40 disabled:opacity-30 disabled:hover:bg-transparent transition-all text-xs font-medium flex items-center gap-2"
+                        className="px-3 py-1.5 rounded-lg border border-red-200 dark:border-red-500/20 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-300 dark:hover:border-red-500/40 disabled:opacity-30 disabled:hover:bg-transparent transition-all text-xs font-medium flex items-center gap-2"
                     >
                         <span className="material-icons-outlined text-sm">delete</span>
                         <span className="hidden sm:inline">Delete</span>
@@ -535,7 +535,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     <button
                         onClick={handleSave}
                         disabled={!isDirty}
-                        className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary_hover text-white disabled:opacity-50 disabled:grayscale transition-all text-xs font-bold tracking-wide flex items-center gap-2 shadow-lg shadow-primary/20"
+                        className="px-4 py-1.5 rounded-lg bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white disabled:opacity-50 disabled:grayscale transition-all text-xs font-bold tracking-wide flex items-center gap-2 shadow-lg shadow-blue-500/20 dark:shadow-primary/20"
                     >
                         <span className="material-icons-outlined text-sm">save</span>
                         <span className="hidden sm:inline">Save Changes</span>
@@ -543,13 +543,13 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden relative bg-black">
+            <div className="flex-1 flex overflow-hidden relative bg-white dark:bg-black">
                 {/* Sidebar Tree */}
-                <div className={`w-80 border-r border-white/5 bg-[#0A0A0A] overflow-y-auto p-3 flex-shrink-0 flex flex-col gap-4`}>
+                <div className={`w-80 border-r border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0A0A0A] overflow-y-auto p-3 flex-shrink-0 flex flex-col gap-4 transition-colors duration-300`}>
 
-                    <div className="px-2 pb-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex justify-between items-center border-b border-white/5">
+                    <div className="px-2 pb-2 text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest flex justify-between items-center border-b border-slate-200 dark:border-white/5">
                         <span>Explorer</span>
-                        <button onClick={() => setFiles(files)} className="hover:text-white transition-colors"><span className="material-icons-outlined text-sm">refresh</span></button>
+                        <button onClick={() => setFiles(files)} className="hover:text-slate-900 dark:hover:text-white transition-colors"><span className="material-icons-outlined text-sm">refresh</span></button>
                     </div>
 
                     <div className="flex-1 -mx-2">
@@ -558,21 +558,21 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 </div>
 
                 {/* Editor / Preview Area */}
-                <div className="flex-1 flex flex-col bg-[#09090b] min-w-0 relative">
+                <div className="flex-1 flex flex-col bg-white dark:bg-[#09090b] min-w-0 relative transition-colors duration-300">
                     {selectedFile ? (
                         <>
-                            <div className="h-10 px-4 flex items-center justify-between bg-[#0A0A0A] border-b border-white/5">
-                                <span className="flex items-center gap-2 text-xs font-medium text-zinc-400">
-                                    <span className="material-icons-outlined text-sm text-zinc-500">description</span>
+                            <div className="h-10 px-4 flex items-center justify-between bg-slate-50 dark:bg-[#0A0A0A] border-b border-slate-200 dark:border-white/5">
+                                <span className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-zinc-400">
+                                    <span className="material-icons-outlined text-sm text-slate-400 dark:text-zinc-500">description</span>
                                     {selectedFile.name}
                                 </span>
-                                <span className="text-[10px] uppercase font-mono text-zinc-600">{selectedFile.id}</span>
+                                <span className="text-[10px] uppercase font-mono text-slate-400 dark:text-zinc-600">{selectedFile.id}</span>
                             </div>
 
-                            <div className="flex-1 overflow-hidden relative flex flex-col bg-[#050505]">
+                            <div className="flex-1 overflow-hidden relative flex flex-col bg-white dark:bg-[#050505]">
                                 {/* Media Rendering Logic */}
                                 {['mp4', 'mov', 'webm'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
-                                    <div className="w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                                    <div className="w-full h-full flex items-center justify-center bg-black/90 backdrop-blur-sm">
                                         {previewUrl ? (
                                             <video src={previewUrl} controls className="max-w-full max-h-full rounded-lg shadow-2xl" />
                                         ) : (
@@ -580,33 +580,33 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                                         )}
                                     </div>
                                 ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
-                                    <div className="w-full h-full flex items-center justify-center p-8 bg-[url('https://transparenttextures.com/patterns/dark-matter.png')]">
-                                        {previewUrl && <img src={previewUrl} className="max-w-full max-h-full object-contain rounded-md shadow-2xl border border-white/10" />}
+                                    <div className="w-full h-full flex items-center justify-center p-8 bg-slate-100/50 dark:bg-[url('https://transparenttextures.com/patterns/dark-matter.png')]">
+                                        {previewUrl && <img src={previewUrl} className="max-w-full max-h-full object-contain rounded-md shadow-2xl border border-slate-200 dark:border-white/10" />}
                                     </div>
                                 ) : (
                                     <textarea
                                         value={editorContent}
                                         onChange={(e) => { setEditorContent(e.target.value); setIsDirty(true); }}
-                                        className="w-full h-full p-6 bg-transparent outline-none font-mono text-sm resize-none text-zinc-300 leading-relaxed custom-scrollbar"
+                                        className="w-full h-full p-6 bg-transparent outline-none font-mono text-sm resize-none text-slate-800 dark:text-zinc-300 leading-relaxed custom-scrollbar"
                                         spellCheck={false}
                                     />
                                 )}
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-zinc-700 select-none">
-                            <div className="w-24 h-24 rounded-3xl bg-white/5 flex items-center justify-center mb-6 ring-1 ring-white/5">
-                                <span className="material-icons-outlined text-6xl text-zinc-800">grid_view</span>
+                        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 dark:text-zinc-700 select-none">
+                            <div className="w-24 h-24 rounded-3xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mb-6 ring-1 ring-slate-200 dark:ring-white/5">
+                                <span className="material-icons-outlined text-6xl text-slate-300 dark:text-zinc-800">grid_view</span>
                             </div>
-                            <p className="text-zinc-500 font-medium tracking-tight">Select a file to view content</p>
-                            <p className="text-zinc-700 text-sm mt-2">or press <span className="bg-white/10 px-1.5 py-0.5 rounded text-zinc-500 font-mono text-xs">Cmd+P</span> to search</p>
+                            <p className="text-slate-500 dark:text-zinc-500 font-medium tracking-tight">Select a file to view content</p>
+                            <p className="text-slate-400 dark:text-zinc-700 text-sm mt-2">or press <span className="bg-slate-100 dark:bg-white/10 px-1.5 py-0.5 rounded text-slate-500 dark:text-zinc-500 font-mono text-xs">Cmd+P</span> to search</p>
                         </div>
                     )}
 
                     {/* Terminal Panel */}
                     {(showTerminal || isProcessing) && (
-                        <div className="h-64 border-t border-white/10 bg-[#0c0c0c] text-zinc-300 font-mono text-xs flex flex-col absolute bottom-0 left-0 right-0 z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-                            <div className="px-4 py-2 border-b border-white/5 flex items-center justify-between bg-white/5">
+                        <div className="h-64 border-t border-slate-200 dark:border-white/10 bg-slate-900 dark:bg-[#0c0c0c] text-slate-300 font-mono text-xs flex flex-col absolute bottom-0 left-0 right-0 z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
+                            <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-black/20 dark:bg-white/5">
                                 <span className="font-bold flex items-center gap-2 text-zinc-100">
                                     <span className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-emerald-500'}`}></span>
                                     TERMINAL
@@ -616,7 +616,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                                     <button onClick={() => setShowTerminal(false)} className="hover:text-white text-zinc-500 transition-colors"><span className="material-icons-outlined text-sm">close</span></button>
                                 </div>
                             </div>
-                            <div className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar font-medium bg-[#0A0A0A]">
+                            <div className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar font-medium bg-[#1e1e1e] dark:bg-[#0A0A0A]">
                                 {terminalLogs.map((log, i) => (
                                     <div key={i} className="flex gap-2">
                                         <span className="text-zinc-600 select-none">$</span>
@@ -643,27 +643,27 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
             />
 
             {newFolderDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-                    <div className="bg-[#111] border border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-white/5">
-                        <h3 className="text-lg font-bold text-white mb-1">New Folder</h3>
-                        <p className="text-sm text-zinc-500 mb-6">Create a new directory in the root.</p>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-black/50 border border-white/10 focus:border-primary/50 rounded-lg p-3 text-white mb-6 outline-none transition-all placeholder:text-zinc-700" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">New Folder</h3>
+                        <p className="text-sm text-slate-500 dark:text-zinc-500 mb-6">Create a new directory in the root.</p>
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-blue-500 dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setNewFolderDialogOpen(false)} className="px-4 py-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium">Cancel</button>
-                            <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-primary/20 transition-all">Create Folder</button>
+                            <button onClick={() => setNewFolderDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
+                            <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-500/20 dark:shadow-primary/20 transition-all">Create Folder</button>
                         </div>
                     </div>
                 </div>
             )}
             {newFileDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-                    <div className="bg-[#111] border border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-white/5">
-                        <h3 className="text-lg font-bold text-white mb-1">New File</h3>
-                        <p className="text-sm text-zinc-500 mb-6">Create a new file in the root.</p>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-black/50 border border-white/10 focus:border-primary/50 rounded-lg p-3 text-white mb-6 outline-none transition-all placeholder:text-zinc-700" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">New File</h3>
+                        <p className="text-sm text-slate-500 dark:text-zinc-500 mb-6">Create a new file in the root.</p>
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-blue-500 dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
-                            <button onClick={() => setNewFileDialogOpen(false)} className="px-4 py-2 text-zinc-400 hover:text-white transition-colors text-sm font-medium">Cancel</button>
-                            <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-primary/20 transition-all">Create File</button>
+                            <button onClick={() => setNewFileDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
+                            <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-500/20 dark:shadow-primary/20 transition-all">Create File</button>
                         </div>
                     </div>
                 </div>
