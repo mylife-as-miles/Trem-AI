@@ -313,6 +313,36 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
     return videoMd?.content || repoData.brief;
   }, [repoData]);
 
+  const latestTags = React.useMemo(() => {
+    if (!activityLog || activityLog.length === 0) return [];
+    // ActivityLog is already sorted by timestamp (desc)
+    // We need to find the commit that matches the latest activity
+    // But actually, we need the *latest commit object* which has hashtags, not just the activity log entry
+
+    if (repoData?.fileSystem) {
+      const commitsFolder = repoData.fileSystem.find((node: FileNode) => node.name === 'commits');
+      if (commitsFolder && commitsFolder.children) {
+        // Find the file corresponding to the latest activity (index 0)
+        // Or simpler: parse all commits, sort, take first. 
+        // Since activityLog is already derived from commitsFolder, we can just look up the file
+        // that corresponds to the top activity log entry.
+
+        // Simpler approach: Map all commits, sort by timestamp, take first valid one with hashtags
+        const allCommits = commitsFolder.children
+          .map((f: FileNode) => {
+            try { return f.content ? JSON.parse(f.content) : null; } catch { return null; }
+          })
+          .filter((c: any) => c !== null)
+          .sort((a: any, b: any) => (new Date(b.timestamp).getTime()) - (new Date(a.timestamp).getTime()));
+
+        if (allCommits.length > 0 && allCommits[0].hashtags) {
+          return allCommits[0].hashtags;
+        }
+      }
+    }
+    return [];
+  }, [repoData, activityLog]);
+
   return (
     <div className="flex flex-col h-full bg-slate-50 dark:bg-black">
       <TopNavigation onNavigate={onNavigate} />
@@ -397,7 +427,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                 )}
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
-                {['#social-media', '#high-contrast', '#vertical'].map(tag => (
+                {latestTags.map(tag => (
                   <div key={tag} className="px-3 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-black/40 text-xs text-slate-500 dark:text-slate-400 font-mono">
                     {tag}
                   </div>
