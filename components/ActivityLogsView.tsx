@@ -29,8 +29,8 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
         // Search
         if (searchQuery.trim()) {
             filtered = filtered.filter(c =>
-                c.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                c.hashtags?.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
+                (c.message || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                c.hashtags?.some(t => (t || '').toLowerCase().includes(searchQuery.toLowerCase()))
             );
         }
 
@@ -41,7 +41,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
 
         // Stats
         const total = commits.length;
-        const aiCommits = commits.filter(c => c.author.toLowerCase().includes('bot') || c.author.toLowerCase().includes('ai') || c.hashtags?.includes('#ai-generated')).length;
+        const aiCommits = commits.filter(c => (c.author || '').toLowerCase().includes('bot') || (c.author || '').toLowerCase().includes('ai') || c.hashtags?.includes('#ai-generated')).length;
         const authorsList = Array.from(new Set(commits.map(c => c.author)));
 
         // Grouping
@@ -167,7 +167,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
 
                             <div className="space-y-4">
                                 {groupCommits.map((commit, idx) => {
-                                    const isAI = commit.author.toLowerCase().includes('bot') || commit.author.toLowerCase().includes('ai') || commit.hashtags?.includes('#ai-generated');
+                                    const isAI = (commit.author || '').toLowerCase().includes('bot') || (commit.author || '').toLowerCase().includes('ai') || commit.hashtags?.includes('#ai-generated');
 
                                     return (
                                         <div
@@ -192,8 +192,8 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
                                                         <div className="flex items-start gap-4">
                                                             {/* Avatar */}
                                                             <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isAI
-                                                                    ? 'bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-purple-400'
-                                                                    : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400'
+                                                                ? 'bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-purple-400'
+                                                                : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400'
                                                                 }`}>
                                                                 <span className="material-icons-outlined text-lg">
                                                                     {isAI ? 'auto_awesome' : 'person'}
@@ -247,9 +247,9 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = ({ repoData, onNavigat
                                                                         title={type}
                                                                     >
                                                                         <span className={`material-icons-outlined text-[10px] ${type === 'otio' ? 'text-blue-400' :
-                                                                                type === 'dag' ? 'text-purple-400' :
-                                                                                    type === 'scenes' ? 'text-emerald-400' :
-                                                                                        'text-slate-400'
+                                                                            type === 'dag' ? 'text-purple-400' :
+                                                                                type === 'scenes' ? 'text-emerald-400' :
+                                                                                    'text-slate-400'
                                                                             }`}>
                                                                             {type === 'otio' ? 'videocam' : type === 'dag' ? 'account_tree' : type === 'scenes' ? 'movie' : 'description'}
                                                                         </span>

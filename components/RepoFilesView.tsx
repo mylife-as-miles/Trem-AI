@@ -286,7 +286,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
 
                             {/* Content Renderer */}
                             <div className="flex-1 overflow-hidden relative">
-                                {['mp4', 'mov', 'webm'].some(ext => selectedFile.name.toLowerCase().endsWith(ext)) ? (
+                                {['mp4', 'mov', 'webm'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
                                     <div className="w-full h-full flex items-center justify-center bg-black">
                                         {/* In a real app, src would be a blob URL or server path. For mock, we show a placeholder player */}
                                         <div className="text-center text-white/50">
@@ -295,14 +295,14 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                                             <p className="text-xs opacity-50">(Media playback simulation)</p>
                                         </div>
                                     </div>
-                                ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => selectedFile.name.toLowerCase().endsWith(ext)) ? (
+                                ) : ['jpg', 'jpeg', 'png', 'gif', 'webp'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
                                     <div className="w-full h-full flex items-center justify-center bg-black/90 p-8">
                                         <div className="text-center text-white/50">
                                             <span className="material-icons-outlined text-6xl">image</span>
                                             <p className="mt-4 font-mono text-sm">Image Preview: {selectedFile.name}</p>
                                         </div>
                                     </div>
-                                ) : ['mp3', 'wav', 'aac'].some(ext => selectedFile.name.toLowerCase().endsWith(ext)) ? (
+                                ) : ['mp3', 'wav', 'aac'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
                                     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900 text-white">
                                         <span className="material-icons-outlined text-6xl mb-4 text-primary animate-pulse">graphic_eq</span>
                                         <p className="font-mono">{selectedFile.name}</p>
