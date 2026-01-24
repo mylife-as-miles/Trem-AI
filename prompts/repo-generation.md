@@ -92,24 +92,43 @@ You MUST output ONLY valid JSON matching this exact structure. No markdown, no c
     "scenes_md": "string (Markdown scene-by-scene breakdown)"
   },
   "timeline": {
-    "OTIO_SCHEMA": "OpenTimelineIO.v1",
+    "OTIO_SCHEMA": "Timeline.1",
+    "metadata": {},
+    "name": "string (Timeline Name)",
     "tracks": {
-        "children": [
+      "OTIO_SCHEMA": "Stack.1",
+      "metadata": {},
+      "children": [
+        {
+          "OTIO_SCHEMA": "Track.1",
+          "metadata": {},
+          "kind": "Video",
+          "children": [
             {
-                "OTIO_SCHEMA": "Track.v1",
-                "kind": "Video",
-                "children": [
-                    {
-                        "OTIO_SCHEMA": "Clip.v1",
-                        "name": "Clip_001",
-                        "source_range": {
-                          "start_time": { "value": 0, "rate": 30.0 },
-                          "duration": { "value": 105, "rate": 30.0 }
-                        }
-                    }
-                ]
+              "OTIO_SCHEMA": "Clip.1",
+              "metadata": {},
+              "name": "Clip_001",
+              "source_range": {
+                "OTIO_SCHEMA": "TimeRange.1",
+                "start_time": {
+                  "OTIO_SCHEMA": "RationalTime.1",
+                  "value": 0.0,
+                  "rate": 24.0
+                },
+                "duration": {
+                  "OTIO_SCHEMA": "RationalTime.1",
+                  "value": 24.0,
+                  "rate": 24.0
+                }
+              },
+              "media_reference": {
+                "OTIO_SCHEMA": "ExternalReference.1",
+                "target_url": "file:///path/to/asset.mp4"
+              }
             }
-        ]
+          ]
+        }
+      ]
     }
   },
   "dag": {},
@@ -148,6 +167,6 @@ Generate 4-6 hashtags based on actual content analysis:
 - IMPORTANT: For the 'captions_srt' and 'metadata' fields, you must properly escape all newlines (\n) and double quotes (\") so the JSON remains valid.
 - Scenes array must contain **multiple scenes** proportional to video length.
 - Be precise with timestamps (use decimals like 3.5, 7.25).
-- For OTIO 'source_range', use a default rate of 30.0 fps unless detected otherwise. Calculate 'value' as 'seconds * rate'.
+- For OTIO: Use `Timeline.1`, `Stack.1`, `Track.1`, `Clip.1`. Timestamps must use `RationalTime.1` with `value` and `rate`. Ensure `source_range` is a `TimeRange.1`.
 - Use the Asset Context to inform descriptions and tags.
 - If critical inputs are missing, infer conservatively and set 'confidence' accordingly.
