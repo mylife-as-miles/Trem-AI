@@ -4,29 +4,65 @@
  */
 
 export const extractFramesFromVideo = async (videoBlob: Blob): Promise<string[]> => {
-    try {
-        const base64Video = await blobToDataURL(videoBlob);
+    return new Promise(async (resolve, reject) => {
+        const video = document.createElement('video');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const frames: string[] = [];
 
-        const response = await fetch('/api/extract-frames', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ file: base64Video }),
-        });
+        if (!ctx) return reject(new Error("Could not get canvas context"));
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Frame extraction failed');
-        }
+        const url = URL.createObjectURL(videoBlob);
+        video.src = url;
+        video.muted = true;
+        video.playsInline = true;
+        video.crossOrigin = "anonymous";
 
-        const data = await response.json();
-        return data.frames; // Array of base64 strings
+        // Wait for metadata to load to get duration/dimensions
+        await new Promise((r) => { video.onloadedmetadata = r; });
 
-    } catch (error) {
-        console.error('Frame extraction error:', error);
-        return []; // Fallback to empty if fails, rather than blocking entire flow
-    }
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Rate: 1 frame per second (1 fps)
+        const duration = video.duration;
+        const fps = 1;
+        const interval = 1 / fps;
+        let currentTime = 0;
+
+        const processFrame = async () => {
+            if (currentTime >= duration) {
+                // Done
+                URL.revokeObjectURL(url);
+                resolve(frames);
+                return;
+            }
+
+            // Seek
+            video.currentTime = currentTime;
+
+            // Wait for seek to complete
+            await new Promise<void>((r) => {
+                video.onseeked = () => r();
+                // Safety timeout in case seek hangs
+                // setTimeout(r, 1000); 
+            });
+
+            // Draw
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Compressing to JPEG 0.7 to save context size
+            const base64 = canvas.toDataURL('image/jpeg', 0.7);
+            frames.push(base64);
+
+            // Next frame
+            currentTime += interval;
+            processFrame();
+        };
+
+        // Start processing
+        processFrame();
+    });
 };
 
 const blobToDataURL = (blob: Blob): Promise<string> => {

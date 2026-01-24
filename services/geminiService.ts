@@ -5,6 +5,16 @@ const apiKey = process.env.API_KEY || '';
 // Use v1alpha as requested for media_resolution support
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
+const retryWithBackoff = async <T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> => {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries === 0) throw error;
+    await new Promise(resolve => setTimeout(resolve, delay));
+    return retryWithBackoff(fn, retries - 1, delay * 2);
+  }
+};
+
 export const interpretAgentCommand = async (command: string): Promise<string> => {
   if (!ai) {
     console.warn("Gemini API Key is missing. Returning mock response.");
