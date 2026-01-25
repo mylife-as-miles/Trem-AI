@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { interpretAgentCommand } from '../services/geminiService';
+import { generateRemotionProject } from '../services/geminiService';
 import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
 
 interface TremCreateProps {
-    onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
+    onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'trem-create' | 'trem-edit') => void;
     onSelectRepo?: (repo: RepoData) => void;
 }
 
@@ -23,6 +23,7 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
     const [prompt, setPrompt] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
+    const [generatedFiles, setGeneratedFiles] = useState<Record<string, string> | null>(null);
 
     // Typewriter State
     const [suggestionIndex, setSuggestionIndex] = useState(0);
@@ -93,16 +94,14 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
         if (!prompt.trim()) return;
         setIsProcessing(true);
         setFeedback(null);
+        setGeneratedFiles(null);
 
         try {
-            // Here we would ideally call a specific service for "Creating" vs "Editing"
-            // For now using the same service but we might want to differentiate later
-            const response = await interpretAgentCommand("CREATE_MODE: " + prompt);
-            setFeedback(response);
-            setTimeout(() => {
-                // Navigate to a relevant view, maybe still timeline or a specific 'render' view
-                onNavigate('timeline');
-            }, 1500);
+            const files = await generateRemotionProject(prompt);
+            setGeneratedFiles(files);
+            setFeedback("Project structure generated successfully.");
+        } catch (e) {
+            setFeedback("Error generating project. Please try again.");
         } finally {
             setIsProcessing(false);
         }
@@ -144,8 +143,22 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                             </div>
 
                             {feedback && (
-                                <div className="ml-8 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg text-sm text-purple-500 font-mono mb-2 animate-pulse">
-                                    AI Response: {feedback}
+                                <div className="ml-8 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg text-sm text-purple-500 font-mono mb-2">
+                                    <span className="font-bold mr-2">Status:</span> {feedback}
+                                </div>
+                            )}
+
+                            {generatedFiles && (
+                                <div className="ml-8 mt-2 space-y-2">
+                                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Generated Files</div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        {Object.keys(generatedFiles).map(fileName => (
+                                            <div key={fileName} className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded p-3 text-sm font-mono text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                                                <span className="material-icons-outlined text-xs text-purple-500">code</span>
+                                                {fileName}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
 

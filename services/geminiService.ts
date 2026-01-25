@@ -203,6 +203,40 @@ export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
   }
 };
 
+// @ts-ignore
+import remotionGenerationPrompt from '../prompts/remotion-generation.md?raw';
+
+export const generateRemotionProject = async (userPrompt: string): Promise<Record<string, string>> => {
+  if (!ai) {
+    // Mock response for dev without API key
+    await new Promise(r => setTimeout(r, 2000));
+    return {
+      "Root.tsx": `import {Composition} from 'remotion';\nimport {MyVideo} from './MyVideo';\n\nexport const Root: React.FC = () => {\n  return (\n    <Composition\n      id="MyVideo"\n      component={MyVideo}\n      durationInFrames={150}\n      width={1920}\n      height={1080}\n      fps={30}\n    />\n  );\n};`,
+      "MyVideo.tsx": `import {AbsoluteFill, useCurrentFrame, interpolate} from 'remotion';\n\nexport const MyVideo: React.FC = () => {\n  const frame = useCurrentFrame();\n  const opacity = interpolate(frame, [0, 30], [0, 1]);\n  return (\n    <AbsoluteFill className="bg-white flex items-center justify-center">\n      <h1 style={{ opacity }} className="text-6xl font-bold text-slate-900">Hello Trem AI</h1>\n    </AbsoluteFill>\n  );\n};`
+    };
+  }
+
+  try {
+    const promptText = remotionGenerationPrompt.replace('{{USER_PROMPT}}', userPrompt);
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      generationConfig: {
+        responseMimeType: 'application/json'
+      },
+      contents: [{ role: 'user', parts: [{ text: promptText }] }]
+    } as any);
+
+    const text = response.text || "{}";
+    const json = extractJSON(text);
+    return json.files || json; // Support both new nested schema and legacy flat schema if model hallucinates
+
+  } catch (error) {
+    console.error("Remotion Generation Failed:", error);
+    throw error;
+  }
+};
+
 // Helper to strip markdown and extract JSON
 const extractJSON = (text: string): any => {
   try {
