@@ -117,7 +117,7 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
     return (
         <div className="flex flex-col min-h-full">
             {/* Top Navigation Header */}
-            <TopNavigation onNavigate={onNavigate} />
+            <TopNavigation onNavigate={onNavigate} activeTab="create" />
 
             {/* Main Scrollable Content */}
             <div className="flex-1 p-6 md:p-10">

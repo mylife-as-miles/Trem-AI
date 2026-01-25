@@ -118,7 +118,7 @@ const TremEdit: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo }) => 
   return (
     <div className="flex flex-col min-h-full">
       {/* Top Navigation Header */}
-      <TopNavigation onNavigate={onNavigate} />
+      <TopNavigation onNavigate={onNavigate} activeTab="edit" />
 
       {/* Main Scrollable Content */}
       <div className="flex-1 p-6 md:p-10">
