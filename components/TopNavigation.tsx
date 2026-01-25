@@ -36,6 +36,13 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) 
                     <img alt="User" className="w-8 h-8 rounded-full border-2 border-background-light dark:border-black" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOTDE_X3JwToSHTjUFVUtEmOhsNZj6RL934lNVNkkJ_7-dUJZEIfrP-BB4R4yKz6DimrwF9peEsyj_o_qTyGoJMJOIY6497yHymfN_9F7STpDS1WU4VhqLtB4lv5rUS9pq_am9pw4b9Oa84Xtx6eWZ8hdpz0VKq6xB3s-x830O9tK35zH4IDI59VYtVh53_FTHTGcjhnrq1u24Z-SHawNiXKPLY7e3aK6NGBtwHSbiXSaWb5DZhnQiVdO59VHXuxa09qplRDAhcE" />
                     <div className="w-8 h-8 rounded-full border-2 border-background-light dark:border-black bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] text-slate-500 dark:text-white">+2</div>
                 </div>
+                <button
+                    onClick={() => onNavigate?.('assets')}
+                    className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    title="Asset Library"
+                >
+                    <span className="material-icons-outlined">video_library</span>
+                </button>
                 <div className="h-4 w-px bg-slate-300 dark:bg-white/10 mx-2"></div>
 
                 <button className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
