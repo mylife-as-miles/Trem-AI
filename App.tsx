@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Sidebar from './components/Sidebar';
-import Orchestrator from './components/Orchestrator';
+import TremEdit from './components/TremEdit';
+import TremCreate from './components/TremCreate';
 import TimelineEditor from './components/TimelineEditor';
 import VideoRepoOverview from './components/VideoRepoOverview';
 import CompareDiffView from './components/CompareDiffView';
@@ -32,6 +33,8 @@ const App: React.FC = () => {
             else if (path === '/diff') setCurrentView('diff');
             else if (path === '/assets') setCurrentView('assets');
             else if (path === '/create-repo') setCurrentView('create-repo');
+            else if (path === '/trem-create') setCurrentView('trem-create');
+            else if (path === '/trem-edit') setCurrentView('trem-edit');
             else if (path === '/repo-files' && repoData) setCurrentView('repo-files');
             else if (path.startsWith('/repo/')) {
                 const parts = path.split('/');
@@ -52,20 +55,20 @@ const App: React.FC = () => {
                             }
                         } else {
                             // Repo not found, redirect to dashboard
-                            window.history.replaceState({}, '', '/orchestrator');
-                            setCurrentView('dashboard');
+                            window.history.replaceState({}, '', '/trem-edit');
+                            setCurrentView('trem-edit');
                         }
                     } catch (e) {
                         console.error("Failed to route to repo:", e);
-                        setCurrentView('dashboard');
+                        setCurrentView('trem-edit');
                     }
                 }
             } else {
-                // Default to dashboard for / or /orchestrator or unknown
-                if (path !== '/' && path !== '/orchestrator') {
-                    window.history.replaceState({}, '', '/orchestrator');
+                // Default to trem-edit for / or /orchestrator or unknown
+                if (path !== '/' && path !== '/trem-edit' && path !== '/orchestrator') {
+                    window.history.replaceState({}, '', '/trem-edit');
                 }
-                setCurrentView('dashboard');
+                setCurrentView('trem-edit');
             }
         };
 
@@ -77,15 +80,17 @@ const App: React.FC = () => {
     }, []); // Run once on mount
 
     const handleNavigate = (view: ViewType | string) => {
-        let url = '/orchestrator';
+        let url = '/trem-edit';
 
         switch (view) {
             case 'timeline': url = '/timeline'; break;
             case 'diff': url = '/diff'; break;
             case 'assets': url = '/assets'; break;
             case 'create-repo': url = '/create-repo'; break;
+            case 'trem-create': url = '/trem-create'; break;
+            case 'trem-edit': url = '/trem-edit'; break;
             case 'settings': url = '/settings'; break;
-            case 'dashboard': url = '/orchestrator'; break;
+            case 'dashboard': url = '/trem-edit'; break; // Dashboard maps to TremEdit
             case 'repo':
                 if (repoData?.id) url = `/repo/${repoData.id}`;
                 break;
@@ -115,14 +120,14 @@ const App: React.FC = () => {
 
     const handleCreateRepo = (data: RepoData) => {
         setRepoData(data);
-        const url = data.id ? `/repo/${data.id}` : '/orchestrator';
+        const url = data.id ? `/repo/${data.id}` : '/trem-edit';
         window.history.pushState({}, '', url);
         setCurrentView('repo');
     };
 
     const handleSelectRepo = (data: RepoData) => {
         setRepoData(data);
-        const url = data.id ? `/repo/${data.id}` : '/orchestrator';
+        const url = data.id ? `/repo/${data.id}` : '/trem-edit';
         window.history.pushState({}, '', url);
         setCurrentView('repo');
     };
@@ -130,7 +135,10 @@ const App: React.FC = () => {
     const renderView = () => {
         switch (currentView) {
             case 'dashboard':
-                return <Orchestrator onNavigate={handleNavigate} onSelectRepo={handleSelectRepo} />;
+            case 'trem-edit':
+                return <TremEdit onNavigate={handleNavigate} onSelectRepo={handleSelectRepo} />;
+            case 'trem-create':
+                return <TremCreate onNavigate={handleNavigate} onSelectRepo={handleSelectRepo} />;
             case 'timeline':
                 return <TimelineEditor onNavigate={handleNavigate} />;
             case 'repo':
@@ -146,7 +154,7 @@ const App: React.FC = () => {
             case 'repo-logs':
                 return <ActivityLogsView />; // No props needed, uses store
             default:
-                return <Orchestrator onNavigate={handleNavigate} />;
+                return <TremEdit onNavigate={handleNavigate} />;
         }
     };
 

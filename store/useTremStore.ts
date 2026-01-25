@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { RepoData } from '../utils/db';
 
-export type ViewType = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files' | 'repo-logs';
+export type ViewType = 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files' | 'repo-logs' | 'trem-create' | 'trem-edit';
 
 interface TremStore {
     currentView: ViewType;

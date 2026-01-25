@@ -4,7 +4,7 @@ import { db, RepoData } from '../utils/db';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
+  onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'trem-create' | 'trem-edit') => void;
   onSelectRepo?: (repo: RepoData) => void;
 }
 
@@ -56,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
         {/* Header */}
         <div className={`h-16 flex items-center justify-between border-b border-slate-100 dark:border-white/10 ${isCollapsed ? 'px-2 justify-center' : 'px-4'}`}>
           <button
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => onNavigate('trem-edit')}
             className={`flex items-center gap-2 hover:opacity-80 transition-opacity ${isCollapsed ? 'justify-center' : ''}`}
           >
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)] flex-shrink-0">
@@ -101,6 +101,27 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
 
         {/* Navigation Links */}
         <div className={`flex-1 overflow-y-auto px-3 space-y-6 ${isCollapsed ? 'py-4 px-2 no-scrollbar' : ''}`}>
+
+          {/* AI Studio */}
+          <div>
+            {!isCollapsed && (
+              <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 mt-2 font-bold whitespace-nowrap overflow-hidden">AI Studio</h3>
+            )}
+            <ul className="space-y-1">
+              <li>
+                <button onClick={() => onNavigate('trem-edit')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Trem Edit" : ""}>
+                  <span className="material-icons-outlined text-sm text-primary group-hover:text-primary transition-colors">auto_fix_normal</span>
+                  {!isCollapsed && <span className="truncate">Trem Edit</span>}
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onNavigate('trem-create')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Trem Create" : ""}>
+                  <span className="material-icons-outlined text-sm text-purple-500 group-hover:text-purple-400 transition-colors">auto_awesome</span>
+                  {!isCollapsed && <span className="truncate">Trem Create</span>}
+                </button>
+              </li>
+            </ul>
+          </div>
 
           {/* Active Processing */}
           <div>

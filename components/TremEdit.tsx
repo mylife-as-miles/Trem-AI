@@ -20,7 +20,7 @@ const SUGGESTIONS = [
 
 const MODES = ["Interactive plan", "Review", "Start"];
 
-const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo }) => {
+const TremEdit: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo }) => {
   const [prompt, setPrompt] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -294,4 +294,4 @@ const Orchestrator: React.FC<OrchestratorProps> = ({ onNavigate, onSelectRepo })
   );
 };
 
-export default Orchestrator;
+export default TremEdit;
