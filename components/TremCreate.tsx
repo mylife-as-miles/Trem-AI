@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { generateRemotionProject } from '../services/geminiService';
 import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
+import AssetLibrary from './AssetLibrary';
 
 interface TremCreateProps {
     onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'trem-create' | 'trem-edit') => void;
@@ -17,7 +18,24 @@ const SUGGESTIONS = [
     "Generate a software demo walkthrough with voiceover"
 ];
 
-const MODES = ["Agent Settings", "Storyboard", "Render"];
+interface AgentOption {
+    id: string;
+    label: string;
+    category: 'Persona' | 'Model' | 'Workflow';
+    icon: string;
+    description: string;
+}
+
+const AGENT_OPTIONS: AgentOption[] = [
+    { id: 'creative-director', label: 'Creative Director', category: 'Persona', icon: 'auto_fix_high', description: 'Focuses on aesthetics, pacing, and brand alignment.' },
+    { id: 'technical-editor', label: 'Technical Editor', category: 'Persona', icon: 'build', description: 'Optimizes for code quality, Remotion best practices, and performance.' },
+    { id: 'social-manager', label: 'Social Media Manager', category: 'Persona', icon: 'share', description: 'Optimizes for engagement, vertical formats, and trends.' },
+    { id: 'model-pro', label: 'Gemini 1.5 Pro', category: 'Model', icon: 'psychology', description: 'Highest fidelity reasoning for complex logic.' },
+    { id: 'model-flash', label: 'Gemini Flash', category: 'Model', icon: 'bolt', description: 'Fastest generation speed for rapid prototyping.' },
+    { id: 'workflow-remotion', label: 'Remotion Standard', category: 'Workflow', icon: 'movie', description: 'Standard 2D video composition workflow.' },
+    { id: 'workflow-r3f', label: 'React Three Fiber', category: 'Workflow', icon: '3d_rotation', description: 'Advanced 3D scenes and WebGL integration.' },
+    { id: 'workflow-experimental', label: 'Experimental Motion', category: 'Workflow', icon: 'science', description: 'Cutting-edge animation techniques (Beta).' },
+];
 
 const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => {
     const [prompt, setPrompt] = useState("");
@@ -31,17 +49,18 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
     const [isDeleting, setIsDeleting] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
 
-    // Repo Selection State
-    const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
-    const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
-    const [repos, setRepos] = useState<RepoData[]>([]);
-    const [repoSearch, setRepoSearch] = useState("");
-    const repoDropdownRef = useRef<HTMLDivElement>(null);
+    // Asset Library Modal State
+    const [showAssetLibrary, setShowAssetLibrary] = useState(false);
+    const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>([]);
 
-    // Mode Selection State
-    const [selectedMode, setSelectedMode] = useState<string>("Agent Settings");
-    const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
-    const modeDropdownRef = useRef<HTMLDivElement>(null);
+    // Agent Settings State
+    const [selectedAgentId, setSelectedAgentId] = useState<string>("creative-director");
+    const [isAgentDropdownOpen, setIsAgentDropdownOpen] = useState(false);
+    const [agentSearch, setAgentSearch] = useState("");
+    const agentDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Repos (Still needed for "Recent Projects" list, but not the dropdown)
+    const [repos, setRepos] = useState<RepoData[]>([]);
 
     useEffect(() => {
         const loadRepos = async () => {
@@ -56,11 +75,8 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
 
         // Click outside listener
         const handleClickOutside = (event: MouseEvent) => {
-            if (repoDropdownRef.current && !repoDropdownRef.current.contains(event.target as Node)) {
-                setIsRepoDropdownOpen(false);
-            }
-            if (modeDropdownRef.current && !modeDropdownRef.current.contains(event.target as Node)) {
-                setIsModeDropdownOpen(false);
+            if (agentDropdownRef.current && !agentDropdownRef.current.contains(event.target as Node)) {
+                setIsAgentDropdownOpen(false);
             }
         };
 
@@ -131,12 +147,23 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
         }
     }
 
-    const filteredRepos = repos.filter(repo =>
-        repo.name.toLowerCase().includes(repoSearch.toLowerCase())
+    const filteredAgents = AGENT_OPTIONS.filter(agent =>
+        agent.label.toLowerCase().includes(agentSearch.toLowerCase()) ||
+        agent.description.toLowerCase().includes(agentSearch.toLowerCase())
     );
 
+    const activeAgent = AGENT_OPTIONS.find(a => a.id === selectedAgentId) || AGENT_OPTIONS[0];
+
+    // Grouping for display
+    const groupedAgents = filteredAgents.reduce((acc, agent) => {
+        if (!acc[agent.category]) acc[agent.category] = [];
+        acc[agent.category].push(agent);
+        return acc;
+    }, {} as Record<string, AgentOption[]>);
+
+
     return (
-        <div className="flex flex-col min-h-full">
+        <div className="flex flex-col min-h-full relative">
             {/* Top Navigation Header */}
             <TopNavigation onNavigate={onNavigate} activeTab="create" />
 
@@ -184,154 +211,121 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                 </div>
                             )}
 
+                            {selectedAssetIds.length > 0 && (
+                                <div className="ml-8 flex flex-wrap gap-2">
+                                    {selectedAssetIds.map(id => (
+                                        <div key={id} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 text-xs font-medium text-purple-700 dark:text-purple-300">
+                                            <span className="material-icons-outlined text-[10px]">movie</span>
+                                            <span>Asset {id.slice(0, 4)}...</span>
+                                            <button
+                                                onClick={() => setSelectedAssetIds(prev => prev.filter(p => p !== id))}
+                                                className="hover:text-purple-900 dark:hover:text-white"
+                                            >
+                                                <span className="material-icons-outlined text-[10px]">close</span>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-slate-100 dark:border-white/10 gap-4 sm:gap-0">
                                 <div className="flex flex-wrap gap-3">
 
+                                    {/* Add Asset Library Button (Simple Modal Trigger) */}
+                                    <button
+                                        onClick={() => setShowAssetLibrary(true)}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400 transition-colors shadow-sm text-sm font-medium"
+                                    >
+                                        <span className="material-icons-outlined text-lg">video_library</span>
+                                        <span>Add Asset Library</span>
+                                        {selectedAssetIds.length > 0 && (
+                                            <span className="bg-purple-500 text-white text-[10px] px-1.5 rounded-full">{selectedAssetIds.length}</span>
+                                        )}
+                                    </button>
 
-                                    {/* Advanced Asset Library (Repo) Selection Dropdown */}
-                                    <div className="relative" ref={repoDropdownRef}>
+                                    {/* Agent Settings (Advanced Dropdown) */}
+                                    <div className="relative" ref={agentDropdownRef}>
                                         <button
-                                            onClick={() => setIsRepoDropdownOpen(!isRepoDropdownOpen)}
+                                            onClick={() => setIsAgentDropdownOpen(!isAgentDropdownOpen)}
                                             className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all duration-200 shadow-sm ${
-                                                isRepoDropdownOpen
+                                                isAgentDropdownOpen
                                                 ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500/20'
                                                 : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400'
                                             }`}
                                         >
-                                            <span className={`material-icons-outlined text-lg ${selectedRepo ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'}`}>
-                                                {selectedRepo ? 'video_library' : 'add_circle'}
+                                            <span className={`material-icons-outlined text-lg ${isAgentDropdownOpen ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'}`}>
+                                                {activeAgent.icon}
                                             </span>
-                                            <span className="font-medium">{selectedRepo || "Add Asset Library"}</span>
-                                            <span className={`material-icons-outlined text-sm transition-transform duration-200 ${isRepoDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                                            <span className="font-medium">{activeAgent.label}</span>
+                                            <span className={`material-icons-outlined text-sm transition-transform duration-200 ${isAgentDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
                                         </button>
 
-                                        {isRepoDropdownOpen && (
+                                        {isAgentDropdownOpen && (
                                             <div className="absolute top-full left-0 mt-3 w-80 bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 flex flex-col origin-top-left animate-in fade-in zoom-in-95 duration-100">
                                                 <div className="p-3 border-b border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
                                                     <div className="relative">
                                                         <span className="absolute left-3 top-2.5 material-icons-outlined text-slate-400 text-sm">search</span>
                                                         <input
                                                             type="text"
-                                                            placeholder="Search libraries..."
+                                                            placeholder="Search agents & models..."
                                                             className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none text-slate-700 dark:text-gray-200 placeholder-slate-400"
-                                                            value={repoSearch}
-                                                            onChange={(e) => setRepoSearch(e.target.value)}
+                                                            value={agentSearch}
+                                                            onChange={(e) => setAgentSearch(e.target.value)}
                                                             autoFocus
                                                         />
                                                     </div>
                                                 </div>
 
-                                                <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
-                                                    {filteredRepos.length === 0 ? (
+                                                <div className="max-h-80 overflow-y-auto p-1 custom-scrollbar">
+                                                    {Object.keys(groupedAgents).length === 0 ? (
                                                         <div className="px-4 py-8 text-center">
-                                                            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 mb-2">
-                                                                <span className="material-icons-outlined text-slate-400">inventory_2</span>
-                                                            </div>
-                                                            <p className="text-xs text-slate-500 dark:text-gray-500">No libraries found</p>
+                                                            <p className="text-xs text-slate-500 dark:text-gray-500">No agents found</p>
                                                         </div>
                                                     ) : (
-                                                        <>
-                                                            <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500">Available Libraries</div>
-                                                            {filteredRepos.map(repo => (
-                                                                <button
-                                                                    key={repo.id}
-                                                                    onClick={() => {
-                                                                        setSelectedRepo(repo.name);
-                                                                        setIsRepoDropdownOpen(false);
-                                                                        setRepoSearch("");
-                                                                    }}
-                                                                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 group ${
-                                                                        selectedRepo === repo.name
-                                                                        ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
-                                                                        : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300'
-                                                                    }`}
-                                                                >
-                                                                    <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${
-                                                                        selectedRepo === repo.name
-                                                                        ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300'
-                                                                        : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400 group-hover:bg-white group-hover:shadow-sm dark:group-hover:bg-white/10'
-                                                                    }`}>
-                                                                        <span className="material-icons-outlined text-lg">folder</span>
-                                                                    </div>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <div className="font-medium truncate">{repo.name}</div>
-                                                                        <div className="text-[10px] opacity-60 flex items-center gap-1">
-                                                                            <span>{new Date(repo.created).toLocaleDateString()}</span>
-                                                                            <span>•</span>
-                                                                            <span>Video Project</span>
+                                                        Object.entries(groupedAgents).map(([category, agents]) => (
+                                                            <div key={category} className="mb-2 last:mb-0">
+                                                                <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm z-10">{category}</div>
+                                                                {agents.map(agent => (
+                                                                    <button
+                                                                        key={agent.id}
+                                                                        onClick={() => {
+                                                                            setSelectedAgentId(agent.id);
+                                                                            setIsAgentDropdownOpen(false);
+                                                                            setAgentSearch("");
+                                                                        }}
+                                                                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-start gap-3 group ${
+                                                                            selectedAgentId === agent.id
+                                                                            ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                                                                            : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300'
+                                                                        }`}
+                                                                    >
+                                                                        <div className={`mt-0.5 w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${
+                                                                            selectedAgentId === agent.id
+                                                                            ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300'
+                                                                            : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400 group-hover:bg-white group-hover:shadow-sm dark:group-hover:bg-white/10'
+                                                                        }`}>
+                                                                            <span className="material-icons-outlined text-base">{agent.icon}</span>
                                                                         </div>
-                                                                    </div>
-                                                                    {selectedRepo === repo.name && (
-                                                                        <span className="material-icons-outlined text-purple-500 text-sm">check_circle</span>
-                                                                    )}
-                                                                </button>
-                                                            ))}
-                                                        </>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <div className="font-medium">{agent.label}</div>
+                                                                            <div className="text-[10px] opacity-70 leading-snug mt-0.5">
+                                                                                {agent.description}
+                                                                            </div>
+                                                                        </div>
+                                                                        {selectedAgentId === agent.id && (
+                                                                            <span className="material-icons-outlined text-purple-500 text-sm mt-1">check_circle</span>
+                                                                        )}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        ))
                                                     )}
-                                                </div>
-                                                <div className="p-2 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
-                                                    <button
-                                                        onClick={() => onNavigate('create-repo')}
-                                                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-dashed border-slate-300 dark:border-white/20 text-slate-500 dark:text-gray-400 hover:text-purple-600 hover:border-purple-300 dark:hover:text-purple-400 transition-colors text-xs font-medium"
-                                                    >
-                                                        <span className="material-icons-outlined text-sm">add</span>
-                                                        Create New Library
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Mode Selection Dropdown */}
-                                    <div className="relative" ref={modeDropdownRef}>
-                                        <button
-                                            onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all duration-200 shadow-sm ${
-                                                isModeDropdownOpen
-                                                ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500/20'
-                                                : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400'
-                                            }`}
-                                        >
-                                            <span className={`material-icons-outlined text-lg ${selectedMode ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'}`}>
-                                                {selectedMode === "Agent Settings" ? 'smart_toy' : 'layers'}
-                                            </span>
-                                            <span className="font-medium">{selectedMode}</span>
-                                            <span className={`material-icons-outlined text-sm transition-transform duration-200 ${isModeDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
-                                        </button>
-                                        {isModeDropdownOpen && (
-                                            <div className="absolute top-full left-0 mt-3 w-56 bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-100">
-                                                <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 bg-slate-50/50 dark:bg-white/5">Generation Mode</div>
-                                                <div className="p-1">
-                                                    {MODES.map(mode => (
-                                                        <button
-                                                            key={mode}
-                                                            onClick={() => {
-                                                                setSelectedMode(mode);
-                                                                setIsModeDropdownOpen(false);
-                                                            }}
-                                                            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 group ${
-                                                                selectedMode === mode
-                                                                ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
-                                                                : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300'
-                                                            }`}
-                                                        >
-                                                            <span className={`material-icons-outlined text-lg ${
-                                                                selectedMode === mode ? 'text-purple-500' : 'text-slate-400 group-hover:text-purple-400'
-                                                            }`}>
-                                                                {mode === "Agent Settings" ? 'smart_toy' :
-                                                                 mode === "Storyboard" ? 'auto_stories' : 'movie_filter'}
-                                                            </span>
-                                                            <span className="font-medium">{mode}</span>
-                                                            {selectedMode === mode && (
-                                                                <span className="material-icons-outlined text-purple-500 text-sm ml-auto">check</span>
-                                                            )}
-                                                        </button>
-                                                    ))}
                                                 </div>
                                             </div>
                                         )}
                                     </div>
                                 </div>
+
                                 <button
                                     onClick={handleSubmit}
                                     disabled={isProcessing}
@@ -377,14 +371,14 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                     <button
                                         key={repo.id}
                                         onClick={() => {
-                                            setSelectedRepo(repo.name);
+                                            // Handle repo selection if needed
                                             if (onSelectRepo) {
                                                 onSelectRepo(repo);
                                             }
                                         }}
-                                        className={`bg-white dark:bg-white/5 border rounded-xl p-4 text-left hover:border-purple-500/50 transition-all flex items-center gap-3 shadow-sm hover:shadow-md ${selectedRepo === repo.name ? 'border-purple-500 bg-purple-500/5' : 'border-slate-200 dark:border-white/10'}`}
+                                        className={`bg-white dark:bg-white/5 border rounded-xl p-4 text-left hover:border-purple-500/50 transition-all flex items-center gap-3 shadow-sm hover:shadow-md border-slate-200 dark:border-white/10`}
                                     >
-                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedRepo === repo.name ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-600' : 'bg-slate-100 dark:bg-white/10 text-slate-400'}`}>
+                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-white/10 text-slate-400`}>
                                             <span className="material-icons-outlined">movie</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -394,9 +388,6 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                                 {new Date(repo.created).toLocaleDateString()}
                                             </div>
                                         </div>
-                                        {selectedRepo === repo.name && (
-                                            <span className="material-icons-outlined text-purple-500 text-sm">check_circle</span>
-                                        )}
                                     </button>
                                 ))}
                             </div>
@@ -414,6 +405,20 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                 </div>
                 <div className="h-20"></div>
             </div>
+
+            {/* Asset Library Modal Overlay */}
+            {showAssetLibrary && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <AssetLibrary
+                        isModal
+                        onClose={() => setShowAssetLibrary(false)}
+                        onSelect={(assets) => {
+                            setSelectedAssetIds(prev => [...new Set([...prev, ...assets])]);
+                            setShowAssetLibrary(false);
+                        }}
+                    />
+                </div>
+            )}
         </div>
     );
 };
