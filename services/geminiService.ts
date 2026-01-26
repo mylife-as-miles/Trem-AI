@@ -205,6 +205,8 @@ export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
 
 // @ts-ignore
 import remotionGenerationPrompt from '../prompts/remotion-generation.md?raw';
+// @ts-ignore
+import remotionSkills from '../prompts/remotion-skills-combined.md?raw';
 
 export const generateRemotionProject = async (userPrompt: string): Promise<Record<string, string>> => {
   if (!ai) {
@@ -217,7 +219,9 @@ export const generateRemotionProject = async (userPrompt: string): Promise<Recor
   }
 
   try {
-    const promptText = remotionGenerationPrompt.replace('{{USER_PROMPT}}', userPrompt);
+    const promptText = remotionGenerationPrompt
+        .replace('{{USER_PROMPT}}', userPrompt)
+        .replace('{{REMOTION_SKILLS}}', remotionSkills);
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',

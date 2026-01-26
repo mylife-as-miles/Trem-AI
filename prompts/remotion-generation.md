@@ -42,6 +42,11 @@ You excel at:
    - For Remotion components (`Video`, `Img`, `AbsoluteFill`), use `style={{ ... }}` if `className` is not supported or for dynamic values (like `opacity`, `transform`).
    - *Note*: `AbsoluteFill` supports `className`.
 
+## Remotion Best Practices (Official)
+Adhere to the following advanced best practices derived from the official Remotion documentation:
+
+{{REMOTION_SKILLS}}
+
 ---
 
 # Output Schema (Strict JSON)
