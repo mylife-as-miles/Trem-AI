@@ -223,17 +223,36 @@ export const generateRemotionProject = async (userPrompt: string): Promise<Recor
         .replace('{{USER_PROMPT}}', userPrompt)
         .replace('{{REMOTION_SKILLS}}', remotionSkills);
 
+    const model = 'gemini-3-pro-preview';
+
+    // Config with thinking and code execution
+    const config = {
+        thinkingConfig: {
+            thinkingLevel: 'HIGH',
+        },
+        tools: [
+            { codeExecution: {} }
+        ],
+        // Note: For gemini-3-pro-preview, 'responseMimeType: application/json' might conflict with Thinking/Code Execution
+        // if the model decides to output text first. However, we need strict JSON.
+        // Strategy: Let the model think, execute code, and we rely on the final text part being JSON
+        // or finding JSON in the text. We remove explicit responseMimeType enforcement to allow thinking blocks.
+    };
+
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      generationConfig: {
-        responseMimeType: 'application/json'
-      },
+      model,
+      config: config as any,
       contents: [{ role: 'user', parts: [{ text: promptText }] }]
     } as any);
 
+    // With Thinking model, response might contain multiple parts (thought, code result, text).
+    // We typically want the final text response.
     const text = response.text || "{}";
+
+    // Log thinking for debugging if available (usually in metadata or separate parts, handled by extractJSON logic essentially)
+
     const json = extractJSON(text);
-    return json.files || json; // Support both new nested schema and legacy flat schema if model hallucinates
+    return json.files || json;
 
   } catch (error) {
     console.error("Remotion Generation Failed:", error);
