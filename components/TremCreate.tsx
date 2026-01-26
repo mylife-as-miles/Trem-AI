@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { generateRemotionProject } from '../services/geminiService';
 import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
@@ -17,7 +17,7 @@ const SUGGESTIONS = [
     "Generate a software demo walkthrough with voiceover"
 ];
 
-const MODES = ["Concept Generation", "Storyboard", "Render"];
+const MODES = ["Agent Settings", "Storyboard", "Render"];
 
 const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => {
     const [prompt, setPrompt] = useState("");
@@ -35,10 +35,13 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
     const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
     const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
     const [repos, setRepos] = useState<RepoData[]>([]);
+    const [repoSearch, setRepoSearch] = useState("");
+    const repoDropdownRef = useRef<HTMLDivElement>(null);
 
     // Mode Selection State
-    const [selectedMode, setSelectedMode] = useState<string>("Concept Generation");
+    const [selectedMode, setSelectedMode] = useState<string>("Agent Settings");
     const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
+    const modeDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const loadRepos = async () => {
@@ -50,6 +53,21 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
             }
         };
         loadRepos();
+
+        // Click outside listener
+        const handleClickOutside = (event: MouseEvent) => {
+            if (repoDropdownRef.current && !repoDropdownRef.current.contains(event.target as Node)) {
+                setIsRepoDropdownOpen(false);
+            }
+            if (modeDropdownRef.current && !modeDropdownRef.current.contains(event.target as Node)) {
+                setIsModeDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     // Typewriter Effect
@@ -113,6 +131,10 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
         }
     }
 
+    const filteredRepos = repos.filter(repo =>
+        repo.name.toLowerCase().includes(repoSearch.toLowerCase())
+    );
+
     return (
         <div className="flex flex-col min-h-full">
             {/* Top Navigation Header */}
@@ -162,67 +184,150 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                 </div>
                             )}
 
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-2 border-t border-slate-100 dark:border-white/10 gap-4 sm:gap-0">
-                                <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-slate-100 dark:border-white/10 gap-4 sm:gap-0">
+                                <div className="flex flex-wrap gap-3">
 
 
-                                    {/* Repo Selection Dropdown */}
-                                    <div className="relative">
+                                    {/* Advanced Asset Library (Repo) Selection Dropdown */}
+                                    <div className="relative" ref={repoDropdownRef}>
                                         <button
                                             onClick={() => setIsRepoDropdownOpen(!isRepoDropdownOpen)}
-                                            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-gray-400 hover:border-purple-500/50 hover:text-purple-500 transition-colors"
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all duration-200 shadow-sm ${
+                                                isRepoDropdownOpen
+                                                ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500/20'
+                                                : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400'
+                                            }`}
                                         >
-                                            <span className="material-icons-outlined text-sm text-purple-500">folder_open</span>
-                                            <span>{selectedRepo || "Select Project"}</span>
-                                            <span className="material-icons-outlined text-[10px] ml-1 opacity-60">expand_more</span>
+                                            <span className={`material-icons-outlined text-lg ${selectedRepo ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'}`}>
+                                                {selectedRepo ? 'video_library' : 'add_circle'}
+                                            </span>
+                                            <span className="font-medium">{selectedRepo || "Add Asset Library"}</span>
+                                            <span className={`material-icons-outlined text-sm transition-transform duration-200 ${isRepoDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
                                         </button>
+
                                         {isRepoDropdownOpen && (
-                                            <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-surface-card border border-slate-200 dark:border-white/10 rounded-lg shadow-xl z-50 overflow-hidden py-1">
-                                                {repos.length === 0 && (
-                                                    <div className="px-4 py-2 text-xs text-slate-400 italic">No projects found</div>
-                                                )}
-                                                {repos.map(repo => (
+                                            <div className="absolute top-full left-0 mt-3 w-80 bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 flex flex-col origin-top-left animate-in fade-in zoom-in-95 duration-100">
+                                                <div className="p-3 border-b border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
+                                                    <div className="relative">
+                                                        <span className="absolute left-3 top-2.5 material-icons-outlined text-slate-400 text-sm">search</span>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search libraries..."
+                                                            className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none text-slate-700 dark:text-gray-200 placeholder-slate-400"
+                                                            value={repoSearch}
+                                                            onChange={(e) => setRepoSearch(e.target.value)}
+                                                            autoFocus
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
+                                                    {filteredRepos.length === 0 ? (
+                                                        <div className="px-4 py-8 text-center">
+                                                            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 mb-2">
+                                                                <span className="material-icons-outlined text-slate-400">inventory_2</span>
+                                                            </div>
+                                                            <p className="text-xs text-slate-500 dark:text-gray-500">No libraries found</p>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500">Available Libraries</div>
+                                                            {filteredRepos.map(repo => (
+                                                                <button
+                                                                    key={repo.id}
+                                                                    onClick={() => {
+                                                                        setSelectedRepo(repo.name);
+                                                                        setIsRepoDropdownOpen(false);
+                                                                        setRepoSearch("");
+                                                                    }}
+                                                                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 group ${
+                                                                        selectedRepo === repo.name
+                                                                        ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                                                                        : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300'
+                                                                    }`}
+                                                                >
+                                                                    <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${
+                                                                        selectedRepo === repo.name
+                                                                        ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300'
+                                                                        : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400 group-hover:bg-white group-hover:shadow-sm dark:group-hover:bg-white/10'
+                                                                    }`}>
+                                                                        <span className="material-icons-outlined text-lg">folder</span>
+                                                                    </div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="font-medium truncate">{repo.name}</div>
+                                                                        <div className="text-[10px] opacity-60 flex items-center gap-1">
+                                                                            <span>{new Date(repo.created).toLocaleDateString()}</span>
+                                                                            <span>•</span>
+                                                                            <span>Video Project</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    {selectedRepo === repo.name && (
+                                                                        <span className="material-icons-outlined text-purple-500 text-sm">check_circle</span>
+                                                                    )}
+                                                                </button>
+                                                            ))}
+                                                        </>
+                                                    )}
+                                                </div>
+                                                <div className="p-2 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
                                                     <button
-                                                        key={repo.id}
-                                                        onClick={() => {
-                                                            setSelectedRepo(repo.name);
-                                                            setIsRepoDropdownOpen(false);
-                                                        }}
-                                                        className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-white/5 hover:text-purple-500 transition-colors font-mono flex items-center gap-2 ${selectedRepo === repo.name ? 'text-purple-500 bg-purple-500/5' : 'text-slate-600 dark:text-gray-300'}`}
+                                                        onClick={() => onNavigate('create-repo')}
+                                                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-dashed border-slate-300 dark:border-white/20 text-slate-500 dark:text-gray-400 hover:text-purple-600 hover:border-purple-300 dark:hover:text-purple-400 transition-colors text-xs font-medium"
                                                     >
-                                                        <span className={`material-icons-outlined text-[10px] ${selectedRepo === repo.name ? 'opacity-100' : 'opacity-0'}`}>check</span>
-                                                        {repo.name}
+                                                        <span className="material-icons-outlined text-sm">add</span>
+                                                        Create New Library
                                                     </button>
-                                                ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Mode Selection Dropdown */}
-                                    <div className="relative">
+                                    <div className="relative" ref={modeDropdownRef}>
                                         <button
                                             onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
-                                            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-gray-400 hover:border-purple-500/50 hover:text-purple-500 transition-colors"
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all duration-200 shadow-sm ${
+                                                isModeDropdownOpen
+                                                ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500/20'
+                                                : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400'
+                                            }`}
                                         >
-                                            <span className="material-icons-outlined text-sm text-purple-500">layers</span>
-                                            <span>{selectedMode}</span>
-                                            <span className="material-icons-outlined text-[10px] ml-1 opacity-60">expand_more</span>
+                                            <span className={`material-icons-outlined text-lg ${selectedMode ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'}`}>
+                                                {selectedMode === "Agent Settings" ? 'smart_toy' : 'layers'}
+                                            </span>
+                                            <span className="font-medium">{selectedMode}</span>
+                                            <span className={`material-icons-outlined text-sm transition-transform duration-200 ${isModeDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
                                         </button>
                                         {isModeDropdownOpen && (
-                                            <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-surface-card border border-slate-200 dark:border-white/10 rounded-lg shadow-xl z-50 overflow-hidden py-1">
-                                                {MODES.map(mode => (
-                                                    <button
-                                                        key={mode}
-                                                        onClick={() => {
-                                                            setSelectedMode(mode);
-                                                            setIsModeDropdownOpen(false);
-                                                        }}
-                                                        className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-100 dark:hover:bg-white/5 hover:text-purple-500 transition-colors font-mono flex items-center gap-2 ${selectedMode === mode ? 'text-purple-500 bg-purple-500/5' : 'text-slate-600 dark:text-gray-300'}`}
-                                                    >
-                                                        <span className={`material-icons-outlined text-[10px] ${selectedMode === mode ? 'opacity-100' : 'opacity-0'}`}>check</span>
-                                                        {mode}
-                                                    </button>
-                                                ))}
+                                            <div className="absolute top-full left-0 mt-3 w-56 bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-100">
+                                                <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 bg-slate-50/50 dark:bg-white/5">Generation Mode</div>
+                                                <div className="p-1">
+                                                    {MODES.map(mode => (
+                                                        <button
+                                                            key={mode}
+                                                            onClick={() => {
+                                                                setSelectedMode(mode);
+                                                                setIsModeDropdownOpen(false);
+                                                            }}
+                                                            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 group ${
+                                                                selectedMode === mode
+                                                                ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                                                                : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300'
+                                                            }`}
+                                                        >
+                                                            <span className={`material-icons-outlined text-lg ${
+                                                                selectedMode === mode ? 'text-purple-500' : 'text-slate-400 group-hover:text-purple-400'
+                                                            }`}>
+                                                                {mode === "Agent Settings" ? 'smart_toy' :
+                                                                 mode === "Storyboard" ? 'auto_stories' : 'movie_filter'}
+                                                            </span>
+                                                            <span className="font-medium">{mode}</span>
+                                                            {selectedMode === mode && (
+                                                                <span className="material-icons-outlined text-purple-500 text-sm ml-auto">check</span>
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -230,8 +335,9 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                 <button
                                     onClick={handleSubmit}
                                     disabled={isProcessing}
-                                    className={`bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-lg transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center ${isProcessing ? 'opacity-75 cursor-not-allowed' : ''}`}
+                                    className={`bg-purple-600 hover:bg-purple-700 text-white p-3 px-6 rounded-xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center shadow-lg shadow-purple-600/20 ${isProcessing ? 'opacity-75 cursor-not-allowed' : ''}`}
                                 >
+                                    <span className="font-medium mr-2">{isProcessing ? 'Generating...' : 'Generate Video'}</span>
                                     <span className={`material-icons-outlined ${isProcessing ? 'animate-spin' : ''}`}>
                                         {isProcessing ? 'sync' : 'auto_fix_high'}
                                     </span>
@@ -252,7 +358,7 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                 <button
                                     key={i}
                                     onClick={() => setPrompt(suggestion)}
-                                    className="px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-500 hover:bg-purple-500/5 transition-all group flex items-center gap-2"
+                                    className="px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-500 hover:bg-purple-500/5 transition-all group flex items-center gap-2 shadow-sm"
                                 >
                                     <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-purple-500 transition-colors">lightbulb</span>
                                     {suggestion}
@@ -276,12 +382,15 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                                 onSelectRepo(repo);
                                             }
                                         }}
-                                        className={`bg-white dark:bg-white/5 border rounded-lg p-4 text-left hover:border-purple-500/50 transition-all flex items-center gap-3 ${selectedRepo === repo.name ? 'border-purple-500 bg-purple-500/5' : 'border-slate-200 dark:border-white/10'}`}
+                                        className={`bg-white dark:bg-white/5 border rounded-xl p-4 text-left hover:border-purple-500/50 transition-all flex items-center gap-3 shadow-sm hover:shadow-md ${selectedRepo === repo.name ? 'border-purple-500 bg-purple-500/5' : 'border-slate-200 dark:border-white/10'}`}
                                     >
-                                        <span className="material-icons-outlined text-purple-400">movie</span>
+                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${selectedRepo === repo.name ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-600' : 'bg-slate-100 dark:bg-white/10 text-slate-400'}`}>
+                                            <span className="material-icons-outlined">movie</span>
+                                        </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="font-mono text-sm font-bold text-slate-800 dark:text-white truncate">{repo.name}</div>
-                                            <div className="text-[10px] text-slate-400 dark:text-gray-500 font-mono">
+                                            <div className="font-display text-sm font-bold text-slate-800 dark:text-white truncate">{repo.name}</div>
+                                            <div className="text-[10px] text-slate-400 dark:text-gray-500 font-mono flex items-center gap-1 mt-0.5">
+                                                <span className="material-icons-outlined text-[10px]">schedule</span>
                                                 {new Date(repo.created).toLocaleDateString()}
                                             </div>
                                         </div>
@@ -294,8 +403,11 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                         </div>
                     )}
                 </div>
-                <div className="mt-12 p-4 rounded-lg bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-900/20 text-center">
-                    <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-mono mb-1">Generative Video Engine</h4>
+                <div className="mt-12 p-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-900/20 text-center">
+                    <h4 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 font-mono mb-1 flex items-center justify-center gap-2">
+                        <span className="material-icons-outlined text-sm">psychology</span>
+                        Generative Video Engine
+                    </h4>
                     <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80">
                         Trem Create uses advanced generative models. Results may vary based on complexity.
                     </p>

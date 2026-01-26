@@ -8,7 +8,6 @@ interface AssetLibraryProps {
 }
 
 const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect }) => {
-    const [activeFilters, setActiveFilters] = useState<string[]>(['Vision_Pro_v4']);
     const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
     const [assets, setAssets] = useState<AssetData[]>([]);
     const [isDragging, setIsDragging] = useState(false);
@@ -30,14 +29,6 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
         const interval = setInterval(loadAssets, 5000);
         return () => clearInterval(interval);
     }, []);
-
-    const toggleFilter = (filter: string) => {
-        if (activeFilters.includes(filter)) {
-            setActiveFilters(activeFilters.filter(f => f !== filter));
-        } else {
-            setActiveFilters([...activeFilters, filter]);
-        }
-    };
 
     const toggleAssetSelection = (assetId: string) => {
         if (selectedAssets.includes(assetId)) {
@@ -182,7 +173,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
 
     return (
         <div
-            className={`flex bg-background-dark text-white font-sans overflow-hidden selection:bg-primary selection:text-white ${isModal ? 'h-[80vh] w-full rounded-xl border border-white/10 shadow-2xl' : 'h-screen'}`}
+            className={`flex bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans overflow-hidden selection:bg-primary selection:text-white ${isModal ? 'h-[80vh] w-full rounded-xl border border-slate-200 dark:border-white/10 shadow-2xl' : 'h-screen'}`}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
@@ -206,64 +197,20 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                 </div>
             )}
 
-            {/* Sidebar - Hide if modal */}
-            {!isModal && (
-                <aside className="w-72 flex-shrink-0 flex flex-col border-r border-white/10 bg-black z-20">
-                    <div className="h-20 flex items-center px-6 border-b border-white/10">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
-                                <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
-                            </div>
-                            <span className="font-display font-bold text-2xl tracking-tight text-white">Trem</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                        {/* Existing Filters - Kept for visual consistency */}
-                        <div>
-                            <h3 className="text-xs font-mono uppercase tracking-widest text-gray-500 mb-4 font-bold flex items-center gap-2">
-                                <span className="material-icons-outlined text-sm">calendar_today</span> Date Uploaded
-                            </h3>
-                            <ul className="space-y-2 font-mono text-sm text-gray-400">
-                                {['Last 24 Hours', 'Past Week', 'Past Month'].map((label) => (
-                                    <li key={label}
-                                        className={`flex items-center gap-3 cursor-pointer group transition-colors ${activeFilters.includes(label) ? 'text-white' : 'hover:text-primary'}`}
-                                        onClick={() => toggleFilter(label)}
-                                    >
-                                        <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${activeFilters.includes(label) ? 'bg-primary border-primary' : 'border-white/20 group-hover:border-primary'}`}>
-                                            {activeFilters.includes(label) && <span className="material-icons-outlined text-[10px] text-white">check</span>}
-                                        </div>
-                                        <span>{label}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </aside>
-            )}
-
             {/* Main Content */}
-            <main className="flex-1 flex flex-col relative bg-background-dark overflow-hidden">
-                <header className={`h-20 flex-shrink-0 flex items-center justify-between px-8 border-b border-white/10 bg-black/80 backdrop-blur-md sticky top-0 z-30 ${isModal ? 'bg-black' : ''}`}>
+            <main className="flex-1 flex flex-col relative bg-slate-50 dark:bg-background-dark overflow-hidden">
+                <header className={`h-20 flex-shrink-0 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-30 ${isModal ? 'bg-white dark:bg-black' : ''}`}>
                     <div className="flex flex-col justify-center">
-                        <h1 className="text-2xl font-display font-bold text-white tracking-tight">{isModal ? 'Select Assets' : 'Asset Library'}</h1>
-                        {!isModal && (
-                            <div className="flex items-center gap-2 text-xs font-mono text-gray-500 mt-1">
-                                <span className="hover:text-primary cursor-pointer transition-colors">client</span>
-                                <span className="text-white/20">/</span>
-                                <span className="hover:text-primary cursor-pointer transition-colors">nike-commercial</span>
-                                <span className="text-white/20">/</span>
-                                <span className="text-primary">media</span>
-                            </div>
-                        )}
+                        <h1 className="text-2xl font-display font-bold text-slate-900 dark:text-white tracking-tight">{isModal ? 'Select Assets' : 'Asset Library'}</h1>
                     </div>
                     <div className="flex items-center gap-6 flex-1 justify-end">
                         {!isModal && (
                             <div className="relative group max-w-xl w-full">
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-emerald-900/50 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-                                <div className="relative flex items-center bg-black border border-white/10 rounded-lg overflow-hidden group-focus-within:border-primary/50 transition-colors">
-                                    <span className="material-icons-outlined text-gray-500 pl-3">search</span>
+                                <div className="relative flex items-center bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-lg overflow-hidden group-focus-within:border-primary/50 transition-colors">
+                                    <span className="material-icons-outlined text-slate-400 dark:text-gray-500 pl-3">search</span>
                                     <input
-                                        className="w-full bg-transparent border-none text-sm text-white placeholder-gray-600 focus:ring-0 py-2.5 px-3 font-mono focus:outline-none"
+                                        className="w-full bg-transparent border-none text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-600 focus:ring-0 py-2.5 px-3 font-mono focus:outline-none"
                                         placeholder="Show me all clips with red shoes and running."
                                         type="text"
                                     />
@@ -272,12 +219,12 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                         )}
                         {isModal ? (
                             <div className="flex items-center gap-3">
-                                <div className="text-sm font-mono text-gray-400">
+                                <div className="text-sm font-mono text-slate-500 dark:text-gray-400">
                                     {selectedAssets.length} selected
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                                    className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -292,7 +239,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                         ) : (
                             <button
                                 onClick={triggerFileInput}
-                                className="bg-primary hover:bg-primary_hover text-white px-5 py-2.5 rounded-lg text-sm font-medium font-display tracking-wide transition-all flex items-center gap-2 whitespace-nowrap active:scale-95"
+                                className="bg-primary hover:bg-primary_hover text-white px-5 py-2.5 rounded-lg text-sm font-medium font-display tracking-wide transition-all flex items-center gap-2 whitespace-nowrap active:scale-95 shadow-md hover:shadow-lg"
                             >
                                 <span className="material-icons-outlined text-lg">cloud_upload</span>
                                 Upload Files
@@ -308,12 +255,12 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                         {/* Upload Placeholder - First Item */}
                         <div
                             onClick={triggerFileInput}
-                            className="relative group w-full aspect-[16/9] bg-black rounded-lg overflow-hidden border border-dashed border-white/10 hover:border-primary transition-all duration-300 flex flex-col items-center justify-center cursor-pointer mb-6 break-inside-avoid"
+                            className="relative group w-full aspect-[16/9] bg-white dark:bg-black rounded-xl overflow-hidden border border-dashed border-slate-300 dark:border-white/10 hover:border-primary dark:hover:border-primary transition-all duration-300 flex flex-col items-center justify-center cursor-pointer mb-6 break-inside-avoid shadow-sm hover:shadow-md"
                         >
-                            <div className="text-gray-600 mb-2 group-hover:text-primary transition-colors">
+                            <div className="text-slate-400 dark:text-gray-600 mb-2 group-hover:text-primary transition-colors">
                                 <span className="material-icons-outlined text-4xl">add_circle_outline</span>
                             </div>
-                            <div className="text-xs font-mono text-gray-500 uppercase tracking-widest group-hover:text-primary transition-colors">Upload New</div>
+                            <div className="text-xs font-mono text-slate-500 dark:text-gray-500 uppercase tracking-widest group-hover:text-primary transition-colors">Upload New</div>
                         </div>
 
                         {assets.map((asset) => (
@@ -321,12 +268,12 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                 key={asset.id}
                                 onClick={() => isModal && toggleAssetSelection(asset.id)}
                                 className={`
-                                    relative group w-full bg-black rounded-lg overflow-hidden border transition-all duration-300 mb-6 break-inside-avoid
+                                    relative group w-full bg-white dark:bg-black rounded-xl overflow-hidden border transition-all duration-300 mb-6 break-inside-avoid shadow-sm
                                     ${isModal && selectedAssets.includes(asset.id)
                                         ? 'border-primary ring-2 ring-primary/50 shadow-lg scale-[1.02]'
-                                        : 'border-white/10 hover:border-primary'
+                                        : 'border-slate-200 dark:border-white/10 hover:border-primary dark:hover:border-primary'
                                     }
-                                    ${!isModal && 'hover:border-primary shadow-lg ring-0 hover:ring-2 ring-primary/20'}
+                                    ${!isModal && 'hover:shadow-xl hover:translate-y-[-2px]'}
                                     ${isModal ? 'cursor-pointer' : ''}
                                 `}
                             >
@@ -340,8 +287,8 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                             loading="lazy"
                                         />
                                     ) : (
-                                        <div className="w-full aspect-video bg-gray-900 flex items-center justify-center">
-                                            <span className="material-icons-outlined text-4xl text-gray-600">
+                                        <div className="w-full aspect-video bg-slate-200 dark:bg-gray-900 flex items-center justify-center">
+                                            <span className="material-icons-outlined text-4xl text-slate-400 dark:text-gray-600">
                                                 {asset.type === 'image' ? 'image' : 'movie'}
                                             </span>
                                         </div>
