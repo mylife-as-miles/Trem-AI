@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { generateRemotionProject } from '../services/geminiService';
 import TopNavigation from './TopNavigation';
-import { db, RepoData } from '../utils/db';
+import { db, RepoData, AssetData } from '../utils/db';
 import AssetLibrary from './AssetLibrary';
 
 interface TremCreateProps {
@@ -41,7 +41,6 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
     const [prompt, setPrompt] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
-    const [generatedFiles, setGeneratedFiles] = useState<Record<string, string> | null>(null);
 
     // Typewriter State
     const [suggestionIndex, setSuggestionIndex] = useState(0);
@@ -128,13 +127,43 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
         if (!prompt.trim()) return;
         setIsProcessing(true);
         setFeedback(null);
-        setGeneratedFiles(null);
 
         try {
-            const files = await generateRemotionProject(prompt);
-            setGeneratedFiles(files);
+            // 1. Generate Files
+            const generatedFiles = await generateRemotionProject(prompt);
             setFeedback("Project structure generated successfully.");
+
+            // 2. Resolve Assets
+            const resolvedAssets: AssetData[] = [];
+            if (selectedAssetIds.length > 0) {
+                const assets = await Promise.all(selectedAssetIds.map(id => db.getAsset(id)));
+                assets.forEach(a => {
+                    if (a) resolvedAssets.push(a);
+                });
+            }
+
+            // 3. Create Repo in DB
+            const newRepo: Omit<RepoData, 'id'> = {
+                name: prompt.length > 40 ? prompt.substring(0, 40) + "..." : prompt,
+                brief: prompt,
+                assets: resolvedAssets,
+                fileSystem: Object.entries(generatedFiles).map(([path, content]) => ({ path, content })),
+                created: Date.now()
+            };
+
+            const newRepoId = await db.addRepo(newRepo);
+
+            // 4. Select Repo & Navigate
+            if (onSelectRepo) {
+                onSelectRepo({ ...newRepo, id: newRepoId });
+                // Navigation happens in onSelectRepo or implicit view switch
+            } else {
+                // Fallback if no select handler
+                onNavigate('repo');
+            }
+
         } catch (e) {
+            console.error(e);
             setFeedback("Error generating project. Please try again.");
         } finally {
             setIsProcessing(false);
@@ -180,51 +209,43 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                     <div className="relative group">
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/30 to-rose-600/30 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
                         <div className="relative bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
+
+                            {/* Combined Input Container */}
                             <div className="flex gap-4">
                                 <span className="pt-2 text-purple-500 font-mono text-lg select-none font-bold">&gt;</span>
-                                <textarea
-                                    className="w-full bg-transparent border-none focus:ring-0 text-lg md:text-xl font-display text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-gray-600 resize-none h-24 p-1 leading-relaxed caret-purple-500 font-medium outline-none"
-                                    placeholder={displayedPlaceholder}
-                                    value={prompt}
-                                    onChange={(e) => setPrompt(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                />
+
+                                <div className="flex-1 flex flex-col gap-3">
+                                    {/* Selected Assets as Thumbnails inside input flow */}
+                                    {selectedAssetIds.length > 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {selectedAssetIds.map(id => (
+                                                <div key={id} className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 text-xs font-medium text-purple-700 dark:text-purple-300 animate-in fade-in zoom-in-95 duration-200">
+                                                    <span className="material-icons-outlined text-[10px]">movie</span>
+                                                    <span>Asset {id.slice(0, 4)}...</span>
+                                                    <button
+                                                        onClick={() => setSelectedAssetIds(prev => prev.filter(p => p !== id))}
+                                                        className="hover:text-purple-900 dark:hover:text-white p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                                                    >
+                                                        <span className="material-icons-outlined text-[10px] block">close</span>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <textarea
+                                        className="w-full bg-transparent border-none focus:ring-0 text-lg md:text-xl font-display text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-gray-600 resize-none h-24 p-0 leading-relaxed caret-purple-500 font-medium outline-none"
+                                        placeholder={displayedPlaceholder}
+                                        value={prompt}
+                                        onChange={(e) => setPrompt(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </div>
                             </div>
 
                             {feedback && (
                                 <div className="ml-8 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg text-sm text-purple-500 font-mono mb-2">
                                     <span className="font-bold mr-2">Status:</span> {feedback}
-                                </div>
-                            )}
-
-                            {generatedFiles && (
-                                <div className="ml-8 mt-2 space-y-2">
-                                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Generated Files</div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                        {Object.keys(generatedFiles).map(fileName => (
-                                            <div key={fileName} className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded p-3 text-sm font-mono text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                                                <span className="material-icons-outlined text-xs text-purple-500">code</span>
-                                                {fileName}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {selectedAssetIds.length > 0 && (
-                                <div className="ml-8 flex flex-wrap gap-2">
-                                    {selectedAssetIds.map(id => (
-                                        <div key={id} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 text-xs font-medium text-purple-700 dark:text-purple-300">
-                                            <span className="material-icons-outlined text-[10px]">movie</span>
-                                            <span>Asset {id.slice(0, 4)}...</span>
-                                            <button
-                                                onClick={() => setSelectedAssetIds(prev => prev.filter(p => p !== id))}
-                                                className="hover:text-purple-900 dark:hover:text-white"
-                                            >
-                                                <span className="material-icons-outlined text-[10px]">close</span>
-                                            </button>
-                                        </div>
-                                    ))}
                                 </div>
                             )}
 
