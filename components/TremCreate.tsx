@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { generateRemotionProject } from '../services/geminiService';
+import { generateRemotionProject } from '../services/gemini/create/index';
 import TopNavigation from './TopNavigation';
 import { db, RepoData, AssetData } from '../utils/db';
 import AssetLibrary from './AssetLibrary';
@@ -268,11 +268,10 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                     <div className="relative" ref={agentDropdownRef}>
                                         <button
                                             onClick={() => setIsAgentDropdownOpen(!isAgentDropdownOpen)}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all duration-200 shadow-sm ${
-                                                isAgentDropdownOpen
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all duration-200 shadow-sm ${isAgentDropdownOpen
                                                 ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500/20'
                                                 : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400'
-                                            }`}
+                                                }`}
                                         >
                                             <span className={`material-icons-outlined text-lg ${isAgentDropdownOpen ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'}`}>
                                                 {activeAgent.icon}
@@ -314,17 +313,15 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
                                                                             setIsAgentDropdownOpen(false);
                                                                             setAgentSearch("");
                                                                         }}
-                                                                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-start gap-3 group ${
-                                                                            selectedAgentId === agent.id
+                                                                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-start gap-3 group ${selectedAgentId === agent.id
                                                                             ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
                                                                             : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300'
-                                                                        }`}
+                                                                            }`}
                                                                     >
-                                                                        <div className={`mt-0.5 w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${
-                                                                            selectedAgentId === agent.id
+                                                                        <div className={`mt-0.5 w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${selectedAgentId === agent.id
                                                                             ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300'
                                                                             : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400 group-hover:bg-white group-hover:shadow-sm dark:group-hover:bg-white/10'
-                                                                        }`}>
+                                                                            }`}>
                                                                             <span className="material-icons-outlined text-base">{agent.icon}</span>
                                                                         </div>
                                                                         <div className="flex-1 min-w-0">

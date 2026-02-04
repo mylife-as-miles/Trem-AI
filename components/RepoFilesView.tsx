@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import TopNavigation from './TopNavigation';
 import { RepoData, db } from '../utils/db'; // Added db import
 import AlertDialog from './AlertDialog';
-import { analyzeAsset, generateRepoStructure } from '../services/geminiService';
+import { analyzeAsset, generateRepoStructure } from '../services/gemini/repo/index';
 import { transcribeAudio } from '../services/whisperService';
 import { extractFramesFromVideo } from '../utils/frameExtractor';
 import { extractAudioFromVideo } from '../utils/audioExtractor';

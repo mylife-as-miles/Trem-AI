@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AssetLibrary from './AssetLibrary';
 import TopNavigation from './TopNavigation';
 import { db, RepoData } from '../utils/db';
-import { generateRepoStructure, analyzeAsset } from '../services/geminiService';
+import { generateRepoStructure, analyzeAsset } from '../services/gemini/repo/index';
 import { extractAudioFromVideo } from '../utils/audioExtractor';
 import { extractFramesFromVideo } from '../utils/frameExtractor';
 import { transcribeAudio } from '../services/whisperService';
@@ -94,23 +94,17 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     if (isCancelled) return;
 
                     const workerId = (index % 4) + 1;
-                    updateWorker(workerId, 'analyzing', `Frame Analysis: ${asset.name}`);
+                    updateWorker(workerId, 'analyzing', `Frame Analysis: ${asset.name} `);
                     setSimLogs(prev => [...prev, `> [Worker_${workerId}] Analyzing ${asset.name} (media_resolution_low: 70 tokens)...`]);
 
                     // Update UI status to 'transcribing' / 'detecting'
                     setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'detecting', progress: 20 } : a));
 
                     try {
-                        // ... imports
-
-
-                        // ... (props/interfaces)
-
-                        // ...
 
                         // 1. Frame Analysis (Keyframe Extraction)
-                        updateWorker(workerId, 'analyzing', `Frame Analysis: ${asset.name}`);
-                        setSimLogs(prev => [...prev, `> [Worker_${workerId}] Extracting Keyframes (approx 1/5s)...`]);
+                        updateWorker(workerId, 'analyzing', `Frame Analysis: ${asset.name} `);
+                        setSimLogs(prev => [...prev, `> [Worker_${workerId}] Extracting Keyframes(approx 1 / 5s)...`]);
 
                         let keyframes: string[] = [];
                         try {
@@ -123,7 +117,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         }
 
                         // 2. Audio Transcription (Parallel)
-                        updateWorker(workerId, 'transcribing', `Audio Extraction: ${asset.name}`);
+                        updateWorker(workerId, 'transcribing', `Audio Extraction: ${asset.name} `);
                         setSimLogs(prev => [...prev, `> [Worker_${workerId}] Extracting audio track...`]);
 
                         let audioBlob: Blob | null = null;
@@ -137,7 +131,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
                         let transcriptionResult = { text: "", srt: "" };
                         if (audioBlob) {
-                            setSimLogs(prev => [...prev, `> [Worker_${workerId}] Audio Extracted. Requesting Whisper API...`]);
+                            setSimLogs(prev => [...prev, `> [Worker_${workerId}] Audio Extracted.Requesting Whisper API...`]);
                             setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'transcribing', progress: 50 } : a));
 
                             try {
@@ -145,12 +139,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                 setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription Complete.`]);
                             } catch (e) {
                                 console.error("Transcription failed", e);
-                                setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription failed. Proceeding without audio.`]);
+                                setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription failed.Proceeding without audio.`]);
                             }
                         }
 
                         // 3. Asset Context Analysis (Gemini via Keyframes)
-                        updateWorker(workerId, 'vectorizing', `Semantic Index: ${asset.name}`);
+                        updateWorker(workerId, 'vectorizing', `Semantic Index: ${asset.name} `);
                         const result = await analyzeAsset({
                             id: asset.id,
                             name: asset.name,
@@ -160,7 +154,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
                         if (isCancelled) return;
 
-                        analyzedData.push(`Asset: ${asset.name}\nDescription: ${result.description}\nTags: ${result.tags.join(', ')}\nTranscript: ${transcriptionResult.text}`);
+                        analyzedData.push(`Asset: ${asset.name} \nDescription: ${result.description} \nTags: ${result.tags.join(', ')} \nTranscript: ${transcriptionResult.text} `);
 
                         // Store frames for global context if needed (maybe limit to 5 per asset to save context window)
                         // We'll attach the first 5 frames of each asset to the global context
@@ -182,7 +176,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     } catch (e) {
                         console.error(e);
                         if (isCancelled) return;
-                        setSimLogs(prev => [...prev, `> [Worker_${workerId}] Error processing ${asset.name}`]);
+                        setSimLogs(prev => [...prev, `> [Worker_${workerId}] Error processing ${asset.name} `]);
                     }
                 };
 
@@ -192,7 +186,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 if (isCancelled) return;
 
                 // 2. Final Repo Generation
-                setSimLogs(prev => [...prev, `> Consolidating Analysis Context...`, `> Generating Semantic Baseline...`]);
+                setSimLogs(prev => [...prev, `> Consolidating Analysis Context...`, ` > Generating Semantic Baseline...`]);
                 const durationText = getTotalDurationText(selectedAssets);
                 const contextStr = analyzedData.join('\n\n');
 
@@ -225,12 +219,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 // We need the frames.
 
                 // I will assume `selectedAssets` state won't update fast enough for `runIngestion` closure to see `frames`.
-                // Ideally I'd refactor `processAsset` to return `{ id, frames, ... }`.
+                // Ideally I'd refactor `processAsset` to return `{ id, frames, ... } `.
 
                 // For this edit, I'll stick to text-based if frames are hard to aggregate without larger refactor, 
                 // OR I can use a local variable `collectedFrames` inside `runIngestion`.
 
-                // Let's assume for this specific edit we just stick to what `generateRepoStructure` signature I made: `images?: string[]`.
+                // Let's assume for this specific edit we just stick to what `generateRepoStructure` signature I made: `images ?: string[]`.
 
                 // I will add `collectedFrames` array to `runIngestion`.
 
@@ -259,7 +253,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
                 } catch (e: any) {
                     console.error("Aggregation Failed", e);
-                    setSimLogs(logs => [...logs, `> CRITICAL ERROR: ${e.message || "Semantic Analysis Failed."}`, "> Process Terminated."]);
+                    setSimLogs(logs => [...logs, `> CRITICAL ERROR: ${e.message || "Semantic Analysis Failed."} `, "> Process Terminated."]);
                     // Mark workers as failed
                     setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Failed' })));
 
@@ -283,7 +277,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             const dbAsset = await db.getAsset(id);
             return {
                 id,
-                name: dbAsset?.name || `Imported_Clip_${id}`,
+                name: dbAsset?.name || `Imported_Clip_${id} `,
                 status: 'pending' as const,
                 progress: 0,
                 duration: dbAsset?.duration,
@@ -365,7 +359,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         content: selectedAssets.map(a => a.srt).join('\n\n') || generatedRepoData.captions_srt || ''
                     },
                     ...selectedAssets.map((asset, idx) => ({
-                        id: `sub_asset_${idx}`,
+                        id: `sub_asset_${idx} `,
                         name: `${asset.name}.srt`,
                         type: 'file' as const,
                         icon: 'subtitles',
@@ -386,7 +380,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // commits/
             {
                 id: 'commits', name: 'commits', type: 'folder', children: [
-                    { id: 'commit_0001', name: '0001.json', type: 'file', icon: 'commit', iconColor: 'text-orange-400', content: JSON.stringify({ ...generatedRepoData.commit, timestamp: Date.now() } || {}, null, 2) }
+                    { id: 'commit_0001', name: '0001.json', type: 'file', icon: 'commit', iconColor: 'text-orange-400', content: JSON.stringify(generatedRepoData.commit ? { ...generatedRepoData.commit, timestamp: Date.now() } : {}, null, 2) }
                 ]
             },
 
@@ -453,7 +447,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         const mm = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
         const ss = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
 
-        return { scenes, lines, duration: `${mm}:${ss}` };
+        return { scenes, lines, duration: `${mm}:${ss} ` };
     };
 
     const stats = getStats();
@@ -471,11 +465,11 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             <p className="text-slate-500 dark:text-slate-400 mt-2">Initialize a new video workspace driven by AI context.</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className={`w-3 h-3 rounded-full ${step === 'details' ? 'bg-primary' : 'bg-primary/30'}`}></div>
+                            <div className={`w - 3 h - 3 rounded - full ${step === 'details' ? 'bg-primary' : 'bg-primary/30'} `}></div>
                             <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
-                            <div className={`w-3 h-3 rounded-full ${step === 'ingest' ? 'bg-primary' : 'bg-primary/30'}`}></div>
+                            <div className={`w - 3 h - 3 rounded - full ${step === 'ingest' ? 'bg-primary' : 'bg-primary/30'} `}></div>
                             <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
-                            <div className={`w-3 h-3 rounded-full ${step === 'commit' || isIngestionComplete ? 'bg-primary' : 'bg-primary/30'}`}></div>
+                            <div className={`w - 3 h - 3 rounded - full ${step === 'commit' || isIngestionComplete ? 'bg-primary' : 'bg-primary/30'} `}></div>
                         </div>
                     </header>
 
@@ -483,7 +477,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     <div className="flex-1 overflow-y-auto space-y-10">
 
                         {/* Step 1: Repo Details */}
-                        <section className={`transition-opacity duration-300 ${step !== 'details' && 'opacity-50 pointer-events-none'}`}>
+                        <section className={`transition - opacity duration - 300 ${step !== 'details' && 'opacity-50 pointer-events-none'} `}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-4">
                                     <label className="block text-sm font-mono text-primary font-bold uppercase tracking-wider">Repository Name</label>
@@ -521,12 +515,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         onClick={() => setIsAssetModalOpen(true)}
                                         disabled={!repoName}
                                         className={`
-                                        flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
+                                        flex items - center gap - 2 px - 4 py - 2 rounded - lg font - medium transition - all
                                         ${repoName
                                                 ? 'bg-primary hover:bg-primary_hover text-white shadow-[0_0_15px_rgba(34,197,94,0.3)]'
                                                 : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500 cursor-not-allowed'
                                             }
-                                    `}
+`}
                                     >
                                         <span className="material-icons-outlined">add_to_queue</span>
                                         Add Assets from Library
@@ -539,12 +533,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                 <div
                                     onClick={() => repoName && setIsAssetModalOpen(true)}
                                     className={`
-                                    border-2 border-dashed rounded-2xl h-48 flex flex-col items-center justify-center gap-4 transition-colors
+border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center justify - center gap - 4 transition - colors
                                     ${repoName ? 'border-slate-300 dark:border-white/10 hover:border-primary/50 cursor-pointer bg-white dark:bg-white/5' : 'border-slate-200 dark:border-white/5 bg-transparent'}
-                                `}
+`}
                                 >
-                                    <span className={`material-icons-outlined text-4xl ${repoName ? 'text-slate-400 dark:text-gray-400' : 'text-slate-300 dark:text-gray-700'}`}>folder_open</span>
-                                    <p className={`font-mono text-sm ${repoName ? 'text-slate-500 dark:text-gray-400' : 'text-slate-400 dark:text-gray-700'}`}>
+                                    <span className={`material - icons - outlined text - 4xl ${repoName ? 'text-slate-400 dark:text-gray-400' : 'text-slate-300 dark:text-gray-700'} `}>folder_open</span>
+                                    <p className={`font - mono text - sm ${repoName ? 'text-slate-500 dark:text-gray-400' : 'text-slate-400 dark:text-gray-700'} `}>
                                         {repoName ? 'Click to select footage, audio, or scripts' : 'Enter a repository name first'}
                                     </p>
                                 </div>
@@ -562,10 +556,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                                         <span className="material-icons-outlined text-slate-400 text-sm">dns</span>
                                                         <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">NODE_0{worker.id}</span>
                                                     </div>
-                                                    <div className={`w-2 h-2 rounded-full ${worker.status === 'idle' ? 'bg-slate-400' : 'bg-green-400 animate-pulse'}`}></div>
+                                                    <div className={`w - 2 h - 2 rounded - full ${worker.status === 'idle' ? 'bg-slate-400' : 'bg-green-400 animate-pulse'} `}></div>
                                                 </div>
                                                 <div className="font-mono text-xs text-slate-500 dark:text-gray-500 mb-1">STATUS</div>
-                                                <div className={`text-sm font-bold uppercase ${worker.status === 'idle' ? 'text-slate-400' : 'text-primary'}`}>
+                                                <div className={`text - sm font - bold uppercase ${worker.status === 'idle' ? 'text-slate-400' : 'text-primary'} `}>
                                                     {worker.status}
                                                 </div>
                                                 <div className="mt-2 text-[10px] font-mono text-slate-400 dark:text-gray-600 truncate">
@@ -576,7 +570,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                                     <div className="absolute bottom-0 left-0 right-0 h-8 opacity-20 pointer-events-none">
                                                         <div className="flex items-end justify-between h-full px-1">
                                                             {[...Array(10)].map((_, i) => (
-                                                                <div key={i} className="w-1 bg-primary transition-all duration-300" style={{ height: `${Math.random() * 100}%` }}></div>
+                                                                <div key={i} className="w-1 bg-primary transition-all duration-300" style={{ height: `${Math.random() * 100}% ` }}></div>
                                                             ))}
                                                         </div>
                                                     </div>
@@ -613,12 +607,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center justify-between mb-1">
                                                             <span className="font-mono text-xs font-bold truncate text-slate-900 dark:text-white max-w-[120px]">{asset.name}</span>
-                                                            <span className={`text-[10px] font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-primary' : 'text-amber-500 dark:text-yellow-500'}`}>
+                                                            <span className={`text - [10px] font - mono uppercase tracking - wider ${asset.status === 'indexed' ? 'text-primary' : 'text-amber-500 dark:text-yellow-500'} `}>
                                                                 {asset.status === 'indexed' ? 'Ready' : asset.status}
                                                             </span>
                                                         </div>
                                                         <div className="h-1 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
-                                                            <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}%` }}></div>
+                                                            <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}% ` }}></div>
                                                         </div>
                                                     </div>
                                                 </div>
