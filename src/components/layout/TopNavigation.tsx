@@ -45,7 +45,10 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) 
                 </button>
                 <div className="h-4 w-px bg-slate-300 dark:bg-white/10 mx-2"></div>
 
-                <button className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                <button
+                    onClick={() => onNavigate?.('settings')}
+                    className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                >
                     <span className="material-icons-outlined">settings</span>
                 </button>
                 <button className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 // --- Types ---
-import TopNavigation from './TopNavigation';
-import SimpleMarkdown from './SimpleMarkdown';
-import CommitDetailsView from './CommitDetailsView';
-import AlertDialog from './AlertDialog';
-import { db } from '../utils/db';
+import TopNavigation from '../../components/layout/TopNavigation';
+import SimpleMarkdown from '../../components/ui/SimpleMarkdown';
+import CommitDetailsView from './components/CommitDetails';
+import AlertDialog from '../../components/ui/AlertDialog';
+import { db } from '../../utils/db';
 
 export interface FileNode {
   id: string;
@@ -18,7 +18,7 @@ export interface FileNode {
   content?: string;
 }
 
-import { RepoData } from '../utils/db';
+import { RepoData } from '../../utils/db';
 
 
 

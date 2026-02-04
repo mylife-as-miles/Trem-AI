@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useTremStore } from '../store/useTremStore';
+import { useTremStore } from '../../store/useTremStore';
 
 interface ActivityLogsViewProps {
     repoData?: any;

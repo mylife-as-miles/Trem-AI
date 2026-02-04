@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db, AssetData } from '../utils/db';
+import { db, AssetData } from '../../utils/db';
 
 interface AssetLibraryProps {
     isModal?: boolean;

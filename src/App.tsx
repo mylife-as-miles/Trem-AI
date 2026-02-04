@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
-import Sidebar from './components/Sidebar';
-import TremEdit from './components/TremEdit';
-import TremCreate from './components/TremCreate';
-import TimelineEditor from './components/TimelineEditor';
-import VideoRepoOverview from './components/VideoRepoOverview';
-import CompareDiffView from './components/CompareDiffView';
-import AssetLibrary from './components/AssetLibrary';
-import CreateRepoView from './components/CreateRepoView';
-import RepoFilesView from './components/RepoFilesView';
-import ActivityLogsView from './components/ActivityLogsView';
+import Sidebar from './components/layout/Sidebar';
+import TremEdit from './dashboard/edit/AgentEditPage';
+import TremCreate from './dashboard/create/RemotionCreatePage';
+import TimelineEditor from './dashboard/edit/TimelineEditorPage';
+import VideoRepoOverview from './dashboard/repo/RepoOverviewPage';
+import CompareDiffView from './dashboard/edit/CompareDiffPage';
+import AssetLibrary from './dashboard/assets/AssetLibraryPage';
+import CreateRepoView from './dashboard/create/RepoIngestionPage';
+import RepoFilesView from './dashboard/repo/RepoFilesPage';
+import ActivityLogsView from './dashboard/repo/ActivityLogsPage';
+import SettingsView from './dashboard/settings/SettingsPage';
 
 import { db, RepoData } from './utils/db';
 import { useTremStore, ViewType } from './store/useTremStore';
@@ -153,6 +154,8 @@ const App: React.FC = () => {
                 return <RepoFilesView onNavigate={handleNavigate} repoData={repoData} />;
             case 'repo-logs':
                 return <ActivityLogsView />; // No props needed, uses store
+            case 'settings':
+                return <SettingsView onNavigate={handleNavigate} />;
             default:
                 return <TremEdit onNavigate={handleNavigate} />;
         }

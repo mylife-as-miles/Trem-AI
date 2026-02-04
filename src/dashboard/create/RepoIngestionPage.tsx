@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import AssetLibrary from './AssetLibrary';
-import TopNavigation from './TopNavigation';
-import { db, RepoData } from '../utils/db';
-import { generateRepoStructure, analyzeAsset } from '../services/gemini/repo/index';
-import { extractAudioFromVideo } from '../utils/audioExtractor';
-import { extractFramesFromVideo } from '../utils/frameExtractor';
-import { transcribeAudio } from '../services/whisperService';
+import AssetLibrary from '../assets/AssetLibraryPage';
+import TopNavigation from '../../components/layout/TopNavigation';
+import { db, RepoData } from '../../utils/db';
+import { generateRepoStructure, analyzeAsset } from '../../services/gemini/repo/index';
+import { extractAudioFromVideo } from '../../utils/audioExtractor';
+import { extractFramesFromVideo } from '../../utils/frameExtractor';
+import { transcribeAudio } from '../../services/whisperService';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;

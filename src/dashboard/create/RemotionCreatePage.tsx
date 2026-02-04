@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { generateRemotionProject } from '../services/gemini/create/index';
-import TopNavigation from './TopNavigation';
-import { db, RepoData, AssetData } from '../utils/db';
-import AssetLibrary from './AssetLibrary';
+import { generateRemotionProject } from '../../services/gemini/create/index';
+import TopNavigation from '../../components/layout/TopNavigation';
+import { db, RepoData, AssetData } from '../../utils/db';
+import AssetLibrary from '../assets/AssetLibraryPage';
 
 interface TremCreateProps {
     onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'trem-create' | 'trem-edit') => void;

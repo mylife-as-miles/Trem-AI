@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, RepoData } from '../utils/db';
+import { db, RepoData } from '../../utils/db';
 
 interface SidebarProps {
   isOpen: boolean;

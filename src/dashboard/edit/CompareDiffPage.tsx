@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import MarkdownRenderer from './MarkdownRenderer';
+import MarkdownRenderer from '../../components/ui/MarkdownRenderer';
 
 interface CompareDiffViewProps {
     onNavigate?: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets') => void;

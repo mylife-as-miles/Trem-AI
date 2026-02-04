@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { interpretAgentCommand } from '../services/gemini/edit/index';
-import TopNavigation from './TopNavigation';
-import { db, RepoData } from '../utils/db';
+import { interpretAgentCommand } from '../../services/gemini/edit/index';
+import TopNavigation from '../../components/layout/TopNavigation';
+import { db, RepoData } from '../../utils/db';
 
 interface OrchestratorProps {
   onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
