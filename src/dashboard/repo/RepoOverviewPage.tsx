@@ -254,7 +254,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
     }
   };
 
-  // Calculate file counts for folders
+  // Calculate file counts for folder
   const getFileCount = (node: FileNode): number => {
     if (node.type === 'file') return 0;
     return node.children?.length || 0;
