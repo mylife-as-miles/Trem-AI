@@ -273,7 +273,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
           {/* Vertical line for children */}
           {level > 0 && (
             <div
-              className="absolute left-0 top-0 bottom-0 w-px bg-white/5"
+              className="absolute left-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-white/5"
               style={{ left: `${(level * 1.5) - 0.75}rem` }}
             />
           )}
@@ -281,7 +281,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
           <div
             className={`
               group flex items-center justify-between py-2.5 pr-4 rounded-lg cursor-pointer font-mono text-sm transition-all duration-200
-              ${isSelected ? 'bg-white/5' : 'hover:bg-white/[0.02]'}
+              ${isSelected ? 'bg-slate-100 dark:bg-white/5' : 'hover:bg-slate-50 dark:hover:bg-white/[0.02]'}
               ${node.locked ? 'opacity-50' : ''}
             `}
             style={{ paddingLeft }}
@@ -296,7 +296,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                     toggleFolder(e, node.id);
                   }
                 }}
-                className={`w-5 h-5 flex items-center justify-center transition-colors ${node.type === 'folder' ? 'text-purple-500' : 'text-slate-500'}`}
+                className={`w-5 h-5 flex items-center justify-center transition-colors ${node.type === 'folder' ? 'text-purple-500' : 'text-slate-400 dark:text-slate-500'}`}
               >
                 {node.type === 'folder' ? (
                   <span className="material-icons-outlined text-base transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
@@ -316,13 +316,13 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
               )}
 
               {/* Name */}
-              <span className={`text-slate-300 group-hover:text-white transition-colors ${isSelected ? 'text-white font-medium' : ''}`}>
+              <span className={`transition-colors ${isSelected ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'}`}>
                 {node.name}
               </span>
             </div>
 
             {/* Right Side: File Count */}
-            <div className="flex items-center gap-4 text-xs text-slate-600 font-mono">
+            <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-600 font-mono">
               {node.type === 'folder' && (
                 <span>{fileCount} {fileCount === 1 ? 'file' : 'files'}</span>
               )}
@@ -472,19 +472,19 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
             </div>
 
             {/* Repository Files - Mac Style Widget */}
-            <div className="flex flex-col bg-[#0A0A0A] rounded-xl overflow-hidden shadow-xl border border-white/10">
+            <div className="flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden shadow-xl border border-slate-200 dark:border-white/10">
               {/* Widget Header */}
-              <div className="h-10 flex items-center justify-between px-4 border-b border-white/5 bg-[#0A0A0A] shrink-0">
+              <div className="h-10 flex items-center justify-between px-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0A0A0A] shrink-0">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]"></div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-zinc-500 font-mono">~/files/</span>
+                  <span className="text-[10px] text-slate-500 dark:text-zinc-500 font-mono">~/files/</span>
                   <button
                     onClick={() => onNavigate && onNavigate('repo-files')}
-                    className="text-zinc-500 hover:text-white transition-colors"
+                    className="text-slate-400 hover:text-slate-600 dark:text-zinc-500 dark:hover:text-white transition-colors"
                     title="Maximize / Open File Manager"
                   >
                     <span className="material-icons-outlined text-sm">open_in_full</span>
@@ -493,7 +493,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
               </div>
 
               {/* Widget Content */}
-              <div className="flex-1 p-3 overflow-y-auto bg-[#111]">
+              <div className="flex-1 p-3 overflow-y-auto bg-white dark:bg-[#111]">
                 {renderTree(fileSystem)}
               </div>
             </div>
