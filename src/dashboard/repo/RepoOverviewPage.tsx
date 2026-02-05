@@ -472,7 +472,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
             </div>
 
             {/* Repository Files - Mac Style Widget */}
-            <div className="flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden shadow-xl border border-slate-200 dark:border-white/10">
+            <div className="flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden border border-slate-200 dark:border-white/10">
               {/* Widget Header */}
               <div className="h-10 flex items-center justify-between px-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0A0A0A] shrink-0">
                 <div className="flex items-center gap-1.5">
