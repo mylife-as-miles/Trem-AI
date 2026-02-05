@@ -378,78 +378,197 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
   }, [repoData, activityLog]);
 
   return (
-    <div className="flex flex-col h-full bg-[#0A0A0A] text-slate-300 font-sans selection:bg-purple-500/30">
-
-      {/* App Header (Custom Mac-style Titlebar) */}
-      <div className="h-14 flex items-center justify-between px-6 border-b border-white/5 bg-[#0A0A0A] shrink-0 sticky top-0 z-20">
-
-        {/* Window Controls */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onNavigate && onNavigate('dashboard')}
-            className="w-3 h-3 rounded-full bg-[#FF5F56] hover:bg-[#FF5F56]/80 transition-colors focus:outline-none"
-            title="Close / Back to Dashboard"
-          />
-          <div className="w-3 h-3 rounded-full bg-[#FFBD2E] hover:bg-[#FFBD2E]/80 transition-colors"></div>
-          <div className="w-3 h-3 rounded-full bg-[#27C93F] hover:bg-[#27C93F]/80 transition-colors"></div>
-        </div>
-
-        {/* Breadcrumb / Project Path */}
-        <div className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-white/5 border border-white/5 transition-colors hover:bg-white/10 group cursor-default">
-          <span className="text-slate-500 text-sm font-mono group-hover:text-slate-400">~/client/</span>
-          <span className="text-slate-200 text-sm font-bold font-mono tracking-tight">{repoData?.name || 'project-root'}/</span>
-        </div>
-
-        {/* Right Actions */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => onNavigate && onNavigate('settings')}
-            className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-white transition-colors"
-          >
-            <span className="material-icons-outlined text-lg">settings</span>
-          </button>
-        </div>
-      </div>
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-black">
+      <TopNavigation onNavigate={onNavigate} />
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-8">
-        <div className="max-w-5xl mx-auto">
+      <div className="flex-1 overflow-y-auto p-6 md:p-10">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[500px]">
 
-          {/* File Explorer Container */}
-          <div className="bg-[#111] border border-white/5 rounded-2xl overflow-hidden shadow-2xl min-h-[500px]">
-
-            {/* File Tree Header (Optional, or just start list) */}
-            <div className="p-4 md:p-6 space-y-1">
-              {renderTree(fileSystem)}
-            </div>
-          </div>
-
-          {/* Activity Log - Minimized or redesigned to fit new aesthetic */}
-          <div className="mt-8 pt-8 border-t border-white/5">
-            <div className="flex items-center justify-between mb-4 px-2">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500">Recent Activity</h3>
-              <button onClick={handleViewFullLogs} className="text-xs text-purple-500 hover:text-purple-400">View All</button>
-            </div>
-
-            <div className="space-y-2">
-              {activityLog.slice(0, 3).map((entry, idx) => (
-                <div key={idx} className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
-                  <div className="w-2 h-2 rounded-full bg-purple-500 shrink-0"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-300 truncate font-mono">{entry.message}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] uppercase text-slate-500 font-bold">{entry.agent}</span>
-                      <span className="text-[10px] text-slate-600">•</span>
-                      <span className="text-[10px] text-slate-600">
-                        {Math.floor((Date.now() - entry.timestamp) / 60000)}m ago
-                      </span>
-                    </div>
-                  </div>
+            {/* Creative Brief Card */}
+            <div className="lg:col-span-2 glass-panel rounded-xl p-8 flex flex-col relative overflow-hidden group min-h-[300px] border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5">
+              <div className="absolute top-0 right-0 p-8 opacity-10 dark:opacity-20 pointer-events-none">
+                <span className="material-icons-outlined text-9xl text-primary">description</span>
+              </div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-primary font-semibold">{repoData?.name ? `Brief: ${repoData.name}` : 'Creative Brief'}</h2>
+                <div className="flex items-center gap-2">
+                  {!isEditingBrief ? (
+                    <>
+                      <button
+                        onClick={handleEditBrief}
+                        className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-primary transition-colors"
+                        title="Edit Brief"
+                      >
+                        <span className="material-icons-outlined text-lg">edit</span>
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteDialog(true)}
+                        className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-600 transition-colors"
+                        title="Delete Repository"
+                      >
+                        <span className="material-icons-outlined text-lg">delete</span>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleSaveBrief}
+                        className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary_hover text-white text-sm font-medium transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setIsEditingBrief(false)}
+                        className="px-4 py-1.5 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-slate-700 dark:text-white text-sm font-medium transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  )}
                 </div>
-              ))}
+              </div>
+
+              <div className="flex-1 flex flex-col relative z-10 overflow-y-auto pr-2 custom-scrollbar">
+                {isEditingBrief ? (
+                  <textarea
+                    className="flex-1 w-full p-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white font-mono text-sm resize-none focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    value={editedBrief}
+                    onChange={(e) => setEditedBrief(e.target.value)}
+                    placeholder="Enter creative brief in markdown format..."
+                  />
+                ) : (
+                  <SimpleMarkdown className="text-slate-900 dark:text-white leading-relaxed">
+                    {briefContent || (
+                      `# High-Energy 30s Spot
+
+**Client:** Nike  
+**Campaign:** Urban Flow Q3  
+**Tone:** Energetic, Raw, Authentic
+
+## Objectives
+*   Highlight the **red shoes** in every scene.
+*   Use the \`Urban_LUT_v2\` for color grading.
+*   Sync cuts to the beat of *Tech_House_01.mp3*.
+
+## Required Shots
+1.  Close-up of laces tying
+2.  Wide shot running through subway
+3.  Slow-motion jump (120fps)
+
+> "Motion is the key emotion here. Keep it moving." - *Creative Director*`
+                    )}
+                  </SimpleMarkdown>
+                )}
+              </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {latestTags.map(tag => (
+                  <div key={tag} className="px-3 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-black/40 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                    {tag}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Repository Files - Mac Style Widget */}
+            <div className="flex flex-col bg-[#0A0A0A] rounded-xl overflow-hidden shadow-xl border border-white/10">
+              {/* Widget Header */}
+              <div className="h-10 flex items-center justify-between px-4 border-b border-white/5 bg-[#0A0A0A] shrink-0">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-zinc-500 font-mono">~/files/</span>
+                  <button
+                    onClick={() => onNavigate && onNavigate('repo-files')}
+                    className="text-zinc-500 hover:text-white transition-colors"
+                    title="Maximize / Open File Manager"
+                  >
+                    <span className="material-icons-outlined text-sm">open_in_full</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Widget Content */}
+              <div className="flex-1 p-3 overflow-y-auto bg-[#111]">
+                {renderTree(fileSystem)}
+              </div>
             </div>
           </div>
 
+          {/* Activity Log */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-display font-medium text-slate-900 dark:text-white">Latest Activity</h2>
+              <button
+                onClick={handleViewFullLogs}
+                className="text-xs text-primary font-mono hover:text-primary_hover transition-colors"
+              >
+                VIEW FULL LOG
+              </button>
+            </div>
+            <div className="glass-panel rounded-xl overflow-hidden overflow-x-auto border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5">
+              <table className="w-full text-left text-sm font-mono min-w-[600px]">
+                <thead className="bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-white/5">
+                  <tr>
+                    <th className="px-6 py-3 font-medium w-1/4">Agent / Worker</th>
+                    <th className="px-6 py-3 font-medium w-1/2">Commit Message</th>
+                    <th className="px-6 py-3 font-medium text-right">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-white/5 text-slate-700 dark:text-slate-300">
+                  {activityLog.length > 0 ? (
+                    activityLog.slice(0, 5).map((entry, idx) => {
+                      const timeAgo = Math.floor((Date.now() - entry.timestamp) / 1000);
+                      let timeStr = 'just now';
+                      if (timeAgo < 60) timeStr = `${timeAgo}s ago`;
+                      else if (timeAgo < 3600) timeStr = `${Math.floor(timeAgo / 60)}m ago`;
+                      else if (timeAgo < 86400) timeStr = `${Math.floor(timeAgo / 3600)}h ago`;
+                      else timeStr = `${Math.floor(timeAgo / 86400)}d ago`;
+
+                      return (
+                        <tr
+                          key={idx}
+                          onClick={() => {
+                            // Find full commit data from fileSystem
+                            const commitsFolder = repoData?.fileSystem?.find((n: FileNode) => n.name === 'commits');
+                            const commitFile = commitsFolder?.children?.[idx];
+                            if (commitFile?.content) {
+                              try {
+                                const commitData = JSON.parse(commitFile.content);
+                                handleCommitClick(commitData);
+                              } catch (e) {
+                                console.error('Failed to parse commit', e);
+                              }
+                            }
+                          }}
+                          className="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group cursor-pointer"
+                        >
+                          <td className="px-6 py-4 flex items-center gap-3">
+                            <span className="w-2 h-2 rounded-full bg-primary"></span>
+                            <span className="text-primary font-bold">{entry.agent}</span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                            {entry.message}
+                          </td>
+                          <td className="px-6 py-4 text-right text-slate-500">{timeStr}</td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="px-6 py-8 text-center text-slate-400 dark:text-slate-500 italic">
+                        No activity yet. Commits will appear here.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 
