@@ -169,7 +169,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                     <div className="flex items-start gap-4 relative z-10">
                                         <div className="w-12 h-12 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-50 dark:group-hover:bg-purple-900/10 transition-colors">
                                             <span className="material-icons-outlined text-slate-400 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-                                                {repo.id.includes('infographic') ? 'analytics' : 'movie'}
+                                                {String(repo.id || '').includes('infographic') ? 'analytics' : 'movie'}
                                             </span>
                                         </div>
                                         <div className="min-w-0 flex-1">
