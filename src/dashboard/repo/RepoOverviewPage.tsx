@@ -378,7 +378,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
   }, [repoData, activityLog]);
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-black">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-background-dark">
       <TopNavigation onNavigate={onNavigate} />
 
       {/* Main Content Area */}

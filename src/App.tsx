@@ -162,7 +162,7 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white overflow-hidden selection:bg-primary selection:text-white font-sans">
+        <div className="flex h-screen bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white overflow-hidden selection:bg-primary selection:text-white font-sans">
             <Sidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}

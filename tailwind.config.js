@@ -11,11 +11,11 @@ export default {
                 primary: "#D9F85F", // Lime Green
                 primary_hover: "#C8E64D", // Darker Lime Green
                 "background-light": "#f8fafc",
-                "background-dark": "#000000",
+                "background-dark": "#09090b", // Zinc 950
                 "surface-light": "#ffffff",
-                "surface-dark": "#000000",
-                "surface-card": "#0a0a0a",
-                "border-dark": "#1f1f1f",
+                "surface-dark": "#09090b",
+                "surface-card": "#18181b", // Zinc 900
+                "border-dark": "#27272a", // Zinc 800
             },
             fontFamily: {
                 display: ["'Space Grotesk'", "sans-serif"],
