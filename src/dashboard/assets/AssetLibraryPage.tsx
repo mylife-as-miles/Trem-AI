@@ -344,7 +344,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                                         </div>
                                         {asset.meta && (
                                             <div className="font-mono text-xs text-primary bg-black/80 p-3 rounded border border-primary/20 transform scale-95 group-hover:scale-100 transition-transform duration-300 delay-100 relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+                                                <div className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full animate-ping"></div>
                                                 <span className="text-gray-500">{`{`}</span><br />
                                                 &nbsp;&nbsp;<span className="text-emerald-300">"object"</span>: <span className="text-green-400">"{asset.meta.object}"</span>,<br />
                                                 &nbsp;&nbsp;<span className="text-emerald-300">"motion"</span>: <span className="text-green-400">"{asset.meta.motion}"</span><br />

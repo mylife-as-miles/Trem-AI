@@ -100,7 +100,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             description: 'Crossing the line, slow mo',
             type: 'LOG',
             icon: 'flag',
-            colorClass: 'bg-green-500', // Adjusted from UI but keeping distinct
+            colorClass: 'bg-primary', // Adjusted from UI but keeping distinct
             gradientClass: 'from-green-900/40 to-black',
             isAiEdit: true,
         }

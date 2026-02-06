@@ -182,7 +182,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
 
                                             <div className="flex items-center gap-3 mt-3">
                                                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/5 text-[10px] font-medium text-slate-600 dark:text-gray-300">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
                                                     Active
                                                 </div>
                                                 <div className="text-[10px] text-slate-400 dark:text-gray-500 font-mono">

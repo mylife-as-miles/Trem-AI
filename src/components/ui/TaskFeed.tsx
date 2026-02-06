@@ -44,7 +44,7 @@ const TaskFeed: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-6">
-            <div className="px-2 py-1 rounded bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-mono tracking-wide shadow-[0_0_5px_rgba(34,197,94,0.2)]">
+            <div className="px-2 py-1 rounded bg-primary/10 border border-primary/20 text-primary text-[10px] font-mono tracking-wide">
               COMPLETED
             </div>
             <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white">
