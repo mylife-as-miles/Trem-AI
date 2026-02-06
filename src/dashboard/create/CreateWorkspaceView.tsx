@@ -195,128 +195,134 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
 
 
     return (
-        <div className="flex flex-col min-h-full relative fade-in">
-            <div className="max-w-4xl mx-auto space-y-12 w-full">
-                {/* Header with Back Button */}
+        <div className="flex flex-col min-h-full relative fade-in bg-slate-50/50 dark:bg-black font-sans">
+
+            {/* Header / Breadcrumb Area */}
+            <div className="sticky top-0 z-30 flex items-center justify-between px-6 py-4 bg-slate-50/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
                 <div className="flex items-center gap-4">
                     {onBack && (
                         <button
                             onClick={onBack}
-                            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-500 dark:text-gray-400"
+                            className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-colors text-slate-500 dark:text-gray-400"
                         >
-                            <span className="material-icons-outlined">arrow_back</span>
+                            <span className="material-icons-outlined text-lg">arrow_back</span>
                         </button>
                     )}
-                    <div className="space-y-1">
-                        <h1 className="text-3xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
-                            {templateMode ? `Create: ${templateMode}` : "Autonomous Video Creator"}
-                        </h1>
-                        <p className="text-slate-500 dark:text-gray-400">
-                            Describe your vision, and Trem Create builds it.
-                        </p>
+                    <div className="flex items-center gap-2 text-sm">
+                        <span className="text-slate-500 dark:text-gray-500">Trem Create</span>
+                        <span className="text-slate-300 dark:text-gray-700">/</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                            {templateMode ? templateMode : "New Project"}
+                        </span>
                     </div>
                 </div>
+            </div>
 
-                {/* Command Input */}
-                <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/30 to-rose-600/30 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition duration-500"></div>
-                    <div className="relative bg-white dark:bg-black border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
+            <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 w-full max-w-5xl mx-auto">
+                <div className="w-full space-y-8">
 
-                        {/* Combined Input Container */}
-                        <div className="flex gap-4">
-                            <span className="pt-2 text-purple-500 font-mono text-lg select-none font-bold">&gt;</span>
+                    {/* Hero Text */}
+                    <div className="text-center space-y-3">
+                        <h1 className="text-4xl md:text-5xl font-display font-bold text-slate-900 dark:text-white tracking-tight">
+                            What are we building today?
+                        </h1>
+                        <p className="text-lg text-slate-500 dark:text-gray-400 max-w-2xl mx-auto">
+                            Describe your vision, select your creative director, and let Trem AI handle the production.
+                        </p>
+                    </div>
 
-                            <div className="flex-1 flex flex-col gap-3">
-                                {/* Selected Assets as Thumbnails inside input flow */}
+                    {/* Main Command Center Card */}
+                    <div className="relative group w-full max-w-3xl mx-auto">
+                        {/* Glow Effect */}
+                        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+
+                        <div className="relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 overflow-hidden flex flex-col min-h-[320px]">
+
+                            {/* Input Area */}
+                            <div className="flex-1 p-6 relative">
+                                <div className="absolute top-6 left-6 text-purple-500 pointer-events-none">
+                                    <span className="material-icons-outlined text-xl">auto_awesome</span>
+                                </div>
+
+                                <textarea
+                                    className="w-full h-full bg-transparent border-none focus:ring-0 text-xl font-display text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-zinc-600 resize-none pl-10 p-0 leading-relaxed caret-purple-500 outline-none"
+                                    placeholder={displayedPlaceholder}
+                                    value={prompt}
+                                    onChange={(e) => setPrompt(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    autoFocus
+                                />
+
+                                {/* Selected Assets Chips (Overlay) */}
                                 {selectedAssetIds.length > 0 && (
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="absolute bottom-6 left-16 right-6 flex flex-wrap gap-2 pointer-events-none">
                                         {selectedAssetIds.map(id => (
-                                            <div key={id} className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/30 text-xs font-medium text-purple-700 dark:text-purple-300 animate-in fade-in zoom-in-95 duration-200">
-                                                <span className="material-icons-outlined text-[10px]">movie</span>
-                                                <span>Asset {id.slice(0, 4)}...</span>
+                                            <div key={id} className="pointer-events-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-sm animate-in fade-in zoom-in-95 duration-200">
+                                                <span className="material-icons-outlined text-[10px] opacity-70">movie</span>
+                                                <span className="max-w-[100px] truncate">Asset {id.slice(0, 4)}</span>
                                                 <button
                                                     onClick={() => setSelectedAssetIds(prev => prev.filter(p => p !== id))}
-                                                    className="hover:text-purple-900 dark:hover:text-white p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                                                    className="ml-1 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                                                 >
-                                                    <span className="material-icons-outlined text-[10px] block">close</span>
+                                                    <span className="material-icons-outlined text-[12px] block">close</span>
                                                 </button>
                                             </div>
                                         ))}
                                     </div>
                                 )}
-
-                                <textarea
-                                    className="w-full bg-transparent border-none focus:ring-0 text-lg md:text-xl font-display text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-gray-600 resize-none h-24 p-0 leading-relaxed caret-purple-500 font-medium outline-none"
-                                    placeholder={displayedPlaceholder}
-                                    value={prompt}
-                                    onChange={(e) => setPrompt(e.target.value)}
-                                    onKeyDown={handleKeyDown}
-                                />
                             </div>
-                        </div>
 
-                        {feedback && (
-                            <div className="ml-8 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg text-sm text-purple-500 font-mono mb-2">
-                                <span className="font-bold mr-2">Status:</span> {feedback}
-                            </div>
-                        )}
+                            {/* Toolbar / Action Bar */}
+                            <div className="px-6 py-4 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
 
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-slate-100 dark:border-white/10 gap-4 sm:gap-0">
-                            <div className="flex flex-wrap gap-3">
+                                {/* Tools */}
+                                <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
 
-                                {/* Add Asset Library Button (Simple Modal Trigger) */}
-                                <button
-                                    onClick={() => setShowAssetLibrary(true)}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400 transition-colors shadow-sm text-sm font-medium"
-                                >
-                                    <span className="material-icons-outlined text-lg">video_library</span>
-                                    <span>Add Asset Library</span>
-                                    {selectedAssetIds.length > 0 && (
-                                        <span className="bg-purple-500 text-white text-[10px] px-1.5 rounded-full">{selectedAssetIds.length}</span>
-                                    )}
-                                </button>
-
-                                {/* Agent Settings (Advanced Dropdown) */}
-                                <div className="relative" ref={agentDropdownRef}>
+                                    {/* Asset Library Trigger */}
                                     <button
-                                        onClick={() => setIsAgentDropdownOpen(!isAgentDropdownOpen)}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all duration-200 shadow-sm ${isAgentDropdownOpen
-                                            ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-500 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500/20'
-                                            : 'bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:border-purple-500/50 hover:text-purple-600 dark:hover:text-purple-400'
-                                            }`}
+                                        onClick={() => setShowAssetLibrary(true)}
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white dark:hover:bg-white/10 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium whitespace-nowrap"
+                                        title="Add Assets"
                                     >
-                                        <span className={`material-icons-outlined text-lg ${isAgentDropdownOpen ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400'}`}>
-                                            {activeAgent.icon}
-                                        </span>
-                                        <span className="font-medium">{activeAgent.label}</span>
-                                        <span className={`material-icons-outlined text-sm transition-transform duration-200 ${isAgentDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                                        <span className="material-icons-outlined text-lg">video_library</span>
+                                        <span>Assets</span>
+                                        {selectedAssetIds.length > 0 && (
+                                            <span className="bg-purple-500 text-white text-[10px] px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold ml-0.5">{selectedAssetIds.length}</span>
+                                        )}
                                     </button>
 
-                                    {isAgentDropdownOpen && (
-                                        <div className="absolute top-full left-0 mt-3 w-80 bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 flex flex-col origin-top-left animate-in fade-in zoom-in-95 duration-100">
-                                            <div className="p-3 border-b border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-white/5">
-                                                <div className="relative">
-                                                    <span className="absolute left-3 top-2.5 material-icons-outlined text-slate-400 text-sm">search</span>
+                                    <div className="w-px h-4 bg-slate-200 dark:bg-white/10 mx-1"></div>
+
+                                    {/* Agent Selector */}
+                                    <div className="relative" ref={agentDropdownRef}>
+                                        <button
+                                            onClick={() => setIsAgentDropdownOpen(!isAgentDropdownOpen)}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all whitespace-nowrap ${isAgentDropdownOpen
+                                                ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300'
+                                                : 'border-transparent hover:bg-white dark:hover:bg-white/10 hover:border-slate-200 dark:hover:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                                }`}
+                                        >
+                                            <span className="material-icons-outlined text-lg">{activeAgent.icon}</span>
+                                            <span>{activeAgent.label}</span>
+                                            <span className="material-icons-outlined text-xs opacity-50">expand_more</span>
+                                        </button>
+
+                                        {isAgentDropdownOpen && (
+                                            <div className="absolute bottom-full left-0 mb-2 w-72 bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col origin-bottom-left animate-in fade-in zoom-in-95 duration-100">
+                                                <div className="p-2 border-b border-slate-100 dark:border-white/5">
                                                     <input
                                                         type="text"
-                                                        placeholder="Search agents & models..."
-                                                        className="w-full bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none text-slate-700 dark:text-gray-200 placeholder-slate-400"
+                                                        placeholder="Search agents..."
+                                                        className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-purple-500 text-slate-700 dark:text-gray-200 placeholder-slate-400"
                                                         value={agentSearch}
                                                         onChange={(e) => setAgentSearch(e.target.value)}
                                                         autoFocus
                                                     />
                                                 </div>
-                                            </div>
-
-                                            <div className="max-h-80 overflow-y-auto p-1 custom-scrollbar">
-                                                {Object.keys(groupedAgents).length === 0 ? (
-                                                    <div className="px-4 py-8 text-center">
-                                                        <p className="text-xs text-slate-500 dark:text-gray-500">No agents found</p>
-                                                    </div>
-                                                ) : (
-                                                    Object.entries(groupedAgents).map(([category, agents]) => (
-                                                        <div key={category} className="mb-2 last:mb-0">
-                                                            <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500 sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm z-10">{category}</div>
+                                                <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
+                                                    {Object.entries(groupedAgents).map(([category, agents]) => (
+                                                        <div key={category} className="mb-1">
+                                                            <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-600">{category}</div>
                                                             {agents.map(agent => (
                                                                 <button
                                                                     key={agent.id}
@@ -325,55 +331,78 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                                                         setIsAgentDropdownOpen(false);
                                                                         setAgentSearch("");
                                                                     }}
-                                                                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-start gap-3 group ${selectedAgentId === agent.id
+                                                                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 ${selectedAgentId === agent.id
                                                                         ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
-                                                                        : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300'
+                                                                        : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300'
                                                                         }`}
                                                                 >
-                                                                    <div className={`mt-0.5 w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${selectedAgentId === agent.id
-                                                                        ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300'
-                                                                        : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400 group-hover:bg-white group-hover:shadow-sm dark:group-hover:bg-white/10'
-                                                                        }`}>
-                                                                        <span className="material-icons-outlined text-base">{agent.icon}</span>
-                                                                    </div>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <div className="font-medium">{agent.label}</div>
-                                                                        <div className="text-[10px] opacity-70 leading-snug mt-0.5">
-                                                                            {agent.description}
-                                                                        </div>
-                                                                    </div>
-                                                                    {selectedAgentId === agent.id && (
-                                                                        <span className="material-icons-outlined text-purple-500 text-sm mt-1">check_circle</span>
-                                                                    )}
+                                                                    <span className="material-icons-outlined text-sm opacity-70">{agent.icon}</span>
+                                                                    <span className="flex-1">{agent.label}</span>
+                                                                    {selectedAgentId === agent.id && <span className="material-icons-outlined text-sm">check</span>}
                                                                 </button>
                                                             ))}
                                                         </div>
-                                                    ))
-                                                )}
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
+
+                                {/* Generate Button */}
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={isProcessing || !prompt.trim()}
+                                    className={`relative group overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-2.5 rounded-xl font-medium text-sm transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none w-full sm:w-auto`}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity"></div>
+                                    <div className="flex items-center gap-2 relative z-10">
+                                        <span className={isProcessing ? "animate-pulse" : ""}>{isProcessing ? 'Processing' : 'Generate'}</span>
+                                        <span className={`material-icons-outlined text-base ${isProcessing ? 'animate-spin' : ''}`}>
+                                            {isProcessing ? 'sync' : 'auto_fix_high'}
+                                        </span>
+                                    </div>
+                                </button>
                             </div>
 
-                            <button
-                                onClick={handleSubmit}
-                                disabled={isProcessing}
-                                className={`bg-purple-600 hover:bg-purple-700 text-white p-3 px-6 rounded-xl transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center shadow-lg shadow-purple-600/20 ${isProcessing ? 'opacity-75 cursor-not-allowed' : ''}`}
-                            >
-                                <span className="font-medium mr-2">{isProcessing ? 'Generating...' : 'Generate Video'}</span>
-                                <span className={`material-icons-outlined ${isProcessing ? 'animate-spin' : ''}`}>
-                                    {isProcessing ? 'sync' : 'auto_fix_high'}
-                                </span>
-                            </button>
+                            {/* Processing Progress Bar (Optional) */}
+                            {isProcessing && (
+                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-white/5">
+                                    <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 animate-gradient-x w-full"></div>
+                                </div>
+                            )}
                         </div>
+
+                        {/* Feedback / Status Message under the card */}
+                        {feedback && (
+                            <div className="mt-4 text-center animate-in fade-in slide-in-from-top-2">
+                                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30 text-green-700 dark:text-green-400 text-xs font-medium">
+                                    <span className="material-icons-outlined text-sm">check_circle</span>
+                                    {feedback}
+                                </span>
+                            </div>
+                        )}
                     </div>
+
+                    {/* Quick Suggestions */}
+                    <div className="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 fill-mode-forwards">
+                        {SUGGESTIONS.slice(0, 3).map((sugg, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setPrompt(sugg)}
+                                className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/5 hover:border-purple-200 dark:hover:border-purple-800/50 bg-white dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-900/10 text-xs text-slate-500 dark:text-slate-400 transition-colors"
+                            >
+                                {sugg}
+                            </button>
+                        ))}
+                    </div>
+
                 </div>
             </div>
 
             {/* Asset Library Modal Overlay */}
             {showAssetLibrary && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
                     <AssetLibrary
                         isModal
                         onClose={() => setShowAssetLibrary(false)}
