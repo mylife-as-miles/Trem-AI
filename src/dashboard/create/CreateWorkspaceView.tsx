@@ -198,7 +198,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
         <div className="flex flex-col min-h-full relative fade-in bg-slate-50/50 dark:bg-black font-sans">
 
             {/* Header / Breadcrumb Area */}
-            <div className="sticky top-0 z-30 flex items-center justify-between px-6 py-2 bg-slate-50/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
+            <div className="sticky top-0 z-30 flex items-center justify-between px-6 h-14 bg-slate-50/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
                 <div className="flex items-center gap-4">
                     {onBack && (
                         <button
