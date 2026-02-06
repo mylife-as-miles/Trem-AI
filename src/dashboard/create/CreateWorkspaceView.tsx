@@ -195,10 +195,10 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
 
 
     return (
-        <div className="flex flex-col min-h-full relative fade-in bg-slate-50/50 dark:bg-black font-sans">
+        <div className="flex flex-col min-h-full relative fade-in bg-slate-50/50 dark:bg-background-dark font-sans">
 
             {/* Header / Breadcrumb Area */}
-            <div className="sticky top-0 z-30 flex items-center justify-between px-6 h-14 bg-slate-50/80 dark:bg-black/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
+            <div className="sticky top-0 z-30 flex items-center justify-between px-6 h-14 bg-slate-50/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
                 <div className="flex items-center gap-4">
                     {onBack && (
                         <button
@@ -235,7 +235,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                     <div className="relative group w-full max-w-3xl mx-auto">
 
 
-                        <div className="relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[320px]">
+                        <div className="relative bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[320px]">
 
                             {/* Input Area */}
                             <div className="flex-1 p-6 relative">
@@ -401,7 +401,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
 
             {/* Asset Library Modal Overlay */}
             {showAssetLibrary && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/60 backdrop-blur-md p-4 animate-in fade-in duration-200">
                     <AssetLibrary
                         isModal
                         onClose={() => setShowAssetLibrary(false)}

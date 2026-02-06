@@ -60,7 +60,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
     }, []);
 
     return (
-        <div className="flex-1 p-6 md:p-10 fade-in bg-slate-50/50 dark:bg-black min-h-full font-sans">
+        <div className="flex-1 p-6 md:p-10 fade-in bg-slate-50/50 dark:bg-background-dark min-h-full font-sans">
             <div className="max-w-6xl mx-auto space-y-16">
 
                 {/* Hero Section */}
@@ -92,7 +92,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                 onClick={() => onSelectTemplate(card.title)}
                                 className="group relative flex flex-col items-start text-left h-72 rounded-2xl transition-all duration-500 hover:-translate-y-2"
                             >
-                                <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A] rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm transition-all duration-500"></div>
+                                <div className="absolute inset-0 bg-white dark:bg-background-dark rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm transition-all duration-500"></div>
 
                                 {/* Card Image / Icon Area */}
                                 <div className="relative w-full h-40 bg-slate-50 dark:bg-[#111] rounded-t-2xl overflow-hidden flex items-center justify-center border-b border-slate-100 dark:border-white/5 group-hover:border-transparent transition-colors">
@@ -145,7 +145,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                     </div>
 
                     {repos.length === 0 ? (
-                        <div className="h-48 flex flex-col items-center justify-center bg-white/50 dark:bg-[#0A0A0A] rounded-2xl border border-dashed border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-colors">
+                        <div className="h-48 flex flex-col items-center justify-center bg-white/50 dark:bg-background-dark rounded-2xl border border-dashed border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 transition-colors">
                             <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mb-3 text-slate-400 dark:text-gray-500">
                                 <span className="material-icons-outlined text-xl">folder_open</span>
                             </div>
@@ -160,7 +160,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                 <button
                                     key={repo.id}
                                     onClick={() => onSelectRepo && onSelectRepo(repo)}
-                                    className="group relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-primary overflow-hidden"
+                                    className="group relative bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-primary overflow-hidden"
                                 >
                                     <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
 

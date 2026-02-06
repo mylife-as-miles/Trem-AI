@@ -543,7 +543,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden relative bg-white dark:bg-black">
+            <div className="flex-1 flex overflow-hidden relative bg-white dark:bg-background-dark">
                 {/* Sidebar Tree */}
                 <div className={`w-80 border-r border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0A0A0A] overflow-y-auto p-3 flex-shrink-0 flex flex-col gap-4 transition-colors duration-300`}>
 
@@ -572,7 +572,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                             <div className="flex-1 overflow-hidden relative flex flex-col bg-white dark:bg-[#050505]">
                                 {/* Media Rendering Logic */}
                                 {['mp4', 'mov', 'webm'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
-                                    <div className="w-full h-full flex items-center justify-center bg-black/90 backdrop-blur-sm">
+                                    <div className="w-full h-full flex items-center justify-center bg-background-dark/90 backdrop-blur-sm">
                                         {previewUrl ? (
                                             <video src={previewUrl} controls className="max-w-full max-h-full rounded-lg shadow-2xl" />
                                         ) : (
@@ -606,7 +606,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     {/* Terminal Panel */}
                     {(showTerminal || isProcessing) && (
                         <div className="h-64 border-t border-slate-200 dark:border-white/10 bg-slate-900 dark:bg-[#0c0c0c] text-slate-300 font-mono text-xs flex flex-col absolute bottom-0 left-0 right-0 z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
-                            <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-black/20 dark:bg-white/5">
+                            <div className="px-4 py-2 border-b border-white/10 flex items-center justify-between bg-background-dark/20 dark:bg-white/5">
                                 <span className="font-bold flex items-center gap-2 text-zinc-100">
                                     <span className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-emerald-500'}`}></span>
                                     TERMINAL
@@ -643,11 +643,11 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
             />
 
             {newFolderDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/60 backdrop-blur-sm px-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/50 dark:bg-background-dark/60 backdrop-blur-sm px-4">
                     <div className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">New Folder</h3>
                         <p className="text-sm text-slate-500 dark:text-zinc-500 mb-6">Create a new directory in the root.</p>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-primary dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-slate-50 dark:bg-background-dark/50 border border-slate-200 dark:border-white/10 focus:border-primary dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setNewFolderDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
                             <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-black rounded-lg text-sm font-medium transition-all">Create Folder</button>
@@ -656,11 +656,11 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 </div>
             )}
             {newFileDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/60 backdrop-blur-sm px-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background-dark/50 dark:bg-background-dark/60 backdrop-blur-sm px-4">
                     <div className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">New File</h3>
                         <p className="text-sm text-slate-500 dark:text-zinc-500 mb-6">Create a new file in the root.</p>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-primary dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-slate-50 dark:bg-background-dark/50 border border-slate-200 dark:border-white/10 focus:border-primary dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setNewFileDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
                             <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-black rounded-lg text-sm font-medium transition-all">Create File</button>

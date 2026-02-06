@@ -464,7 +464,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
                 {latestTags.map(tag => (
-                  <div key={tag} className="px-3 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-black/40 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                  <div key={tag} className="px-3 py-1 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-background-dark/40 text-xs text-slate-500 dark:text-slate-400 font-mono">
                     {tag}
                   </div>
                 ))}
@@ -472,9 +472,9 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
             </div>
 
             {/* Repository Files - Mac Style Widget */}
-            <div className="flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden border border-slate-200 dark:border-white/10">
+            <div className="flex flex-col bg-white dark:bg-background-dark rounded-xl overflow-hidden border border-slate-200 dark:border-white/10">
               {/* Widget Header */}
-              <div className="h-10 flex items-center justify-between px-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0A0A0A] shrink-0">
+              <div className="h-10 flex items-center justify-between px-4 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-background-dark shrink-0">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>

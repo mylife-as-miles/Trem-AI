@@ -126,9 +126,9 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-background-light dark:bg-black text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
+        <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
             {/* Header */}
-            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black z-20">
+            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-background-dark z-20">
                 <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">
                         <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
@@ -167,7 +167,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             <div className="flex-1 flex overflow-hidden relative">
 
                 {/* Left Sidebar: Instruction Stack */}
-                <aside className={`w-80 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-black absolute top-0 bottom-0 left-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'instructions' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+                <aside className={`w-80 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark absolute top-0 bottom-0 left-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'instructions' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                     <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                         <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white">Instruction Stack</h2>
                         <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400 uppercase border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded bg-slate-50 dark:bg-zinc-800">OTIO v2.1</span>
@@ -194,7 +194,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                             Drop clips here
                         </div>
                     </div>
-                    <div className="p-3 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-black text-[10px] font-mono text-slate-500 dark:text-gray-600 flex justify-between">
+                    <div className="p-3 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark text-[10px] font-mono text-slate-500 dark:text-gray-600 flex justify-between">
                         <span>TOTAL: 00:12:57</span>
                         <span>{clips.length} CLIPS</span>
                     </div>
@@ -204,7 +204,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                 <main className="flex-1 flex flex-col relative bg-zinc-900 border-r border-slate-200 dark:border-white/10 z-0 min-w-0">
                     {/* Viewer kept dark for standard video editing look */}
                     <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black">
-                        <div className="relative w-full aspect-video bg-black border border-white/10 rounded-lg shadow-2xl overflow-hidden group max-h-[60vh]">
+                        <div className="relative w-full aspect-video bg-background-dark border border-white/10 rounded-lg shadow-2xl overflow-hidden group max-h-[60vh]">
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10 pointer-events-none"></div>
                             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
                                 <div className="w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
@@ -222,7 +222,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    <div className="h-40 md:h-32 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 p-4 flex flex-col justify-between">
+                    <div className="h-40 md:h-32 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-white/10 p-4 flex flex-col justify-between">
                         {/* Timeline Bar */}
                         <div className="w-full h-8 flex items-center gap-2 md:gap-4 group">
                             <span className="text-xs font-mono text-slate-600 dark:text-zinc-400 w-12 md:w-16 text-right">00:00:12</span>
@@ -269,8 +269,8 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                 </main>
 
                 {/* Right Sidebar: AI Co-pilot */}
-                <aside className={`w-80 flex-shrink-0 flex flex-col bg-gray-50 dark:bg-black border-l border-slate-200 dark:border-white/10 absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
-                    <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-black z-10">
+                <aside className={`w-80 flex-shrink-0 flex flex-col bg-gray-50 dark:bg-background-dark border-l border-slate-200 dark:border-white/10 absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
+                    <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-background-dark z-10">
                         <div className="flex items-center gap-2">
                             <span className="material-icons-outlined text-blue-600 dark:text-blue-400">smart_toy</span>
                             <h2 className="font-display font-bold text-slate-900 dark:text-white">AI Co-pilot</h2>
@@ -299,7 +299,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                 <div className="flex-1">
                                     <div className="bg-white dark:bg-primary/5 text-slate-700 dark:text-gray-200 text-sm p-3 rounded-2xl rounded-tl-sm border border-slate-200 dark:border-primary/20 backdrop-blur-sm shadow-sm dark:shadow-[0_0_20px_-5px_rgba(168,85,247,0.15)]">
                                         <p className="mb-3 leading-relaxed">I'm on it. I've identified <span className="text-slate-700 dark:text-white font-mono text-xs bg-slate-100 dark:bg-white/10 px-1 rounded">Shot_02_CloseUp</span> as the best candidate.</p>
-                                        <div className="bg-slate-50 dark:bg-black/40 rounded border border-slate-200 dark:border-primary/30 p-2.5 flex items-center gap-3">
+                                        <div className="bg-slate-50 dark:bg-background-dark/40 rounded border border-slate-200 dark:border-primary/30 p-2.5 flex items-center gap-3">
                                             <span className="material-icons-outlined text-blue-600 dark:text-blue-400 animate-spin text-lg">sync</span>
                                             <div>
                                                 <div className="text-xs font-bold text-slate-800 dark:text-white mb-0.5">Updating OTIO instructions...</div>
@@ -312,7 +312,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-black">
+                    <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark">
                         <div className="relative group">
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-emerald-900 rounded-lg blur opacity-20 group-focus-within:opacity-50 transition duration-500 hidden dark:block"></div>
                             <div className="relative flex items-center bg-slate-50 dark:bg-zinc-900 rounded-lg border border-slate-200 dark:border-white/10 focus-within:border-primary/50 transition-colors">
@@ -335,7 +335,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             </div>
 
             {/* Mobile Tab Navigation */}
-            <div className="lg:hidden h-14 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 flex items-center justify-around px-4 z-40">
+            <div className="lg:hidden h-14 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-white/10 flex items-center justify-around px-4 z-40">
                 <button
                     onClick={() => setActiveTab('instructions')}
                     className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}

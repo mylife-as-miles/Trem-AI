@@ -486,7 +486,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         value={repoName}
                                         onChange={(e) => setRepoName(e.target.value)}
                                         placeholder="e.g., nike-commercial-q3"
-                                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-lg p-4 text-xl font-display text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-600"
+                                        className="w-full bg-white dark:bg-background-dark border border-slate-200 dark:border-white/20 rounded-lg p-4 text-xl font-display text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-600"
                                     />
                                 </div>
                                 <div className="space-y-4">
@@ -498,7 +498,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         value={repoBrief}
                                         onChange={(e) => setRepoBrief(e.target.value)}
                                         placeholder="Describe the goals, tone, and visual style..."
-                                        className="w-full bg-white dark:bg-black border border-slate-200 dark:border-white/20 rounded-lg p-4 font-mono text-sm h-32 text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors resize-none placeholder-slate-400 dark:placeholder-slate-600"
+                                        className="w-full bg-white dark:bg-background-dark border border-slate-200 dark:border-white/20 rounded-lg p-4 font-mono text-sm h-32 text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors resize-none placeholder-slate-400 dark:placeholder-slate-600"
                                     />
                                 </div>
                             </div>
@@ -550,7 +550,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                     {/* Worker Nodes Grid */}
                                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                         {workers.map(worker => (
-                                            <div key={worker.id} className="bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg p-3 relative overflow-hidden">
+                                            <div key={worker.id} className="bg-slate-50 dark:bg-background-dark/40 border border-slate-200 dark:border-white/10 rounded-lg p-3 relative overflow-hidden">
                                                 <div className="flex justify-between items-start mb-2">
                                                     <div className="flex items-center gap-2">
                                                         <span className="material-icons-outlined text-slate-400 text-sm">dns</span>
@@ -601,7 +601,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                         <div className="h-64 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                                             {selectedAssets.map(asset => (
                                                 <div key={asset.id} className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-3 flex items-center gap-3">
-                                                    <div className="p-2 rounded bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
+                                                    <div className="p-2 rounded bg-slate-100 dark:bg-background-dark/40 border border-slate-200 dark:border-white/10">
                                                         <span className="material-icons-outlined text-slate-500 dark:text-gray-400 text-sm">movie</span>
                                                     </div>
                                                     <div className="flex-1 min-w-0">
@@ -611,7 +611,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                                                 {asset.status === 'indexed' ? 'Ready' : asset.status}
                                                             </span>
                                                         </div>
-                                                        <div className="h-1 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
+                                                        <div className="h-1 bg-slate-200 dark:bg-background-dark rounded-full overflow-hidden">
                                                             <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}% ` }}></div>
                                                         </div>
                                                     </div>
@@ -627,7 +627,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                 <div className="space-y-3">
                                     {selectedAssets.map(asset => (
                                         <div key={asset.id} className="opacity-60 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-4 flex items-center gap-4">
-                                            <div className="p-3 rounded bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
+                                            <div className="p-3 rounded bg-slate-100 dark:bg-background-dark/40 border border-slate-200 dark:border-white/10">
                                                 <span className="material-icons-outlined text-slate-500 dark:text-gray-400">movie</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -635,7 +635,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                                     <span className="font-mono text-sm font-bold truncate text-slate-900 dark:text-white">{asset.name}</span>
                                                     <span className="text-xs font-mono uppercase tracking-wider text-slate-500">Pending Ingest</span>
                                                 </div>
-                                                <div className="h-1.5 bg-slate-200 dark:bg-black rounded-full overflow-hidden">
+                                                <div className="h-1.5 bg-slate-200 dark:bg-background-dark rounded-full overflow-hidden">
                                                     <div className="h-full bg-slate-300 dark:bg-white/10 w-0"></div>
                                                 </div>
                                             </div>
@@ -665,26 +665,26 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                                 <input
                                                     type="text"
                                                     defaultValue={generatedRepoData?.commit?.message || "Add raw footage and AI index"}
-                                                    className="flex-1 bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-lg px-4 py-2 font-mono text-sm text-slate-700 dark:text-gray-300 focus:outline-none focus:border-primary transition-colors"
+                                                    className="flex-1 bg-slate-100 dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-lg px-4 py-2 font-mono text-sm text-slate-700 dark:text-gray-300 focus:outline-none focus:border-primary transition-colors"
                                                 />
                                             </div>
                                         </div>
 
                                         {/* Staged Stats Grid */}
                                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-background-dark/40 border border-slate-200 dark:border-white/5">
                                                 <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">New Media Assets</div>
                                                 <div className="text-2xl font-bold text-slate-800 dark:text-white">{selectedAssets.length} <span className="text-sm font-normal text-slate-400">files</span></div>
                                             </div>
-                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-background-dark/40 border border-slate-200 dark:border-white/5">
                                                 <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Total Duration</div>
                                                 <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.duration} <span className="text-sm font-normal text-slate-400">mm:ss</span></div>
                                             </div>
-                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-background-dark/40 border border-slate-200 dark:border-white/5">
                                                 <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Detected Scenes</div>
                                                 <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.scenes} <span className="text-sm font-normal text-slate-400">cuts</span></div>
                                             </div>
-                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5">
+                                            <div className="p-4 rounded-lg bg-slate-50 dark:bg-background-dark/40 border border-slate-200 dark:border-white/5">
                                                 <div className="text-xs text-slate-500 dark:text-gray-500 font-mono mb-1">Dialogue Lines</div>
                                                 <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.lines} <span className="text-sm font-normal text-slate-400">lines</span></div>
                                             </div>
@@ -723,7 +723,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                         </div>
 
                                     </div>
-                                    <div className="p-6 bg-slate-50 dark:bg-black/20 border-t border-slate-200 dark:border-white/10 flex justify-end">
+                                    <div className="p-6 bg-slate-50 dark:bg-background-dark/20 border-t border-slate-200 dark:border-white/10 flex justify-end">
                                         <button
                                             onClick={handleCommit}
                                             className="bg-primary hover:bg-primary_hover text-black px-6 py-3 rounded-lg font-bold transition-all flex items-center gap-2 transform active:scale-95"
@@ -751,7 +751,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
 
                 {/* Asset Modal */}
                 {isAssetModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-12 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-12 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm">
                         <AssetLibrary
                             isModal={true}
                             onClose={() => setIsAssetModalOpen(false)}
