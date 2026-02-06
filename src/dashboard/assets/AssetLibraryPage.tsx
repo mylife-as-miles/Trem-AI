@@ -199,6 +199,8 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect,
                 </div>
             )}
 
+
+
             {/* Top Navigation (only when not in modal mode) */}
             {!isModal && onNavigate && (
                 <TopNavigation onNavigate={onNavigate} />
@@ -206,25 +208,12 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect,
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col relative bg-slate-50 dark:bg-background-dark overflow-hidden">
-                <header className={`h-20 flex-shrink-0 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-30 ${isModal ? 'bg-white dark:bg-black' : ''}`}>
-                    <div className="flex flex-col justify-center">
-                        <h1 className="text-2xl font-display font-bold text-slate-900 dark:text-white tracking-tight">{isModal ? 'Select Assets' : 'Asset Library'}</h1>
-                    </div>
-                    <div className="flex items-center gap-6 flex-1 justify-end">
-                        {!isModal && (
-                            <div className="relative group max-w-xl w-full">
-                                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-emerald-900/50 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-                                <div className="relative flex items-center bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/10 rounded-lg overflow-hidden group-focus-within:border-primary/50 transition-colors">
-                                    <span className="material-icons-outlined text-slate-400 dark:text-gray-500 pl-3">search</span>
-                                    <input
-                                        className="w-full bg-transparent border-none text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-600 focus:ring-0 py-2.5 px-3 font-mono focus:outline-none"
-                                        placeholder="Show me all clips with red shoes and running."
-                                        type="text"
-                                    />
-                                </div>
-                            </div>
-                        )}
-                        {isModal ? (
+                {isModal && (
+                    <header className="h-20 flex-shrink-0 flex items-center justify-between px-8 border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-30 bg-white dark:bg-black">
+                        <div className="flex flex-col justify-center">
+                            <h1 className="text-2xl font-display font-bold text-slate-900 dark:text-white tracking-tight">Select Assets</h1>
+                        </div>
+                        <div className="flex items-center gap-6 flex-1 justify-end">
                             <div className="flex items-center gap-3">
                                 <div className="text-sm font-mono text-slate-500 dark:text-gray-400">
                                     {selectedAssets.length} selected
@@ -243,17 +232,9 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect,
                                     Add Selected
                                 </button>
                             </div>
-                        ) : (
-                            <button
-                                onClick={triggerFileInput}
-                                className="bg-primary hover:bg-primary_hover text-white px-5 py-2.5 rounded-lg text-sm font-medium font-display tracking-wide transition-all flex items-center gap-2 whitespace-nowrap active:scale-95 shadow-md hover:shadow-lg"
-                            >
-                                <span className="material-icons-outlined text-lg">cloud_upload</span>
-                                Upload Files
-                            </button>
-                        )}
-                    </div>
-                </header>
+                        </div>
+                    </header>
+                )}
 
                 <div className="flex-1 overflow-y-auto p-8 scroll-smooth">
                     {/* Masonry Layout Container */}
