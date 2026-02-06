@@ -147,7 +147,7 @@ const App: React.FC = () => {
             case 'diff':
                 return <CompareDiffView onNavigate={handleNavigate} />;
             case 'assets':
-                return <AssetLibrary />;
+                return <AssetLibrary onNavigate={handleNavigate} />;
             case 'create-repo':
                 return <CreateRepoView onNavigate={handleNavigate} onCreateRepo={handleCreateRepo} />;
             case 'repo-files':

@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db, AssetData } from '../../utils/db';
+import TopNavigation from '../../components/layout/TopNavigation';
 
 interface AssetLibraryProps {
     isModal?: boolean;
     onClose?: () => void;
     onSelect?: (assets: string[]) => void;
+    onNavigate?: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files' | 'trem-create' | 'trem-edit') => void;
 }
 
-const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect }) => {
+const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect, onNavigate }) => {
     const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
     const [assets, setAssets] = useState<AssetData[]>([]);
     const [isDragging, setIsDragging] = useState(false);
@@ -195,6 +197,11 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect 
                         <h2 className="text-2xl font-bold text-white mt-4 drop-shadow-md">Drop Files to Upload</h2>
                     </div>
                 </div>
+            )}
+
+            {/* Top Navigation (only when not in modal mode) */}
+            {!isModal && onNavigate && (
+                <TopNavigation onNavigate={onNavigate} />
             )}
 
             {/* Main Content */}
