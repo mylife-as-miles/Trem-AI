@@ -7,53 +7,72 @@ interface TopNavigationProps {
 
 const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) => {
     return (
-        <header className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/10 bg-background-light/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-10 flex-shrink-0">
-            <div className="flex items-center gap-2">
-                {/* Context switcher - replaced with Edit/Create tabs */}
+        <header className="h-24 flex items-center justify-between px-8 bg-transparent sticky top-0 z-50 pointer-events-none">
+            {/* Left Spacer to balance layout if needed, or Logo */}
+            <div className="flex items-center gap-2 pointer-events-auto">
+                {/* Logo or Context could go here */}
             </div>
 
-            {/* Centered Navigation Tabs */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center bg-slate-100 dark:bg-white/5 rounded-lg p-1 border border-slate-200 dark:border-white/5">
+            {/* Centered Pill Navigation */}
+            <div className="pointer-events-auto shadow-2xl shadow-slate-200/50 dark:shadow-none bg-white/80 dark:bg-[#1A1A1A]/80 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-full p-2 flex items-center gap-1 mx-auto absolute left-1/2 -translate-x-1/2">
                 <button
                     onClick={() => onNavigate?.('trem-edit')}
-                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'edit' ? 'bg-white dark:bg-white/10 text-primary shadow-sm' : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'}`}
+                    className={`
+                        px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2
+                        ${activeTab === 'edit'
+                            ? 'bg-[#D9F85F] text-black shadow-lg shadow-[#D9F85F]/20 scale-105 ring-4 ring-white/50 dark:ring-black/50'
+                            : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
+                        }
+                    `}
                 >
-                    <span className="material-icons-outlined text-sm">auto_fix_normal</span>
+                    <span className="material-icons-outlined text-xl">auto_fix_normal</span>
                     Edit
                 </button>
-                <div className="w-px h-4 bg-slate-200 dark:bg-white/10 mx-1"></div>
+
                 <button
                     onClick={() => onNavigate?.('trem-create')}
-                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'create' ? 'bg-white dark:bg-white/10 text-purple-500 shadow-sm' : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white'}`}
+                    className={`
+                        px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2
+                        ${activeTab === 'create'
+                            ? 'bg-[#D9F85F] text-black shadow-lg shadow-[#D9F85F]/20 scale-105 ring-4 ring-white/50 dark:ring-black/50'
+                            : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
+                        }
+                    `}
                 >
-                    <span className="material-icons-outlined text-sm">auto_awesome</span>
+                    <span className="material-icons-outlined text-xl">auto_awesome</span>
                     Create
+                </button>
+
+                <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-3"></div>
+
+                <button
+                    onClick={() => onNavigate?.('assets')}
+                    className={`
+                         px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2
+                         text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5
+                    `}
+                >
+                    <span className="material-icons-outlined text-xl">video_library</span>
+                    Assets
                 </button>
             </div>
 
-            <div className="flex items-center gap-4">
-                <div className="flex items-center -space-x-2">
-                    <img alt="User" className="w-8 h-8 rounded-full border-2 border-background-light dark:border-black" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOTDE_X3JwToSHTjUFVUtEmOhsNZj6RL934lNVNkkJ_7-dUJZEIfrP-BB4R4yKz6DimrwF9peEsyj_o_qTyGoJMJOIY6497yHymfN_9F7STpDS1WU4VhqLtB4lv5rUS9pq_am9pw4b9Oa84Xtx6eWZ8hdpz0VKq6xB3s-x830O9tK35zH4IDI59VYtVh53_FTHTGcjhnrq1u24Z-SHawNiXKPLY7e3aK6NGBtwHSbiXSaWb5DZhnQiVdO59VHXuxa09qplRDAhcE" />
-                    <div className="w-8 h-8 rounded-full border-2 border-background-light dark:border-black bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] text-slate-500 dark:text-white">+2</div>
-                </div>
-                <button
-                    onClick={() => onNavigate?.('assets')}
-                    className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-                    title="Asset Library"
-                >
-                    <span className="material-icons-outlined">video_library</span>
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-6 pointer-events-auto">
+                <button className="w-12 h-12 rounded-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all hover:scale-105 shadow-sm group">
+                    <span className="material-icons-outlined group-hover:rotate-12 transition-transform">notifications</span>
+                    <span className="absolute top-3 right-3.5 w-2.5 h-2.5 bg-[#D9F85F] rounded-full ring-2 ring-white dark:ring-zinc-900"></span>
                 </button>
-                <div className="h-4 w-px bg-slate-300 dark:bg-white/10 mx-2"></div>
 
-                <button
-                    onClick={() => onNavigate?.('settings')}
-                    className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
-                    <span className="material-icons-outlined">settings</span>
-                </button>
-                <button className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                    <span className="material-icons-outlined">notifications</span>
-                </button>
+                <div className="flex items-center gap-4 pl-6 border-l border-slate-200 dark:border-white/10">
+                    <div className="flex flex-col items-end hidden md:flex">
+                        <span className="text-sm font-bold text-slate-900 dark:text-white leading-none">Trem User</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-gray-500 tracking-wider mt-1.5">Pro Plan</span>
+                    </div>
+                    <button className="flex items-center justify-center w-12 h-12 rounded-full bg-[#D9F85F] text-black font-bold text-sm shadow-md border-4 border-white dark:border-zinc-800 ring-2 ring-slate-100 dark:ring-zinc-900/50 hover:scale-105 transition-transform">
+                        TU
+                    </button>
+                </div>
             </div>
         </header>
     );
