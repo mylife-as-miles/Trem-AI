@@ -51,7 +51,7 @@ const SortableClip = ({ clip }: { clip: Clip }) => {
             </div>
             <div className="mt-2 flex items-center gap-2">
                 {clip.isAiEdit ? (
-                    <span className="px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-[9px] font-mono text-purple-300 flex items-center gap-1">
+                    <span className="px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20 text-[9px] font-mono text-primary flex items-center gap-1">
                         <span className="material-icons-outlined text-[10px]">auto_fix_high</span> AI Edit
                     </span>
                 ) : (
@@ -81,7 +81,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             resolution: '4K',
             icon: 'movie',
             colorClass: 'bg-primary',
-            gradientClass: 'from-purple-900/40 to-black',
+            gradientClass: 'from-emerald-900/40 to-black',
         },
         {
             id: '2',
@@ -90,7 +90,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             description: 'Face details, sweat beads',
             type: 'LOG',
             icon: 'face',
-            colorClass: 'bg-purple-400',
+            colorClass: 'bg-primary',
             gradientClass: 'from-blue-900/40 to-black',
         },
         {
@@ -293,7 +293,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
 
                         <div className="flex flex-col items-start gap-1 mr-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                             <div className="flex gap-2 w-full">
-                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary to-purple-800 flex items-center justify-center shrink-0 mt-1 shadow-[0_0_10px_rgba(168,85,247,0.4)]">
+                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary to-emerald-800 flex items-center justify-center shrink-0 mt-1 shadow-[0_0_10px_rgba(217,248,95,0.4)]">
                                     <span className="material-icons-outlined text-[14px] text-white">auto_awesome</span>
                                 </div>
                                 <div className="flex-1">
@@ -314,7 +314,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
 
                     <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-black">
                         <div className="relative group">
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-purple-900 rounded-lg blur opacity-20 group-focus-within:opacity-50 transition duration-500 hidden dark:block"></div>
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-emerald-900 rounded-lg blur opacity-20 group-focus-within:opacity-50 transition duration-500 hidden dark:block"></div>
                             <div className="relative flex items-center bg-slate-50 dark:bg-zinc-900 rounded-lg border border-slate-200 dark:border-white/10 focus-within:border-primary/50 transition-colors">
                                 <input
                                     className="w-full bg-transparent border-none text-sm text-slate-800 dark:text-white focus:ring-0 py-3 pl-3 pr-10 font-mono placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none"
@@ -338,21 +338,21 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             <div className="lg:hidden h-14 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 flex items-center justify-around px-4 z-40">
                 <button
                     onClick={() => setActiveTab('instructions')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-blue-500' : 'text-slate-500 dark:text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">list</span>
                     <span className="text-[10px]">Stack</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('timeline')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'timeline' ? 'text-blue-500' : 'text-slate-500 dark:text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'timeline' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">movie</span>
                     <span className="text-[10px]">Timeline</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('copilot')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'copilot' ? 'text-blue-500' : 'text-slate-500 dark:text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'copilot' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">smart_toy</span>
                     <span className="text-[10px]">AI Co-pilot</span>

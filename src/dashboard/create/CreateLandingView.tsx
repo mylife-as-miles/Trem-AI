@@ -65,13 +65,13 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
 
                 {/* Hero Section */}
                 <div className="text-center space-y-6 py-8 md:py-12">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 text-purple-600 dark:text-purple-300 text-xs font-medium tracking-wide">
-                        <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-emerald-600 dark:text-primary text-xs font-medium tracking-wide">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
                         AI-POWERED VIDEO CREATION
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-display font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                        Create with <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Trem AI</span>
+                        Create with <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-600">Trem AI</span>
                     </h1>
 
                     <p className="text-xl text-slate-500 dark:text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
@@ -92,8 +92,8 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                 onClick={() => onSelectTemplate(card.title)}
                                 className="group relative flex flex-col items-start text-left h-72 rounded-2xl transition-all duration-500 hover:-translate-y-2"
                             >
-                                <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A] rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm group-hover:shadow-2xl group-hover:shadow-purple-500/10 dark:group-hover:shadow-purple-900/20 transition-all duration-500"></div>
-                                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A] rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm group-hover:shadow-2xl group-hover:shadow-primary/10 dark:group-hover:shadow-primary/20 transition-all duration-500"></div>
+                                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
                                 {/* Card Image / Icon Area */}
                                 <div className="relative w-full h-40 bg-slate-50 dark:bg-[#111] rounded-t-2xl overflow-hidden flex items-center justify-center border-b border-slate-100 dark:border-white/5 group-hover:border-transparent transition-colors">
@@ -102,13 +102,13 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                             <div className="absolute inset-0 bg-slate-900/5 dark:bg-white/5 group-hover:bg-slate-900/0 dark:group-hover:bg-white/10 transition-colors z-10"></div>
                                             <div className={`absolute inset-0 bg-gradient-to-t from-white dark:from-[#0A0A0A] to-transparent opacity-20 dark:opacity-40 z-10`}></div>
                                             <div className="transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                                                <span className={`material-icons-outlined text-6xl text-slate-200 dark:text-white/10 group-hover:text-purple-500/20 transition-colors`}>
+                                                <span className={`material-icons-outlined text-6xl text-slate-200 dark:text-white/10 group-hover:text-primary/20 transition-colors`}>
                                                     {card.icon}
                                                 </span>
                                             </div>
                                         </>
                                     ) : (
-                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform duration-500">
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform duration-500">
                                             <span className="material-icons-outlined text-3xl text-white">add</span>
                                         </div>
                                     )}
@@ -117,7 +117,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                 {/* Card Content */}
                                 <div className="relative p-5 flex flex-col flex-1 w-full z-10">
                                     <div className="flex items-center justify-between w-full mb-2">
-                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-primary transition-colors">
                                             {card.title}
                                         </h3>
                                     </div>
@@ -125,7 +125,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                         {card.description}
                                     </p>
 
-                                    <div className="mt-auto pt-4 flex items-center text-xs font-medium text-purple-600 dark:text-purple-400 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                    <div className="mt-auto pt-4 flex items-center text-xs font-medium text-emerald-600 dark:text-primary opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                                         <span>Create Project</span>
                                         <span className="material-icons-outlined text-sm ml-1">arrow_forward</span>
                                     </div>
@@ -140,7 +140,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                     <div className="flex items-center justify-between px-2 pt-8 border-t border-slate-200/60 dark:border-white/5">
                         <h2 className="text-sm font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Recent Projects</h2>
                         {repos.length > 0 && (
-                            <button className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors">
+                            <button className="text-xs text-emerald-600 dark:text-primary hover:text-emerald-700 dark:hover:text-primary_hover font-medium transition-colors">
                                 View all
                             </button>
                         )}
@@ -162,18 +162,18 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                 <button
                                     key={repo.id}
                                     onClick={() => onSelectRepo && onSelectRepo(repo)}
-                                    className="group relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/5 hover:-translate-y-1 hover:border-purple-500/30 overflow-hidden"
+                                    className="group relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/30 overflow-hidden"
                                 >
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-purple-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                                     <div className="flex items-start gap-4 relative z-10">
-                                        <div className="w-12 h-12 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-50 dark:group-hover:bg-purple-900/10 transition-colors">
-                                            <span className="material-icons-outlined text-slate-400 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                                        <div className="w-12 h-12 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
+                                            <span className="material-icons-outlined text-slate-400 dark:text-gray-400 group-hover:text-primary transition-colors">
                                                 {String(repo.id || '').includes('infographic') ? 'analytics' : 'movie'}
                                             </span>
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <h4 className="font-bold text-slate-900 dark:text-white truncate group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors text-base">
+                                            <h4 className="font-bold text-slate-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-primary transition-colors text-base">
                                                 {repo.name}
                                             </h4>
                                             <p className="text-xs text-slate-500 dark:text-gray-400 mt-1 line-clamp-1">

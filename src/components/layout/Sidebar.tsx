@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
           <div
             className={`flex items-center gap-2 ${isCollapsed ? 'justify-center' : ''}`}
           >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)] flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(217,248,95,0.5)] flex-shrink-0">
               <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
             </div>
             {!isCollapsed && (

@@ -234,18 +234,18 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                     {/* Main Command Center Card */}
                     <div className="relative group w-full max-w-3xl mx-auto">
                         {/* Glow Effect */}
-                        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+                        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-emerald-500/20 to-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
 
                         <div className="relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 overflow-hidden flex flex-col min-h-[320px]">
 
                             {/* Input Area */}
                             <div className="flex-1 p-6 relative">
-                                <div className="absolute top-6 left-6 text-purple-500 pointer-events-none">
+                                <div className="absolute top-6 left-6 text-primary pointer-events-none">
                                     <span className="material-icons-outlined text-xl">auto_awesome</span>
                                 </div>
 
                                 <textarea
-                                    className="w-full h-full bg-transparent border-none focus:ring-0 text-xl font-display text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-zinc-600 resize-none pl-10 p-0 leading-relaxed caret-purple-500 outline-none"
+                                    className="w-full h-full bg-transparent border-none focus:ring-0 text-xl font-display text-slate-800 dark:text-white placeholder-slate-300 dark:placeholder-zinc-600 resize-none pl-10 p-0 leading-relaxed caret-primary outline-none"
                                     placeholder={displayedPlaceholder}
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
@@ -287,7 +287,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                         <span className="material-icons-outlined text-lg">video_library</span>
                                         <span>Assets</span>
                                         {selectedAssetIds.length > 0 && (
-                                            <span className="bg-purple-500 text-white text-[10px] px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold ml-0.5">{selectedAssetIds.length}</span>
+                                            <span className="bg-primary text-black text-[10px] px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold ml-0.5">{selectedAssetIds.length}</span>
                                         )}
                                     </button>
 
@@ -298,7 +298,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                         <button
                                             onClick={() => setIsAgentDropdownOpen(!isAgentDropdownOpen)}
                                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all whitespace-nowrap ${isAgentDropdownOpen
-                                                ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300'
+                                                ? 'bg-primary/20 dark:bg-primary/10 border-primary/30 dark:border-primary/20 text-emerald-700 dark:text-primary'
                                                 : 'border-transparent hover:bg-white dark:hover:bg-white/10 hover:border-slate-200 dark:hover:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                                 }`}
                                         >
@@ -313,7 +313,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                                     <input
                                                         type="text"
                                                         placeholder="Search agents..."
-                                                        className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-purple-500 text-slate-700 dark:text-gray-200 placeholder-slate-400"
+                                                        className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-primary text-slate-700 dark:text-gray-200 placeholder-slate-400"
                                                         value={agentSearch}
                                                         onChange={(e) => setAgentSearch(e.target.value)}
                                                         autoFocus
@@ -332,7 +332,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                                                         setAgentSearch("");
                                                                     }}
                                                                     className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 ${selectedAgentId === agent.id
-                                                                        ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
+                                                                        ? 'bg-primary/20 dark:bg-primary/10 text-emerald-700 dark:text-primary'
                                                                         : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300'
                                                                         }`}
                                                                 >
@@ -355,7 +355,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                     disabled={isProcessing || !prompt.trim()}
                                     className={`relative group overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-2.5 rounded-xl font-medium text-sm transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none w-full sm:w-auto`}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-emerald-600 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity"></div>
                                     <div className="flex items-center gap-2 relative z-10">
                                         <span className={isProcessing ? "animate-pulse" : ""}>{isProcessing ? 'Processing' : 'Generate'}</span>
                                         <span className={`material-icons-outlined text-base ${isProcessing ? 'animate-spin' : ''}`}>
@@ -368,7 +368,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                             {/* Processing Progress Bar (Optional) */}
                             {isProcessing && (
                                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-white/5">
-                                    <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 animate-gradient-x w-full"></div>
+                                    <div className="h-full bg-gradient-to-r from-primary via-emerald-500 to-primary animate-gradient-x w-full"></div>
                                 </div>
                             )}
                         </div>
@@ -390,7 +390,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                             <button
                                 key={i}
                                 onClick={() => setPrompt(sugg)}
-                                className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/5 hover:border-purple-200 dark:hover:border-purple-800/50 bg-white dark:bg-white/5 hover:bg-purple-50 dark:hover:bg-purple-900/10 text-xs text-slate-500 dark:text-slate-400 transition-colors"
+                                className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/5 hover:border-primary/20 dark:hover:border-primary/20 bg-white dark:bg-white/5 hover:bg-primary/5 dark:hover:bg-primary/5 text-xs text-slate-500 dark:text-slate-400 transition-colors"
                             >
                                 {sugg}
                             </button>

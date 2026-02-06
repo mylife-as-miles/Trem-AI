@@ -224,7 +224,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
                                                         <div className="flex items-start gap-4">
                                                             {/* Avatar */}
                                                             <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isAI
-                                                                ? 'bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-purple-400'
+                                                                ? 'bg-gradient-to-br from-primary/20 to-emerald-500/20 text-primary'
                                                                 : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400'
                                                                 }`}>
                                                                 <span className="material-icons-outlined text-lg">
@@ -238,7 +238,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
                                                                         {commit.author}
                                                                     </span>
                                                                     {isAI && (
-                                                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 uppercase tracking-wide">
+                                                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-emerald-600 dark:text-primary border border-primary/20 uppercase tracking-wide">
                                                                             AI
                                                                         </span>
                                                                     )}
@@ -279,7 +279,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
                                                                         title={type}
                                                                     >
                                                                         <span className={`material-icons-outlined text-[10px] ${type === 'otio' ? 'text-blue-400' :
-                                                                            type === 'dag' ? 'text-purple-400' :
+                                                                            type === 'dag' ? 'text-primary' :
                                                                                 type === 'scenes' ? 'text-emerald-400' :
                                                                                     'text-slate-400'
                                                                             }`}>

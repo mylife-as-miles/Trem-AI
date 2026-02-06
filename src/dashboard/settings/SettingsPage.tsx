@@ -25,7 +25,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
             <span className={`material-icons-outlined text-[20px] ${activeTab === id ? 'text-white' : 'text-slate-500 dark:text-gray-500 group-hover:text-gray-300'}`}>{icon}</span>
             <span className="text-sm tracking-wide">{label}</span>
             {beta && (
-                <span className="ml-auto text-[10px] font-bold bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20 uppercase tracking-wider">Beta</span>
+                <span className="ml-auto text-[10px] font-bold bg-primary/20 text-emerald-400 dark:text-primary px-1.5 py-0.5 rounded border border-primary/20 uppercase tracking-wider">Beta</span>
             )}
         </button>
     );
@@ -57,7 +57,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
 
                     <div className="mt-auto px-4">
                         <div className="flex items-center gap-3 py-3 border-t border-white/5">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-blue-600 flex items-center justify-center text-xs font-bold text-white">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-emerald-600 flex items-center justify-center text-xs font-bold text-black">
                                 T
                             </div>
                             <div className="flex flex-col">
@@ -78,12 +78,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                 {/* Plan Banner */}
                                 <section>
                                     <div className="flex items-start gap-4 mb-2">
-                                        <span className="material-icons-outlined text-blue-500 text-xl mt-0.5">verified</span>
+                                        <span className="material-icons-outlined text-primary text-xl mt-0.5">verified</span>
                                         <h2 className="text-xl font-bold text-white">Plan: Trem Studio Pro</h2>
                                     </div>
                                     <div className="ml-9">
                                         <p className="text-gray-400 text-sm mb-4 leading-relaxed">
-                                            You're on the Pro plan—built for high-throughput rendering and advanced AI context windows. Need even more GPU capacity? <a href="#" className="text-blue-400 hover:underline">Learn more about enterprise nodes.</a>
+                                            You're on the Pro plan—built for high-throughput rendering and advanced AI context windows. Need even more GPU capacity? <a href="#" className="text-emerald-400 dark:text-primary hover:underline">Learn more about enterprise nodes.</a>
                                         </p>
                                         <div className="flex items-center gap-4">
                                             <button className="px-4 py-2 bg-primary hover:bg-primary_hover text-black text-sm font-bold rounded-md transition-all flex items-center gap-2">
@@ -157,7 +157,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                             <div className="space-y-12 fade-in">
                                 <section>
                                     <div className="flex items-start gap-4 mb-6">
-                                        <span className="material-icons-outlined text-blue-500 text-xl mt-0.5">psychology</span>
+                                        <span className="material-icons-outlined text-primary text-xl mt-0.5">psychology</span>
                                         <div>
                                             <h2 className="text-xl font-bold text-white">AI Model Settings</h2>
                                             <p className="text-gray-400 text-sm mt-1">Set your preferences for which model Trem should use for creative decisions.</p>
@@ -195,7 +195,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                         ].map((task, i) => (
                                             <div key={i} className="p-4 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors cursor-pointer group">
                                                 <div className="flex items-center justify-between mb-2">
-                                                    <span className="material-icons-outlined text-gray-400 group-hover:text-blue-400 transition-colors">{task.icon}</span>
+                                                    <span className="material-icons-outlined text-gray-400 group-hover:text-primary transition-colors">{task.icon}</span>
                                                     <div className="w-4 h-4 rounded border border-gray-600 group-hover:border-primary"></div>
                                                 </div>
                                                 <div className="font-medium text-white text-sm">{task.title}</div>
@@ -211,7 +211,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                         {activeTab === 'integrations' && (
                             <div className="space-y-8 fade-in">
                                 <div className="flex items-start gap-4">
-                                    <span className="material-icons-outlined text-blue-500 text-xl mt-0.5">hub</span>
+                                    <span className="material-icons-outlined text-primary text-xl mt-0.5">hub</span>
                                     <div>
                                         <h2 className="text-xl font-bold text-white">Frame.io Integration</h2>
                                         <p className="text-gray-400 text-sm mt-1 leading-relaxed max-w-xl">
@@ -228,7 +228,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                     />
 
                                     <div>
-                                        <a href="#" className="text-sm text-blue-400 hover:text-blue-300 hover:underline mb-2 inline-block">Manage tokens in Frame.io Dashboard</a>
+                                        <a href="#" className="text-sm text-emerald-400 dark:text-primary hover:text-emerald-300 dark:hover:text-primary_hover hover:underline mb-2 inline-block">Manage tokens in Frame.io Dashboard</a>
 
                                         <div className="bg-[#18181b] border border-white/5 rounded-lg p-5 mt-4">
                                             <h4 className="text-sm font-bold text-white mb-3">Quick Setup</h4>
@@ -257,7 +257,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                             <div className="space-y-8 fade-in">
                                 <div className="flex items-center justify-between mb-8">
                                     <div className="flex items-start gap-4">
-                                        <span className="material-icons-outlined text-blue-500 text-xl mt-0.5">vpn_key</span>
+                                        <span className="material-icons-outlined text-primary text-xl mt-0.5">vpn_key</span>
                                         <div>
                                             <h2 className="text-xl font-bold text-white">API Keys</h2>
                                             <p className="text-gray-400 text-sm mt-1">Manage programmatic access to your Trem workspace.</p>
@@ -270,7 +270,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
 
                                 <div className="ml-9">
                                     <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 flex items-start gap-3 mb-8">
-                                        <span className="material-icons-outlined text-blue-500 text-lg mt-0.5">gpp_good</span>
+                                        <span className="material-icons-outlined text-primary text-lg mt-0.5">gpp_good</span>
                                         <div>
                                             <h4 className="text-sm font-bold text-white">Abuse auto-detection on</h4>
                                             <p className="text-xs text-gray-400 mt-1">
@@ -293,7 +293,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                                 <tr className="group hover:bg-white/[0.02] transition-colors">
                                                     <td className="px-6 py-4 text-white font-mono">render-node-01</td>
                                                     <td className="px-6 py-4">
-                                                        <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-xs border border-blue-500/20">pipelines.read</span>
+                                                        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-emerald-400 dark:text-emerald-300 text-xs border border-primary/20">pipelines.read</span>
                                                     </td>
                                                     <td className="px-6 py-4 text-gray-500">2 mins ago</td>
                                                     <td className="px-6 py-4 text-right">
@@ -319,7 +319,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
 
                                     <p className="text-xs text-gray-500 mt-4">
                                         Remember to use your API keys securely. Don't share or embed them in public code.
-                                        <a href="#" className="text-blue-400 hover:underline ml-1">Read best practices</a>.
+                                        <a href="#" className="text-emerald-400 dark:text-primary hover:underline ml-1">Read best practices</a>.
                                     </p>
                                 </div>
                             </div>

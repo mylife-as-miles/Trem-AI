@@ -451,7 +451,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 <div key={node.id}>
                     <div
                         className={`flex items-center gap-2.5 py-1.5 px-3 cursor-pointer text-sm font-sans tracking-tight transition-all relative group
-                            ${isSelected ? 'text-blue-600 dark:text-white font-medium' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200'}
+                            ${isSelected ? 'text-emerald-600 dark:text-primary font-medium' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200'}
                             ${node.locked ? 'opacity-50' : ''}
                         `}
                         style={{ paddingLeft: `${depth * 12 + 12}px` }}
@@ -470,9 +470,9 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                         }}
                     >
                         {/* Interactive Background */}
-                        <div className={`absolute inset-0 mx-2 rounded-md -z-10 transition-colors ${isSelected ? 'bg-blue-50 dark:bg-white/10' : 'group-hover:bg-slate-100 dark:group-hover:bg-white/5'}`}></div>
+                        <div className={`absolute inset-0 mx-2 rounded-md -z-10 transition-colors ${isSelected ? 'bg-primary/20 dark:bg-primary/10' : 'group-hover:bg-slate-100 dark:group-hover:bg-white/5'}`}></div>
 
-                        <span className={`material-icons-outlined text-[18px] transition-colors ${isSelected ? 'text-blue-500 dark:text-blue-400' : iconColorClass}`}>
+                        <span className={`material-icons-outlined text-[18px] transition-colors ${isSelected ? 'text-primary' : iconColorClass}`}>
                             {iconName}
                         </span>
                         <span className="truncate">{node.name}</span>
@@ -502,7 +502,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     </button>
                     <div className="h-4 w-px bg-slate-200 dark:bg-white/10 mx-2"></div>
                     <h2 className="text-sm font-medium text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                        <span className="material-icons-outlined text-base text-blue-500 dark:text-blue-400">folder_open</span>
+                        <span className="material-icons-outlined text-base text-primary">folder_open</span>
                         File Manager
                     </h2>
                 </div>
@@ -535,7 +535,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     <button
                         onClick={handleSave}
                         disabled={!isDirty}
-                        className="px-4 py-1.5 rounded-lg bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white dark:text-black disabled:opacity-50 disabled:grayscale transition-all text-xs font-bold tracking-wide flex items-center gap-2"
+                        className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary_hover text-black font-bold tracking-wide flex items-center gap-2 disabled:opacity-50 disabled:grayscale transition-all text-xs"
                     >
                         <span className="material-icons-outlined text-sm">save</span>
                         <span className="hidden sm:inline">Save Changes</span>
@@ -620,7 +620,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                                 {terminalLogs.map((log, i) => (
                                     <div key={i} className="flex gap-2">
                                         <span className="text-zinc-600 select-none">$</span>
-                                        <span className={log.includes('Msg:') ? 'text-blue-400' : log.includes('Error') ? 'text-red-400' : 'text-zinc-300'}>{log.replace('> ', '')}</span>
+                                        <span className={log.includes('Msg:') ? 'text-emerald-400' : log.includes('Error') ? 'text-red-400' : 'text-zinc-300'}>{log.replace('> ', '')}</span>
                                     </div>
                                 ))}
                                 {isProcessing && <div className="animate-pulse text-amber-500 flex gap-2"><span className="text-zinc-600">$</span> <span>Processing...</span></div>}
@@ -647,10 +647,10 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     <div className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">New Folder</h3>
                         <p className="text-sm text-slate-500 dark:text-zinc-500 mb-6">Create a new directory in the root.</p>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-blue-500 dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-primary dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setNewFolderDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
-                            <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white dark:text-black rounded-lg text-sm font-medium transition-all">Create Folder</button>
+                            <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-black rounded-lg text-sm font-medium transition-all">Create Folder</button>
                         </div>
                     </div>
                 </div>
@@ -660,10 +660,10 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     <div className="bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 p-6 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">New File</h3>
                         <p className="text-sm text-slate-500 dark:text-zinc-500 mb-6">Create a new file in the root.</p>
-                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-blue-500 dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
+                        <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-primary dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setNewFileDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
-                            <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white dark:text-black rounded-lg text-sm font-medium transition-all">Create File</button>
+                            <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-primary hover:bg-primary_hover text-black rounded-lg text-sm font-medium transition-all">Create File</button>
                         </div>
                     </div>
                 </div>

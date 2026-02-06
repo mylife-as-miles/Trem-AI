@@ -149,7 +149,7 @@ const CommitDetailsView: React.FC<CommitDetailsViewProps> = ({ commit, repoName,
                                                 file.type === 'subtitles' ? 'subtitles' :
                                                     'description';
                                     const color = file.type === 'otio' ? 'text-blue-400' :
-                                        file.type === 'dag' ? 'text-purple-400' :
+                                        file.type === 'dag' ? 'text-primary' :
                                             file.type === 'scenes' ? 'text-emerald-400' :
                                                 file.type === 'subtitles' ? 'text-yellow-400' :
                                                     'text-slate-400';
@@ -170,7 +170,7 @@ const CommitDetailsView: React.FC<CommitDetailsViewProps> = ({ commit, repoName,
 
                     {/* AI Analysis Badge */}
                     <div className="flex items-center justify-center gap-2 py-4">
-                        <span className="text-xs font-mono text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20">
+                        <span className="text-xs font-mono text-primary bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
                             ✨ AI-GENERATED COMMIT
                         </span>
                     </div>

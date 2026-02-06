@@ -56,7 +56,7 @@ const defaultFileSystem: FileNode[] = [
     type: 'folder',
     children: [
       { id: 'instagram_story', name: 'Instagram_Story_v1.mp4', type: 'file', icon: 'movie', iconColor: 'text-green-400' },
-      { id: 'broadcast_master', name: 'Broadcast_Master_ProRes.mov', type: 'file', icon: 'movie', iconColor: 'text-blue-400' }
+      { id: 'broadcast_master', name: 'Broadcast_Master_ProRes.mov', type: 'file', icon: 'movie', iconColor: 'text-primary' }
     ]
   },
   {
@@ -136,7 +136,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                     name: a.name || `${a.id}.mp4`,
                     type: 'file' as const,
                     icon: 'movie',
-                    iconColor: 'text-blue-400'
+                    iconColor: 'text-primary'
                   })) || []
                 },
                 { id: 'proxies', name: 'proxies', type: 'folder' as const, children: [] }
@@ -296,7 +296,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                     toggleFolder(e, node.id);
                   }
                 }}
-                className={`w-5 h-5 flex items-center justify-center transition-colors ${node.type === 'folder' ? 'text-purple-500' : 'text-slate-400 dark:text-slate-500'}`}
+                className={`w-5 h-5 flex items-center justify-center transition-colors ${node.type === 'folder' ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}
               >
                 {node.type === 'folder' ? (
                   <span className="material-icons-outlined text-base transition-transform duration-200" style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
@@ -310,7 +310,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
               </div>
 
               {node.type === 'folder' && (
-                <span className="material-icons-outlined text-lg text-purple-500">
+                <span className="material-icons-outlined text-lg text-primary">
                   {isExpanded ? 'folder_open' : 'folder'}
                 </span>
               )}

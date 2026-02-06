@@ -35,7 +35,7 @@ const TaskFeed: React.FC = () => {
         {/* Completed Task */}
         <div className="glass-panel rounded-lg p-4 flex items-center justify-between group hover:border-primary/40 transition-colors">
           <div className="flex items-center gap-4">
-            <div className="p-2 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+            <div className="p-2 rounded bg-primary/10 text-primary border border-primary/20">
               <span className="material-icons-outlined">subtitles</span>
             </div>
             <div>

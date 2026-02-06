@@ -110,7 +110,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                         className="absolute inset-0 w-full h-full"
                         style={{ clipPath: `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)` }}
                     >
-                        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-slate-900 to-black flex items-center justify-center relative">
+                        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/40 via-slate-900 to-black flex items-center justify-center relative">
                             <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiAvPgo8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjYTg1NWY3IiBvcGFjaXR5PSIwLjMiIC8+Cjwvc3ZnPg==')]"></div>
                             <div className="text-blue-400/10 text-[10rem] font-display font-bold rotate-12 absolute scale-150 blur-sm animate-pulse">RUN</div>
                         </div>
@@ -202,7 +202,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                             <div className="max-w-3xl">
                                 <div className="flex gap-4 mb-6">
                                     <div className="flex-shrink-0">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-purple-900 flex items-center justify-center shadow-neon">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-900 flex items-center justify-center shadow-neon">
                                             <span className="material-icons-outlined text-white text-lg">smart_toy</span>
                                         </div>
                                     </div>

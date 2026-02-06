@@ -329,14 +329,14 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // otio/
             {
                 id: 'otio', name: 'otio', type: 'folder', children: [
-                    { id: 'otio_main', name: 'main.otio.json', type: 'file', icon: 'tune', iconColor: 'text-purple-400', content: JSON.stringify(generatedRepoData.timeline || {}, null, 2) }
+                    { id: 'otio_main', name: 'main.otio.json', type: 'file', icon: 'tune', iconColor: 'text-primary', content: JSON.stringify(generatedRepoData.timeline || {}, null, 2) }
                 ]
             },
 
             // dag/
             {
                 id: 'dag', name: 'dag', type: 'folder', children: [
-                    { id: 'dag_graph', name: 'graph.json', type: 'file', icon: 'schema', iconColor: 'text-blue-400', content: JSON.stringify(generatedRepoData.dag || {}, null, 2) }
+                    { id: 'dag_graph', name: 'graph.json', type: 'file', icon: 'schema', iconColor: 'text-primary', content: JSON.stringify(generatedRepoData.dag || {}, null, 2) }
                 ]
             },
 
@@ -372,8 +372,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // descriptions/
             {
                 id: 'descriptions', name: 'descriptions', type: 'folder', children: [
-                    { id: 'desc_video', name: 'video.md', type: 'file', icon: 'description', iconColor: 'text-blue-300', content: generatedRepoData.metadata?.video_md || '' },
-                    { id: 'desc_scenes', name: 'scenes.md', type: 'file', icon: 'description', iconColor: 'text-blue-200', content: generatedRepoData.metadata?.scenes_md || '' }
+                    { id: 'desc_video', name: 'video.md', type: 'file', icon: 'description', iconColor: 'text-emerald-300', content: generatedRepoData.metadata?.video_md || '' },
+                    { id: 'desc_scenes', name: 'scenes.md', type: 'file', icon: 'description', iconColor: 'text-emerald-200', content: generatedRepoData.metadata?.scenes_md || '' }
                 ]
             },
 
@@ -559,7 +559,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                                     <div className={`w - 2 h - 2 rounded - full ${worker.status === 'idle' ? 'bg-slate-400' : 'bg-green-400 animate-pulse'} `}></div>
                                                 </div>
                                                 <div className="font-mono text-xs text-slate-500 dark:text-gray-500 mb-1">STATUS</div>
-                                                <div className={`text-sm font-bold uppercase ${worker.status === 'idle' ? 'text-slate-400' : 'text-blue-500'} `}>
+                                                <div className={`text-sm font-bold uppercase ${worker.status === 'idle' ? 'text-slate-400' : 'text-primary'} `}>
                                                     {worker.status}
                                                 </div>
                                                 <div className="mt-2 text-[10px] font-mono text-slate-400 dark:text-gray-600 truncate">
@@ -607,7 +607,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center justify-between mb-1">
                                                             <span className="font-mono text-xs font-bold truncate text-slate-900 dark:text-white max-w-[120px]">{asset.name}</span>
-                                                            <span className={`text-[10px] font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-blue-500' : 'text-amber-500 dark:text-yellow-500'} `}>
+                                                            <span className={`text-[10px] font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-emerald-500 dark:text-primary' : 'text-amber-500 dark:text-yellow-500'} `}>
                                                                 {asset.status === 'indexed' ? 'Ready' : asset.status}
                                                             </span>
                                                         </div>
@@ -694,7 +694,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-2">
                                                 <label className="text-xs font-mono uppercase text-slate-500 dark:text-gray-400 font-bold">Generated Hashes & Metadata</label>
-                                                <span className="text-[10px] font-mono text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded">TREM-HASH-V2</span>
+                                                <span className="text-[10px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">TREM-HASH-V2</span>
                                             </div>
                                             <div className="font-mono text-xs text-slate-600 dark:text-gray-400 space-y-1 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                                                 {selectedAssets.map((asset, i) => (
