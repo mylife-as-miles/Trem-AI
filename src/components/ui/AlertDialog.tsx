@@ -61,7 +61,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
             <div className="relative bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-white/20 dark:border-white/10 transform transition-all animate-in zoom-in-95 duration-200">
 
                 {/* Decorative Top Border/Glow */}
-                <div className={`absolute top-0 left-0 right-0 h-1 ${type === 'danger' ? 'bg-gradient-to-r from-red-500 to-orange-500' : 'bg-gradient-to-r from-primary to-emerald-500'}`} />
+                <div className={`absolute top-0 left-0 right-0 h-1 ${type === 'danger' ? 'bg-red-500' : 'bg-primary'}`} />
 
                 <div className="p-6">
                     <div className="flex items-start gap-4">

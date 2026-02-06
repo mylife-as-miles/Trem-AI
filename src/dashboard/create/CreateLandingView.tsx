@@ -71,7 +71,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-display font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                        Create with <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-emerald-600">Trem AI</span>
+                        Create with <span className="text-slate-900 dark:text-white">Trem AI</span>
                     </h1>
 
                     <p className="text-xl text-slate-500 dark:text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
@@ -92,15 +92,13 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                 onClick={() => onSelectTemplate(card.title)}
                                 className="group relative flex flex-col items-start text-left h-72 rounded-2xl transition-all duration-500 hover:-translate-y-2"
                             >
-                                <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A] rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm group-hover:shadow-2xl group-hover:shadow-primary/10 dark:group-hover:shadow-primary/20 transition-all duration-500"></div>
-                                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A] rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm transition-all duration-500"></div>
 
                                 {/* Card Image / Icon Area */}
                                 <div className="relative w-full h-40 bg-slate-50 dark:bg-[#111] rounded-t-2xl overflow-hidden flex items-center justify-center border-b border-slate-100 dark:border-white/5 group-hover:border-transparent transition-colors">
                                     {card.image ? (
                                         <>
                                             <div className="absolute inset-0 bg-slate-900/5 dark:bg-white/5 group-hover:bg-slate-900/0 dark:group-hover:bg-white/10 transition-colors z-10"></div>
-                                            <div className={`absolute inset-0 bg-gradient-to-t from-white dark:from-[#0A0A0A] to-transparent opacity-20 dark:opacity-40 z-10`}></div>
                                             <div className="transform group-hover:scale-110 transition-transform duration-700 ease-out">
                                                 <span className={`material-icons-outlined text-6xl text-slate-200 dark:text-white/10 group-hover:text-primary/20 transition-colors`}>
                                                     {card.icon}
@@ -108,8 +106,8 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                             </div>
                                         </>
                                     ) : (
-                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform duration-500">
-                                            <span className="material-icons-outlined text-3xl text-white">add</span>
+                                        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center transition-transform duration-500">
+                                            <span className="material-icons-outlined text-3xl text-black">add</span>
                                         </div>
                                     )}
                                 </div>
@@ -162,9 +160,9 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                                 <button
                                     key={repo.id}
                                     onClick={() => onSelectRepo && onSelectRepo(repo)}
-                                    className="group relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/30 overflow-hidden"
+                                    className="group relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-xl p-5 text-left transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-primary overflow-hidden"
                                 >
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-primary to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                                     <div className="flex items-start gap-4 relative z-10">
                                         <div className="w-12 h-12 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">

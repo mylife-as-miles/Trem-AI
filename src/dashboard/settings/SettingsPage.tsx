@@ -57,7 +57,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
 
                     <div className="mt-auto px-4">
                         <div className="flex items-center gap-3 py-3 border-t border-white/5">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-emerald-600 flex items-center justify-center text-xs font-bold text-black">
+                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-black">
                                 T
                             </div>
                             <div className="flex flex-col">

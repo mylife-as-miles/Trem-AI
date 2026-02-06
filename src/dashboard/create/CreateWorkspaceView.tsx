@@ -233,10 +233,9 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
 
                     {/* Main Command Center Card */}
                     <div className="relative group w-full max-w-3xl mx-auto">
-                        {/* Glow Effect */}
-                        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-emerald-500/20 to-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
 
-                        <div className="relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 overflow-hidden flex flex-col min-h-[320px]">
+
+                        <div className="relative bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[320px]">
 
                             {/* Input Area */}
                             <div className="flex-1 p-6 relative">
@@ -355,7 +354,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                     disabled={isProcessing || !prompt.trim()}
                                     className={`relative group overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-2.5 rounded-xl font-medium text-sm transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none w-full sm:w-auto`}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-emerald-600 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity"></div>
+                                    <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity"></div>
                                     <div className="flex items-center gap-2 relative z-10">
                                         <span className={isProcessing ? "animate-pulse" : ""}>{isProcessing ? 'Processing' : 'Generate'}</span>
                                         <span className={`material-icons-outlined text-base ${isProcessing ? 'animate-spin' : ''}`}>
@@ -368,7 +367,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                             {/* Processing Progress Bar (Optional) */}
                             {isProcessing && (
                                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-slate-100 dark:bg-white/5">
-                                    <div className="h-full bg-gradient-to-r from-primary via-emerald-500 to-primary animate-gradient-x w-full"></div>
+                                    <div className="h-full bg-primary animate-pulse w-full"></div>
                                 </div>
                             )}
                         </div>
