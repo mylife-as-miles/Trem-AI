@@ -175,7 +175,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect,
 
     return (
         <div
-            className={`flex bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans overflow-hidden selection:bg-primary selection:text-white ${isModal ? 'h-[80vh] w-full rounded-xl border border-slate-200 dark:border-white/10 shadow-2xl' : 'h-screen'}`}
+            className={`flex flex-col bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white font-sans overflow-hidden selection:bg-primary selection:text-white ${isModal ? 'h-[80vh] w-full rounded-xl border border-slate-200 dark:border-white/10 shadow-2xl' : 'h-screen'}`}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
