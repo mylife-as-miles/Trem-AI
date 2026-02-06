@@ -13,7 +13,7 @@ export default {
                 "background-light": "#f8fafc",
                 "background-dark": "#0E100A", // User Reference
                 "surface-light": "#ffffff",
-                "surface-dark": "#0E100A",
+                "surface-dark": "#09090b",
                 "surface-card": "#1a1c16", // Adjusted for green-black tint
                 "border-dark": "#2a2c26", // Adjusted for green-black tint
             },

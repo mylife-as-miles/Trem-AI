@@ -14,13 +14,13 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) 
             </div>
 
             {/* Centered Pill Navigation */}
-            <div className="pointer-events-auto shadow-2xl shadow-slate-200/50 dark:shadow-none bg-white/80 dark:bg-[#1A1A1A]/80 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-full p-2 flex items-center gap-1 mx-auto absolute left-1/2 -translate-x-1/2">
+            <div className="pointer-events-auto bg-white/80 dark:bg-zinc-900/90 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full p-2 flex items-center gap-1 mx-auto absolute left-1/2 -translate-x-1/2 shadow-xl dark:shadow-none">
                 <button
                     onClick={() => onNavigate?.('trem-edit')}
                     className={`
                         px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2
                         ${activeTab === 'edit'
-                            ? 'bg-[#D9F85F] text-black shadow-lg shadow-[#D9F85F]/20 scale-105 ring-4 ring-white/50 dark:ring-black/50'
+                            ? 'bg-primary text-black font-extrabold shadow-sm'
                             : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                         }
                     `}
@@ -34,7 +34,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) 
                     className={`
                         px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2
                         ${activeTab === 'create'
-                            ? 'bg-[#D9F85F] text-black shadow-lg shadow-[#D9F85F]/20 scale-105 ring-4 ring-white/50 dark:ring-black/50'
+                            ? 'bg-primary text-black font-extrabold shadow-sm'
                             : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                         }
                     `}
