@@ -21,14 +21,14 @@ const RepoHeader: React.FC<RepoHeaderProps> = ({ onMenuClick, onSettingsClick })
           <span className="text-sm font-mono hidden sm:inline">client /</span>
           <span className="text-slate-900 dark:text-white font-medium font-mono text-base tracking-tight truncate max-w-[150px] sm:max-w-none">nike-commercial</span>
         </div>
-        <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] border border-primary/30 text-primary bg-primary/5 uppercase font-mono tracking-wider">Private</span>
+        <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] border border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-white/5 uppercase font-mono tracking-wider">Private</span>
       </div>
 
       <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-2">
           <div className="relative group">
             <button className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-md bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm text-slate-600 dark:text-slate-300 hover:border-primary/50 transition-colors">
-              <span className="material-icons-outlined text-sm text-primary">call_split</span>
+              <span className="material-icons-outlined text-sm text-blue-500">call_split</span>
               <span className="font-mono">main</span>
               <span className="material-icons-outlined text-sm text-slate-500">expand_more</span>
             </button>

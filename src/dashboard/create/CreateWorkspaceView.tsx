@@ -376,7 +376,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                         {/* Feedback / Status Message under the card */}
                         {feedback && (
                             <div className="mt-4 text-center animate-in fade-in slide-in-from-top-2">
-                                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 dark:bg-primary/10 border border-primary/30 dark:border-primary/30 text-black dark:text-primary text-xs font-medium">
+                                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/20 text-slate-900 dark:text-white text-xs font-medium">
                                     <span className="material-icons-outlined text-sm">check_circle</span>
                                     {feedback}
                                 </span>

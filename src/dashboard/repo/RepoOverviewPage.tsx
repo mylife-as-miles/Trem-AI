@@ -389,16 +389,16 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
             {/* Creative Brief Card */}
             <div className="lg:col-span-2 glass-panel rounded-xl p-8 flex flex-col relative overflow-hidden group min-h-[300px] border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5">
               <div className="absolute top-0 right-0 p-8 opacity-10 dark:opacity-20 pointer-events-none">
-                <span className="material-icons-outlined text-9xl text-primary">description</span>
+                <span className="material-icons-outlined text-9xl text-slate-400 dark:text-zinc-500">description</span>
               </div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-primary font-semibold">{repoData?.name ? `Brief: ${repoData.name}` : 'Creative Brief'}</h2>
+                <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-slate-600 dark:text-zinc-400 font-semibold">{repoData?.name ? `Brief: ${repoData.name}` : 'Creative Brief'}</h2>
                 <div className="flex items-center gap-2">
                   {!isEditingBrief ? (
                     <>
                       <button
                         onClick={handleEditBrief}
-                        className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-primary transition-colors"
+                        className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                         title="Edit Brief"
                       >
                         <span className="material-icons-outlined text-lg">edit</span>
@@ -505,7 +505,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
               <h2 className="text-lg font-display font-medium text-slate-900 dark:text-white">Latest Activity</h2>
               <button
                 onClick={handleViewFullLogs}
-                className="text-xs text-primary font-mono hover:text-primary_hover transition-colors"
+                className="text-xs text-slate-600 dark:text-zinc-400 font-mono hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 VIEW FULL LOG
               </button>
@@ -549,7 +549,7 @@ const VideoRepoOverview: React.FC<VideoRepoOverviewProps> = ({ repoData, onNavig
                         >
                           <td className="px-6 py-4 flex items-center gap-3">
                             <span className="w-2 h-2 rounded-full bg-primary"></span>
-                            <span className="text-primary font-bold">{entry.agent}</span>
+                            <span className="text-slate-700 dark:text-white font-bold">{entry.agent}</span>
                           </td>
                           <td className="px-6 py-4 text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                             {entry.message}

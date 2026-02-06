@@ -472,7 +472,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                         {/* Interactive Background */}
                         <div className={`absolute inset-0 mx-2 rounded-md -z-10 transition-colors ${isSelected ? 'bg-blue-50 dark:bg-white/10' : 'group-hover:bg-slate-100 dark:group-hover:bg-white/5'}`}></div>
 
-                        <span className={`material-icons-outlined text-[18px] transition-colors ${isSelected ? 'text-blue-500 dark:text-primary' : iconColorClass}`}>
+                        <span className={`material-icons-outlined text-[18px] transition-colors ${isSelected ? 'text-blue-500 dark:text-blue-400' : iconColorClass}`}>
                             {iconName}
                         </span>
                         <span className="truncate">{node.name}</span>
@@ -502,7 +502,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     </button>
                     <div className="h-4 w-px bg-slate-200 dark:bg-white/10 mx-2"></div>
                     <h2 className="text-sm font-medium text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                        <span className="material-icons-outlined text-base text-blue-500 dark:text-primary">folder_open</span>
+                        <span className="material-icons-outlined text-base text-blue-500 dark:text-blue-400">folder_open</span>
                         File Manager
                     </h2>
                 </div>
@@ -535,7 +535,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                     <button
                         onClick={handleSave}
                         disabled={!isDirty}
-                        className="px-4 py-1.5 rounded-lg bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white disabled:opacity-50 disabled:grayscale transition-all text-xs font-bold tracking-wide flex items-center gap-2 shadow-lg shadow-blue-500/20 dark:shadow-primary/20"
+                        className="px-4 py-1.5 rounded-lg bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white dark:text-black disabled:opacity-50 disabled:grayscale transition-all text-xs font-bold tracking-wide flex items-center gap-2"
                     >
                         <span className="material-icons-outlined text-sm">save</span>
                         <span className="hidden sm:inline">Save Changes</span>
@@ -650,7 +650,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                         <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="Folder Name" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-blue-500 dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setNewFolderDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
-                            <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-500/20 dark:shadow-primary/20 transition-all">Create Folder</button>
+                            <button onClick={() => handleCreateItem('folder')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white dark:text-black rounded-lg text-sm font-medium transition-all">Create Folder</button>
                         </div>
                     </div>
                 </div>
@@ -663,7 +663,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                         <input autoFocus value={newItemName} onChange={e => setNewItemName(e.target.value)} placeholder="File Name (e.g. notes.md)" className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-white/10 focus:border-blue-500 dark:focus:border-primary/50 rounded-lg p-3 text-slate-900 dark:text-white mb-6 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-700" />
                         <div className="flex justify-end gap-2">
                             <button onClick={() => setNewFileDialogOpen(false)} className="px-4 py-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors text-sm font-medium">Cancel</button>
-                            <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white rounded-lg text-sm font-medium shadow-lg shadow-blue-500/20 dark:shadow-primary/20 transition-all">Create File</button>
+                            <button onClick={() => handleCreateItem('file')} className="px-4 py-2 bg-blue-600 dark:bg-primary hover:bg-blue-700 dark:hover:bg-primary_hover text-white dark:text-black rounded-lg text-sm font-medium transition-all">Create File</button>
                         </div>
                     </div>
                 </div>

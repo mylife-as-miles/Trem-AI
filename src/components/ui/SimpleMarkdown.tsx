@@ -142,10 +142,10 @@ const SimpleMarkdown: React.FC<SimpleMarkdownProps> = ({ children, className = '
                 } else if (type === 'italic') {
                     parts.push(<em key={pIndex++} className="italic">{bestMatch[1]}</em>);
                 } else if (type === 'code') {
-                    parts.push(<code key={pIndex++} className="font-mono text-sm bg-slate-100 dark:bg-white/10 px-1 py-0.5 rounded text-primary">{bestMatch[1]}</code>);
+                    parts.push(<code key={pIndex++} className="font-mono text-sm bg-slate-100 dark:bg-white/10 px-1 py-0.5 rounded text-blue-500">{bestMatch[1]}</code>);
                 } else if (type === 'link') {
                     parts.push(
-                        <a key={pIndex++} href={bestMatch[2]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        <a key={pIndex++} href={bestMatch[2]} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
                             {bestMatch[1]}
                         </a>
                     );

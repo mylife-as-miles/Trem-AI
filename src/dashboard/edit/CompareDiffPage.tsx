@@ -68,7 +68,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                         main
                     </div>
                     <span className="material-icons-outlined text-slate-400 dark:text-slate-600 text-sm">arrow_back</span>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-primary/10 border border-primary/20 text-primary">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400">
                         <span className="material-icons-outlined text-sm">call_split</span>
                         faster-cut
                     </div>
@@ -112,13 +112,13 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                     >
                         <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-slate-900 to-black flex items-center justify-center relative">
                             <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiAvPgo8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjYTg1NWY3IiBvcGFjaXR5PSIwLjMiIC8+Cjwvc3ZnPg==')]"></div>
-                            <div className="text-primary/10 text-[10rem] font-display font-bold rotate-12 absolute scale-150 blur-sm animate-pulse">RUN</div>
+                            <div className="text-blue-400/10 text-[10rem] font-display font-bold rotate-12 absolute scale-150 blur-sm animate-pulse">RUN</div>
                         </div>
                     </div>
 
                     {/* Slider Handle */}
                     <div
-                        className="absolute top-0 bottom-0 w-0.5 bg-primary cursor-col-resize z-20 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.8)] group-hover:bg-primary_hover transition-colors"
+                        className="absolute top-0 bottom-0 w-0.5 bg-primary cursor-col-resize z-20 flex items-center justify-center group-hover:bg-primary_hover transition-colors"
                         style={{ left: `${sliderPosition}%` }}
                     >
                         <div className="absolute top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-white text-white cursor-col-resize hover:scale-110 transition-transform">
@@ -134,7 +134,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                         </div>
                     </div>
                     <div className="absolute top-6 right-6 z-10 transition-opacity duration-200" style={{ opacity: sliderPosition > 90 ? 0 : 1 }}>
-                        <div className="px-3 py-1.5 rounded bg-black/80 backdrop-blur-md border border-primary/30 text-xs font-mono text-primary flex items-center gap-2 shadow-neon">
+                        <div className="px-3 py-1.5 rounded bg-black/80 backdrop-blur-md border border-blue-500/30 text-xs font-mono text-blue-400 flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                             AI EDIT (faster-cut)
                         </div>
@@ -194,7 +194,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                     <div className="flex-1 bg-gray-50 dark:bg-background-dark relative flex flex-col">
                         <div className="px-8 py-4 border-b border-slate-200 dark:border-white/5">
                             <div className="flex items-center gap-2">
-                                <span className="material-icons-outlined text-primary text-sm">psychology</span>
+                                <span className="material-icons-outlined text-blue-400 text-sm">psychology</span>
                                 <h3 className="font-display font-medium text-sm text-slate-900 dark:text-white tracking-wide">Agent Reasoning</h3>
                             </div>
                         </div>
@@ -239,7 +239,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                                     Merge into Main
                                 </button>
                                 <div className="h-4 w-px bg-slate-200 dark:bg-white/10"></div>
-                                <button className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-center text-primary transition-colors tooltip" title="Open Command">
+                                <button className="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 flex items-center justify-center text-blue-500 transition-colors tooltip" title="Open Command">
                                     <span className="material-icons-outlined text-lg">chat_bubble</span>
                                 </button>
                             </div>

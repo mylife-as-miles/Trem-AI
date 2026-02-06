@@ -264,10 +264,10 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect,
                             onClick={triggerFileInput}
                             className="relative group w-full aspect-[16/9] bg-white dark:bg-black rounded-xl overflow-hidden border border-dashed border-slate-300 dark:border-white/10 hover:border-primary dark:hover:border-primary transition-all duration-300 flex flex-col items-center justify-center cursor-pointer mb-6 break-inside-avoid shadow-sm hover:shadow-md"
                         >
-                            <div className="text-slate-400 dark:text-gray-600 mb-2 group-hover:text-primary transition-colors">
+                            <div className="text-slate-400 dark:text-gray-600 mb-2 group-hover:text-blue-500 transition-colors">
                                 <span className="material-icons-outlined text-4xl">add_circle_outline</span>
                             </div>
-                            <div className="text-xs font-mono text-slate-500 dark:text-gray-500 uppercase tracking-widest group-hover:text-primary transition-colors">Upload New</div>
+                            <div className="text-xs font-mono text-slate-500 dark:text-gray-500 uppercase tracking-widest group-hover:text-blue-500 transition-colors">Upload New</div>
                         </div>
 
                         {assets.map((asset) => (
@@ -350,7 +350,7 @@ const AssetLibrary: React.FC<AssetLibraryProps> = ({ isModal, onClose, onSelect,
                                             ))}
                                         </div>
                                         {asset.meta && (
-                                            <div className="font-mono text-xs text-primary bg-black/80 p-3 rounded border border-primary/20 transform scale-95 group-hover:scale-100 transition-transform duration-300 delay-100 relative overflow-hidden">
+                                            <div className="font-mono text-xs text-blue-300 bg-black/80 p-3 rounded border border-blue-500/20 transform scale-95 group-hover:scale-100 transition-transform duration-300 delay-100 relative overflow-hidden">
                                                 <div className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full animate-ping"></div>
                                                 <span className="text-gray-500">{`{`}</span><br />
                                                 &nbsp;&nbsp;<span className="text-emerald-300">"object"</span>: <span className="text-green-400">"{asset.meta.object}"</span>,<br />

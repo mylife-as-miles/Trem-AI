@@ -44,7 +44,7 @@ const SortableClip = ({ clip }: { clip: Clip }) => {
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-0.5">
                         <h3 className="text-sm font-bold text-gray-200 truncate">{clip.name}</h3>
-                        <span className="text-[10px] font-mono text-primary">{clip.duration}</span>
+                        <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">{clip.duration}</span>
                     </div>
                     <p className="text-[11px] text-gray-500 truncate leading-tight">{clip.description}</p>
                 </div>
@@ -152,11 +152,11 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                     </div>
                     <button
                         onClick={() => onNavigate && onNavigate('diff')}
-                        className="hidden sm:block px-4 py-2 rounded-md border border-primary/40 text-primary text-xs font-bold font-display uppercase tracking-wider hover:bg-primary/10 transition-colors"
+                        className="hidden sm:block px-4 py-2 rounded-md border border-slate-300 dark:border-zinc-700 text-slate-600 dark:text-zinc-300 text-xs font-bold font-display uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
                     >
                         Compare & Commit
                     </button>
-                    <button className="px-4 py-2 rounded-md bg-primary text-white text-xs font-bold font-display uppercase tracking-wider shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:bg-primary_hover transition-colors flex items-center gap-2">
+                    <button className="px-4 py-2 rounded-md bg-primary text-black text-xs font-bold font-display uppercase tracking-wider hover:bg-primary_hover transition-colors flex items-center gap-2">
                         <span className="material-icons-outlined text-sm">ios_share</span>
                         <span className="hidden sm:inline">Export</span>
                     </button>
@@ -170,7 +170,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                 <aside className={`w-80 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-black absolute top-0 bottom-0 left-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'instructions' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
                     <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
                         <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white">Instruction Stack</h2>
-                        <span className="text-[10px] font-mono text-primary uppercase border border-primary/30 px-1.5 py-0.5 rounded bg-primary/5">OTIO v2.1</span>
+                        <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400 uppercase border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded bg-slate-50 dark:bg-zinc-800">OTIO v2.1</span>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
                         <div className="text-xs font-mono text-slate-500 dark:text-gray-500 uppercase mb-2 ml-1">Sequence A</div>
@@ -225,9 +225,9 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                     <div className="h-40 md:h-32 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 p-4 flex flex-col justify-between">
                         {/* Timeline Bar */}
                         <div className="w-full h-8 flex items-center gap-2 md:gap-4 group">
-                            <span className="text-xs font-mono text-primary w-12 md:w-16 text-right">00:00:12</span>
+                            <span className="text-xs font-mono text-slate-600 dark:text-zinc-400 w-12 md:w-16 text-right">00:00:12</span>
                             <div className="flex-1 h-1.5 bg-slate-200 dark:bg-zinc-800 rounded-full relative cursor-pointer overflow-visible">
-                                <div className="absolute left-0 top-0 h-full bg-primary w-1/3 rounded-full shadow-[0_0_10px_theme('colors.primary')]"></div>
+                                <div className="absolute left-0 top-0 h-full bg-primary w-1/3 rounded-full"></div>
                                 <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-transform duration-200 z-10 border border-slate-200 dark:border-none"></div>
                                 <div className="hidden md:block absolute left-1/3 bottom-4 -translate-x-1/2 bg-white dark:bg-zinc-800 text-slate-800 dark:text-white text-[10px] font-mono px-2 py-1 rounded border border-slate-200 dark:border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
                                     Shot_01_Sprint
@@ -240,7 +240,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="flex items-center gap-1 justify-center w-full md:w-auto">
                                 <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span className="material-icons-outlined">skip_previous</span></button>
-                                <button className="p-2 text-slate-900 dark:text-white hover:text-primary transition-colors"><span className="material-icons-outlined text-3xl">play_circle_filled</span></button>
+                                <button className="p-2 text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"><span className="material-icons-outlined text-3xl">play_circle_filled</span></button>
                                 <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span className="material-icons-outlined">skip_next</span></button>
                             </div>
 
@@ -251,11 +251,11 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center text-[10px] uppercase font-mono tracking-wider mb-1">
-                                        <span className="text-primary font-bold">Proxy Render</span>
+                                        <span className="text-slate-700 dark:text-white font-bold">Proxy Render</span>
                                         <span className="text-slate-400 dark:text-gray-400">78%</span>
                                     </div>
                                     <div className="w-full h-1 bg-slate-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                        <div className="h-full bg-primary w-[78%] shadow-[0_0_10px_theme('colors.primary')]"></div>
+                                        <div className="h-full bg-primary w-[78%]"></div>
                                     </div>
                                 </div>
                             </div>
@@ -272,7 +272,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                 <aside className={`w-80 flex-shrink-0 flex flex-col bg-gray-50 dark:bg-black border-l border-slate-200 dark:border-white/10 absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
                     <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-black z-10">
                         <div className="flex items-center gap-2">
-                            <span className="material-icons-outlined text-primary">smart_toy</span>
+                            <span className="material-icons-outlined text-blue-600 dark:text-blue-400">smart_toy</span>
                             <h2 className="font-display font-bold text-slate-900 dark:text-white">AI Co-pilot</h2>
                         </div>
                         <button className="text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white"><span className="material-icons-outlined">history</span></button>
@@ -298,9 +298,9 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                 </div>
                                 <div className="flex-1">
                                     <div className="bg-white dark:bg-primary/5 text-slate-700 dark:text-gray-200 text-sm p-3 rounded-2xl rounded-tl-sm border border-slate-200 dark:border-primary/20 backdrop-blur-sm shadow-sm dark:shadow-[0_0_20px_-5px_rgba(168,85,247,0.15)]">
-                                        <p className="mb-3 leading-relaxed">I'm on it. I've identified <span className="text-primary font-mono text-xs bg-primary/10 px-1 rounded">Shot_02_CloseUp</span> as the best candidate.</p>
+                                        <p className="mb-3 leading-relaxed">I'm on it. I've identified <span className="text-slate-700 dark:text-white font-mono text-xs bg-slate-100 dark:bg-white/10 px-1 rounded">Shot_02_CloseUp</span> as the best candidate.</p>
                                         <div className="bg-slate-50 dark:bg-black/40 rounded border border-slate-200 dark:border-primary/30 p-2.5 flex items-center gap-3">
-                                            <span className="material-icons-outlined text-primary animate-spin text-lg">sync</span>
+                                            <span className="material-icons-outlined text-blue-600 dark:text-blue-400 animate-spin text-lg">sync</span>
                                             <div>
                                                 <div className="text-xs font-bold text-slate-800 dark:text-white mb-0.5">Updating OTIO instructions...</div>
                                                 <div className="text-[10px] font-mono text-slate-500 dark:text-gray-400">Re-rendering proxy (Layer 3)</div>
@@ -321,7 +321,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                     placeholder="Command agents..."
                                     type="text"
                                 />
-                                <button className="absolute right-2 p-1.5 text-primary hover:text-slate-900 dark:hover:text-white hover:bg-primary/10 dark:hover:bg-primary/20 rounded transition-all">
+                                <button className="absolute right-2 p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 rounded transition-all">
                                     <span className="material-icons-outlined text-lg">send</span>
                                 </button>
                             </div>
@@ -338,21 +338,21 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             <div className="lg:hidden h-14 bg-white dark:bg-black border-t border-slate-200 dark:border-white/10 flex items-center justify-around px-4 z-40">
                 <button
                     onClick={() => setActiveTab('instructions')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-blue-500' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">list</span>
                     <span className="text-[10px]">Stack</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('timeline')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'timeline' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'timeline' ? 'text-blue-500' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">movie</span>
                     <span className="text-[10px]">Timeline</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('copilot')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'copilot' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'copilot' ? 'text-blue-500' : 'text-slate-500 dark:text-gray-500'}`}
                 >
                     <span className="material-icons-outlined">smart_toy</span>
                     <span className="text-[10px]">AI Co-pilot</span>

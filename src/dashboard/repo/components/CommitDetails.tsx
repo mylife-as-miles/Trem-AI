@@ -53,11 +53,11 @@ const CommitDetailsView: React.FC<CommitDetailsViewProps> = ({ commit, repoName,
                 <div className="flex items-center justify-between px-8 py-6 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
                     <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                            <span className="material-icons-outlined text-primary text-2xl">commit</span>
+                            <span className="material-icons-outlined text-blue-500 text-2xl">commit</span>
                             <h2 className="text-2xl font-display font-bold text-slate-900 dark:text-white">Commit Details</h2>
                         </div>
                         <p className="text-sm text-slate-500 dark:text-slate-400 font-mono">
-                            {repoName && <span className="text-primary">{repoName}</span>}
+                            {repoName && <span className="text-slate-700 dark:text-gray-300">{repoName}</span>}
                             {repoName && <span className="mx-2">/</span>}
                             <span className="text-slate-600 dark:text-slate-300">{commit.id}</span>
                         </p>
@@ -77,7 +77,7 @@ const CommitDetailsView: React.FC<CommitDetailsViewProps> = ({ commit, repoName,
                     <div className="glass-panel rounded-xl p-6 border border-slate-200 dark:border-white/10">
                         <div className="flex items-start gap-4">
                             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                <span className="material-icons-outlined text-primary">auto_awesome</span>
+                                <span className="material-icons-outlined text-blue-500">auto_awesome</span>
                             </div>
                             <div className="flex-1">
                                 <h3 className="text-xl font-display font-bold text-slate-900 dark:text-white mb-2">
@@ -107,7 +107,7 @@ const CommitDetailsView: React.FC<CommitDetailsViewProps> = ({ commit, repoName,
                                 {commit.hashtags.map((tag, idx) => (
                                     <span
                                         key={idx}
-                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary font-mono text-xs font-medium border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer"
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 font-mono text-xs font-medium border border-blue-500/20 hover:bg-blue-500/20 transition-colors cursor-pointer"
                                     >
                                         <span className="material-icons-outlined text-xs">tag</span>
                                         {tag}
@@ -170,7 +170,7 @@ const CommitDetailsView: React.FC<CommitDetailsViewProps> = ({ commit, repoName,
 
                     {/* AI Analysis Badge */}
                     <div className="flex items-center justify-center gap-2 py-4">
-                        <span className="text-xs font-mono text-primary bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+                        <span className="text-xs font-mono text-blue-500 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20">
                             ✨ AI-GENERATED COMMIT
                         </span>
                     </div>
@@ -178,7 +178,7 @@ const CommitDetailsView: React.FC<CommitDetailsViewProps> = ({ commit, repoName,
 
                 {/* Footer Actions */}
                 <div className="flex items-center justify-between px-8 py-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
-                    <button className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors font-mono">
+                    <button className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-500 transition-colors font-mono">
                         View Timeline
                     </button>
                     <button

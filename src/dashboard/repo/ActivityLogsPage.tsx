@@ -134,7 +134,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
                         </h1>
                     </div>
                     <p className="text-slate-500 dark:text-slate-400 max-w-xl">
-                        Track the evolution of <span className="text-primary font-medium font-mono">{repoData?.name}</span> through AI generations and manual edits.
+                        Track the evolution of <span className="text-slate-700 dark:text-white font-medium font-mono">{repoData?.name}</span> through AI generations and manual edits.
                     </p>
                 </div>
 
@@ -145,7 +145,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
                         <div className="text-2xl font-bold text-slate-900 dark:text-white font-display">{stats.total}</div>
                     </div>
                     <div className="glass-panel px-5 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hidden sm:block">
-                        <div className="text-xs text-primary uppercase tracking-wider font-semibold mb-1">AI Generated</div>
+                        <div className="text-xs text-blue-600 dark:text-blue-400 uppercase tracking-wider font-semibold mb-1">AI Generated</div>
                         <div className="text-2xl font-bold text-slate-900 dark:text-white font-display">{stats.aiCommits}</div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
             <div className="mb-8 flex-shrink-0 z-20">
                 <div className="glass-panel p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 flex flex-col md:flex-row gap-2">
                     <div className="relative flex-1 group">
-                        <span className="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+                        <span className="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400 transition-colors">search</span>
                         <input
                             type="text"
                             value={searchQuery}
@@ -170,7 +170,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
                         <select
                             value={selectedAuthor}
                             onChange={(e) => setSelectedAuthor(e.target.value)}
-                            className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-200 outline-none cursor-pointer hover:text-primary transition-colors pr-8 py-2 border-none ring-0 focus:ring-0"
+                            className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-200 outline-none cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors pr-8 py-2 border-none ring-0 focus:ring-0"
                         >
                             <option value="all">All Contributors</option>
                             {authors.map(a => <option key={a} value={a}>{a}</option>)}
@@ -251,7 +251,7 @@ const ActivityLogsView: React.FC<ActivityLogsViewProps> = (props) => {
                                                                 {commit.hashtags && commit.hashtags.length > 0 && (
                                                                     <div className="flex flex-wrap gap-2 mt-3">
                                                                         {commit.hashtags.map(t => (
-                                                                            <span key={t} className="text-xs font-mono text-primary bg-primary/5 px-2 py-0.5 rounded hover:bg-primary/10 transition-colors">
+                                                                            <span key={t} className="text-xs font-mono text-blue-600 dark:text-blue-400 bg-blue-500/5 px-2 py-0.5 rounded hover:bg-blue-500/10 transition-colors">
                                                                                 {t}
                                                                             </span>
                                                                         ))}

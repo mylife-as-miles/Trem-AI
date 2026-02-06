@@ -5,13 +5,13 @@ const TaskFeed: React.FC = () => {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-display font-bold text-slate-800 dark:text-white">Agent Tasks</h2>
-        <button className="text-xs text-primary font-mono hover:text-white transition-colors hover:underline">VIEW ALL LOGS</button>
+        <button className="text-xs text-blue-500 font-mono hover:text-white transition-colors hover:underline">VIEW ALL LOGS</button>
       </div>
       <div className="space-y-3">
         {/* Processing Task */}
         <div className="glass-panel rounded-lg p-4 flex items-center justify-between group hover:border-primary/40 transition-colors">
           <div className="flex items-center gap-4">
-            <div className="p-2 rounded bg-primary/10 text-primary border border-primary/20">
+            <div className="p-2 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20">
               <span className="material-icons-outlined">auto_fix_high</span>
             </div>
             <div>
@@ -21,7 +21,7 @@ const TaskFeed: React.FC = () => {
           </div>
           <div className="flex items-center gap-6">
             <div className="hidden md:flex flex-col items-end w-32">
-              <div className="text-[10px] font-mono text-primary mb-1 animate-pulse">PROCESSING</div>
+              <div className="text-[10px] font-mono text-blue-500 mb-1 animate-pulse">PROCESSING</div>
               <div className="w-full h-1 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
                 <div className="h-full bg-primary w-2/3 rounded-full shadow-[0_0_8px_rgba(168,85,247,0.8)]"></div>
               </div>
@@ -44,7 +44,7 @@ const TaskFeed: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-6">
-            <div className="px-2 py-1 rounded bg-primary/10 border border-primary/20 text-primary text-[10px] font-mono tracking-wide">
+            <div className="px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-500 text-[10px] font-mono tracking-wide">
               COMPLETED
             </div>
             <button className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-white">
