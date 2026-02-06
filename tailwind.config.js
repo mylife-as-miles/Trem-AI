@@ -11,11 +11,11 @@ export default {
                 primary: "#D9F85F", // Lime Green
                 primary_hover: "#C8E64D", // Darker Lime Green
                 "background-light": "#f8fafc",
-                "background-dark": "#09090b", // Zinc 950
+                "background-dark": "#0E100A", // User Reference
                 "surface-light": "#ffffff",
-                "surface-dark": "#09090b",
-                "surface-card": "#18181b", // Zinc 900
-                "border-dark": "#27272a", // Zinc 800
+                "surface-dark": "#0E100A",
+                "surface-card": "#1a1c16", // Adjusted for green-black tint
+                "border-dark": "#2a2c26", // Adjusted for green-black tint
             },
             fontFamily: {
                 display: ["'Space Grotesk'", "sans-serif"],
