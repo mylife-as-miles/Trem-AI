@@ -71,7 +71,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-display font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                        Create with <span className="text-slate-900 dark:text-white">Trem AI</span>
+                        Create with <span className="text-primary">Trem AI</span>
                     </h1>
 
                     <p className="text-xl text-slate-500 dark:text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
