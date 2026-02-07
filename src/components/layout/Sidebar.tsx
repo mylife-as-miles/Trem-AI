@@ -110,20 +110,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
             )}
             <ul className="space-y-1">
               <li>
-                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-blue-500/10 text-blue-500 font-medium border border-blue-500/20 ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Ingest: 4k_Raw_Footage_A" : ""}>
+                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Ingest: 4k_Raw_Footage_A" : ""}>
                   <span className="material-icons-outlined text-sm animate-pulse">data_usage</span>
                   {!isCollapsed && <span className="truncate">Ingest: 4k_Raw_Footage_A</span>}
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Edit: nike-commercial" : ""}>
-                  <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-blue-500 transition-colors">edit</span>
+                  <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">edit</span>
                   {!isCollapsed && <span className="truncate">Edit: nike-commercial</span>}
                 </button>
               </li>
               <li>
                 <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Render: Social_Cut_v3" : ""}>
-                  <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-blue-500 transition-colors">movie_filter</span>
+                  <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">movie_filter</span>
                   {!isCollapsed && <span className="truncate">Render: Social_Cut_v3</span>}
                 </button>
               </li>
@@ -145,7 +145,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
                     onClick={() => handleRepoClick(repo)}
                     className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? repo.name : ""}
                   >
-                    <span className="material-icons-outlined text-sm text-emerald-400/70 group-hover:text-blue-500 transition-colors">folder</span>
+                    <span className="material-icons-outlined text-sm text-emerald-400/70 group-hover:text-primary transition-colors">folder</span>
                     {!isCollapsed && <span className="truncate">{repo.name}</span>}
                   </button>
                 </li>
@@ -169,9 +169,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
 
             <button
               onClick={() => onNavigate('create-repo')}
-              className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md text-slate-500 dark:text-gray-400 hover:text-blue-500 transition-colors group ${isCollapsed ? 'justify-center' : 'w-full'}`} title={isCollapsed ? "New Video Repository" : ""}
+              className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md text-slate-500 dark:text-gray-400 hover:text-primary transition-colors group ${isCollapsed ? 'justify-center' : 'w-full'}`} title={isCollapsed ? "New Video Repository" : ""}
             >
-              <span className="material-icons-outlined text-lg group-hover:text-blue-500">add_circle_outline</span>
+              <span className="material-icons-outlined text-lg group-hover:text-primary">add_circle_outline</span>
               {!isCollapsed && <span>New Repo</span>}
             </button>
           </div>
