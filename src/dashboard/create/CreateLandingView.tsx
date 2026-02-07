@@ -8,36 +8,57 @@ interface CreateLandingViewProps {
 
 const TEMPLATE_CARDS = [
     {
-        id: 'infographics',
-        title: 'Infographics',
-        description: 'Animate charts, data, and visual storytelling elements',
-        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400', // Placeholder
-        icon: 'analytics'
-    },
-    {
-        id: 'text-animation',
-        title: 'Text Animation',
-        description: 'Bring titles, captions, and typography to life',
+        id: 'kinetic-typography',
+        title: 'Kinetic / Stomp Typography',
+        description: 'Dynamic text animations with high energy and impact',
         image: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?auto=format&fit=crop&q=80&w=400',
         icon: 'text_fields'
     },
     {
-        id: 'posters',
-        title: 'Posters',
-        description: 'Turn static posters into eye-catching motion visuals',
-        image: 'https://images.unsplash.com/photo-1558655146-d09347e0b7a8?auto=format&fit=crop&q=80&w=400',
-        icon: 'movie'
+        id: 'animated-infographics',
+        title: 'Animated Infographics',
+        description: 'Visualize data with engaging charts and graphs',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400',
+        icon: 'analytics'
     },
     {
-        id: 'presentation',
-        title: 'Presentation',
-        description: 'Create smooth, engaging slides and motion decks',
-        image: 'https://images.unsplash.com/photo-1544531586-fde5298cdd40?auto=format&fit=crop&q=80&w=400',
-        icon: 'slideshow'
+        id: 'explanation-videos',
+        title: 'Explanation Videos',
+        description: 'Clear and concise visual storytelling for tutorials',
+        image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=400',
+        icon: 'smart_display'
+    },
+    {
+        id: 'cinematic-titles',
+        title: 'Cinematic Titles',
+        description: 'Hollywood-style title sequences and intros',
+        image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=400',
+        icon: 'movie_filter'
+    },
+    {
+        id: 'social-media-motion',
+        title: 'Social Media Motion',
+        description: 'Scroll-stopping content for Stories and Reels',
+        image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=400',
+        icon: 'share'
+    },
+    {
+        id: 'music-visualizers',
+        title: 'Music Visualizers',
+        description: 'Audio-reactive visuals for music videos',
+        image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=400',
+        icon: 'equalizer'
+    },
+    {
+        id: 'motion-graphics',
+        title: 'Motion Graphics',
+        description: 'Advanced motion design and visual effects',
+        image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=400',
+        icon: 'auto_awesome_motion'
     },
     {
         id: 'blank',
-        title: 'From scratch',
+        title: 'From Scratch',
         description: 'Start with a blank canvas and build any motion you want',
         image: '', // Special case styling
         icon: 'add'
@@ -85,7 +106,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                         <h2 className="text-sm font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Start New Project</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                         {TEMPLATE_CARDS.map((card) => (
                             <button
                                 key={card.id}

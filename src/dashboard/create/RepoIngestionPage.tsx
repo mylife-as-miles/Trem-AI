@@ -453,10 +453,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     const stats = getStats();
 
     return (
-        <div className="flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+        <div className="flex flex-col h-full overflow-hidden bg-black text-white selection:bg-primary selection:text-black font-mono">
             <TopNavigation onNavigate={onNavigate} />
             <div className="flex-1 overflow-hidden p-8">
-                <div className="max-w-5xl mx-auto w-full flex flex-col h-full">
+                <div className="max-w-6xl mx-auto w-full flex flex-col h-full">
 
                     {/* Header */}
                     <header className="mb-8 flex items-center justify-between">
@@ -550,19 +550,17 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                     {/* Worker Nodes Grid */}
                                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                         {workers.map(worker => (
-                                            <div key={worker.id} className="bg-slate-50 dark:bg-background-dark/40 border border-slate-200 dark:border-white/10 rounded-lg p-3 relative overflow-hidden">
-                                                <div className="flex justify-between items-start mb-2">
+                                            <div key={worker.id} className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 relative overflow-hidden group hover:border-primary/30 transition-colors">
+                                                <div className="flex justify-between items-start mb-3">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="material-icons-outlined text-slate-400 text-sm">dns</span>
-                                                        <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">NODE_0{worker.id}</span>
+                                                        <span className="font-mono text-[10px] font-bold text-zinc-500 uppercase tracking-widest">STATUS</span>
                                                     </div>
-                                                    <div className={`w - 2 h - 2 rounded - full ${worker.status === 'idle' ? 'bg-slate-400' : 'bg-green-400 animate-pulse'} `}></div>
+                                                    <div className={`w-2 h-2 rounded-full ${worker.status === 'idle' ? 'bg-zinc-700' : 'bg-primary animate-pulse shadow-[0_0_10px_rgba(132,204,22,0.5)]'}`}></div>
                                                 </div>
-                                                <div className="font-mono text-xs text-slate-500 dark:text-gray-500 mb-1">STATUS</div>
-                                                <div className={`text-sm font-bold uppercase ${worker.status === 'idle' ? 'text-slate-400' : 'text-primary'} `}>
+                                                <div className={`text-sm font-bold uppercase tracking-wider mb-2 ${worker.status === 'idle' ? 'text-zinc-500' : 'text-primary'}`}>
                                                     {worker.status}
                                                 </div>
-                                                <div className="mt-2 text-[10px] font-mono text-slate-400 dark:text-gray-600 truncate">
+                                                <div className="mt-2 text-[11px] font-mono text-zinc-400 truncate border-t border-zinc-800 pt-2">
                                                     {worker.task}
                                                 </div>
                                                 {/* Activity Graph Overlay Mock */}
@@ -582,7 +580,7 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                     {/* Console & Process List Split */}
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                         {/* Terminal Log */}
-                                        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 font-mono text-xs h-64 overflow-y-auto custom-scrollbar flex flex-col-reverse shadow-inner">
+                                        <div className="bg-[#0c0c0c] border border-zinc-800 rounded-lg p-5 font-mono text-xs h-80 overflow-y-auto custom-scrollbar flex flex-col-reverse shadow-xl relative">
                                             <div className="flex items-center gap-2 text-green-500 mb-2 border-b border-green-500/20 pb-2 sticky top-0 bg-slate-900/90 backdrop-blur z-10 w-full">
                                                 <span className="material-icons-outlined text-sm">terminal</span>
                                                 <span className="font-bold">CLUSTER_LOGS</span>
@@ -598,21 +596,21 @@ border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center j
                                         </div>
 
                                         {/* Asset Progress List */}
-                                        <div className="h-64 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                                        <div className="h-80 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                                             {selectedAssets.map(asset => (
-                                                <div key={asset.id} className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg p-3 flex items-center gap-3">
-                                                    <div className="p-2 rounded bg-slate-100 dark:bg-background-dark/40 border border-slate-200 dark:border-white/10">
-                                                        <span className="material-icons-outlined text-slate-500 dark:text-gray-400 text-sm">movie</span>
+                                                <div key={asset.id} className="bg-zinc-900/30 border border-zinc-800 rounded-lg p-4 flex items-center gap-4 group hover:border-zinc-700 transition-colors">
+                                                    <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
+                                                        <span className="material-icons-outlined text-sm">movie</span>
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center justify-between mb-1">
-                                                            <span className="font-mono text-xs font-bold truncate text-slate-900 dark:text-white max-w-[120px]">{asset.name}</span>
-                                                            <span className={`text-[10px] font-mono uppercase tracking-wider ${asset.status === 'indexed' ? 'text-emerald-500 dark:text-primary' : 'text-amber-500 dark:text-yellow-500'} `}>
-                                                                {asset.status === 'indexed' ? 'Ready' : asset.status}
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <span className="font-mono text-xs font-bold text-white truncate max-w-[180px]">{asset.name}</span>
+                                                            <span className={`text-[10px] font-mono uppercase tracking-wider font-bold ${asset.status === 'indexed' ? 'text-primary' : 'text-orange-400 animate-pulse'}`}>
+                                                                {asset.status === 'indexed' ? 'READY' : asset.status.toUpperCase()}
                                                             </span>
                                                         </div>
-                                                        <div className="h-1 bg-slate-200 dark:bg-background-dark rounded-full overflow-hidden">
-                                                            <div className="h-full bg-primary transition-all duration-300" style={{ width: `${asset.progress}% ` }}></div>
+                                                        <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                                            <div className="h-full bg-primary shadow-[0_0_10px_rgba(132,204,22,0.5)] transition-all duration-300 ease-out" style={{ width: `${asset.progress}%` }}></div>
                                                         </div>
                                                     </div>
                                                 </div>
