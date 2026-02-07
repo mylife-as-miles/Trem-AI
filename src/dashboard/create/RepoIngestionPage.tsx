@@ -465,11 +465,11 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             <p className="text-slate-500 dark:text-slate-400 mt-2">Initialize a new video workspace driven by AI context.</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className={`w - 3 h - 3 rounded - full ${step === 'details' ? 'bg-primary' : 'bg-primary/30'} `}></div>
+                            <div className={`w-3 h-3 rounded-full ${step === 'details' ? 'bg-primary' : 'bg-primary/30'}`}></div>
                             <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
-                            <div className={`w - 3 h - 3 rounded - full ${step === 'ingest' ? 'bg-primary' : 'bg-primary/30'} `}></div>
+                            <div className={`w-3 h-3 rounded-full ${step === 'ingest' ? 'bg-primary' : 'bg-primary/30'}`}></div>
                             <div className="w-8 h-px bg-slate-300 dark:bg-white/10"></div>
-                            <div className={`w - 3 h - 3 rounded - full ${step === 'commit' || isIngestionComplete ? 'bg-primary' : 'bg-primary/30'} `}></div>
+                            <div className={`w-3 h-3 rounded-full ${step === 'commit' || isIngestionComplete ? 'bg-primary' : 'bg-primary/30'}`}></div>
                         </div>
                     </header>
 
@@ -477,7 +477,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     <div className="flex-1 overflow-y-auto space-y-10">
 
                         {/* Step 1: Repo Details */}
-                        <section className={`transition - opacity duration - 300 ${step !== 'details' && 'opacity-50 pointer-events-none'} `}>
+                        <section className={`transition-opacity duration-300 ${step !== 'details' && 'opacity-50 pointer-events-none'}`}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-4">
                                     <label className="block text-sm font-mono text-slate-500 dark:text-gray-400 font-bold uppercase tracking-wider">Repository Name</label>
@@ -486,7 +486,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         value={repoName}
                                         onChange={(e) => setRepoName(e.target.value)}
                                         placeholder="e.g., nike-commercial-q3"
-                                        className="w-full bg-white dark:bg-background-dark border border-slate-200 dark:border-white/20 rounded-lg p-4 text-xl font-display text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors placeholder-slate-400 dark:placeholder-slate-600"
+                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-4 text-xl font-display text-white focus:border-primary focus:outline-none transition-colors placeholder-zinc-500"
                                     />
                                 </div>
                                 <div className="space-y-4">
@@ -498,7 +498,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         value={repoBrief}
                                         onChange={(e) => setRepoBrief(e.target.value)}
                                         placeholder="Describe the goals, tone, and visual style..."
-                                        className="w-full bg-white dark:bg-background-dark border border-slate-200 dark:border-white/20 rounded-lg p-4 font-mono text-sm h-32 text-slate-900 dark:text-white focus:border-primary focus:outline-none transition-colors resize-none placeholder-slate-400 dark:placeholder-slate-600"
+                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-4 font-mono text-sm h-32 text-white focus:border-primary focus:outline-none transition-colors resize-none placeholder-zinc-500"
                                     />
                                 </div>
                             </div>
@@ -515,12 +515,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         onClick={() => setIsAssetModalOpen(true)}
                                         disabled={!repoName}
                                         className={`
-                                        flex items - center gap - 2 px - 4 py - 2 rounded - lg font - medium transition - all
+                                        flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
                                         ${repoName
-                                                ? 'bg-primary hover:bg-primary_hover text-white shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                                                ? 'bg-primary hover:bg-primary_hover text-black shadow-[0_0_15px_rgba(34,197,94,0.3)]'
                                                 : 'bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-500 cursor-not-allowed'
                                             }
-`}
+                                    `}
                                     >
                                         <span className="material-icons-outlined">add_to_queue</span>
                                         Add Assets from Library
@@ -533,12 +533,12 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                 <div
                                     onClick={() => repoName && setIsAssetModalOpen(true)}
                                     className={`
-border - 2 border - dashed rounded - 2xl h - 48 flex flex - col items - center justify - center gap - 4 transition - colors
-                                    ${repoName ? 'border-slate-300 dark:border-white/10 hover:border-primary/50 cursor-pointer bg-white dark:bg-white/5' : 'border-slate-200 dark:border-white/5 bg-transparent'}
-`}
+                                        border-2 border-dashed rounded-2xl h-48 flex flex-col items-center justify-center gap-4 transition-colors
+                                        ${repoName ? 'border-zinc-700 hover:border-primary/50 cursor-pointer bg-zinc-900/50' : 'border-zinc-800 bg-transparent'}
+                                    `}
                                 >
-                                    <span className={`material - icons - outlined text - 4xl ${repoName ? 'text-slate-400 dark:text-gray-400' : 'text-slate-300 dark:text-gray-700'} `}>folder_open</span>
-                                    <p className={`font - mono text - sm ${repoName ? 'text-slate-500 dark:text-gray-400' : 'text-slate-400 dark:text-gray-700'} `}>
+                                    <span className={`material-icons-outlined text-4xl ${repoName ? 'text-zinc-400' : 'text-zinc-600'}`}>folder_open</span>
+                                    <p className={`font-mono text-sm ${repoName ? 'text-zinc-400' : 'text-zinc-600'}`}>
                                         {repoName ? 'Click to select footage, audio, or scripts' : 'Enter a repository name first'}
                                     </p>
                                 </div>
