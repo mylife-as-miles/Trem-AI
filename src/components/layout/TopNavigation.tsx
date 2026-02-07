@@ -32,7 +32,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) 
     }, []);
 
     return (
-        <header className="h-24 flex items-center justify-between px-8 bg-transparent sticky top-0 z-50 pointer-events-none">
+        <header className={`h-24 flex items-center justify-between px-8 bg-transparent sticky top-0 z-50 pointer-events-none transition-transform duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
             {/* Left Spacer to balance layout if needed, or Logo */}
             <div className="flex items-center gap-2 pointer-events-auto">
                 {/* Logo or Context could go here */}
@@ -40,11 +40,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) 
 
             {/* Centered Pill Navigation */}
             <div
-                className={`
-                    pointer-events-auto bg-white/80 dark:bg-surface-card/90 backdrop-blur-xl border border-white/20 dark:border-border-dark rounded-full p-2 flex items-center gap-1 mx-auto absolute left-1/2 shadow-xl dark:shadow-none transition-all duration-500 ease-in-out
-                    ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-24 opacity-0 pointer-events-none'}
-                `}
-                style={{ transform: `translateX(-50%) ${isVisible ? 'translateY(0)' : 'translateY(-150%)'}` }}
+                className="pointer-events-auto bg-white/80 dark:bg-surface-card/90 backdrop-blur-xl border border-white/20 dark:border-border-dark rounded-full p-2 flex items-center gap-1 mx-auto absolute left-1/2 -translate-x-1/2 shadow-xl dark:shadow-none"
             >
                 <button
                     onClick={() => onNavigate?.('trem-edit')}
