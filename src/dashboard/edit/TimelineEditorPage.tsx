@@ -128,7 +128,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
     return (
         <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
             {/* Header */}
-            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-background-dark z-20">
+            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-border-dark bg-white/95 dark:bg-background-dark z-20">
                 <div className="flex items-center gap-4">
                     <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">
                         <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
@@ -152,7 +152,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                     </div>
                     <button
                         onClick={() => onNavigate && onNavigate('diff')}
-                        className="hidden sm:block px-4 py-2 rounded-md border border-slate-300 dark:border-zinc-700 text-slate-600 dark:text-zinc-300 text-xs font-bold font-display uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                        className="hidden sm:block px-4 py-2 rounded-md border border-slate-300 dark:border-border-dark text-slate-600 dark:text-zinc-300 text-xs font-bold font-display uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
                     >
                         Compare & Commit
                     </button>
@@ -167,10 +167,10 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             <div className="flex-1 flex overflow-hidden relative">
 
                 {/* Left Sidebar: Instruction Stack */}
-                <aside className={`w-80 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark absolute top-0 bottom-0 left-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'instructions' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-                    <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                <aside className={`w-80 flex-shrink-0 flex flex-col border-r border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark absolute top-0 bottom-0 left-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'instructions' ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+                    <div className="p-4 border-b border-slate-200 dark:border-border-dark flex items-center justify-between">
                         <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white">Instruction Stack</h2>
-                        <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400 uppercase border border-slate-200 dark:border-zinc-700 px-1.5 py-0.5 rounded bg-slate-50 dark:bg-zinc-800">OTIO v2.1</span>
+                        <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400 uppercase border border-slate-200 dark:border-border-dark px-1.5 py-0.5 rounded bg-slate-50 dark:bg-surface-card">OTIO v2.1</span>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
                         <div className="text-xs font-mono text-slate-500 dark:text-gray-500 uppercase mb-2 ml-1">Sequence A</div>
@@ -194,19 +194,19 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                             Drop clips here
                         </div>
                     </div>
-                    <div className="p-3 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark text-[10px] font-mono text-slate-500 dark:text-gray-600 flex justify-between">
+                    <div className="p-3 border-t border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark text-[10px] font-mono text-slate-500 dark:text-gray-600 flex justify-between">
                         <span>TOTAL: 00:12:57</span>
                         <span>{clips.length} CLIPS</span>
                     </div>
                 </aside>
 
                 {/* Center: Viewer & Timeline */}
-                <main className="flex-1 flex flex-col relative bg-zinc-900 border-r border-slate-200 dark:border-white/10 z-0 min-w-0">
+                <main className="flex-1 flex flex-col relative bg-background-dark border-r border-slate-200 dark:border-border-dark z-0 min-w-0">
                     {/* Viewer kept dark for standard video editing look */}
                     <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black">
-                        <div className="relative w-full aspect-video bg-background-dark border border-white/10 rounded-lg shadow-2xl overflow-hidden group max-h-[60vh]">
+                        <div className="relative w-full aspect-video bg-background-dark border border-border-dark rounded-lg shadow-2xl overflow-hidden group max-h-[60vh]">
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10 pointer-events-none"></div>
-                            <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
+                            <div className="absolute inset-0 flex items-center justify-center bg-background-dark">
                                 <div className="w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
                                 <div className="absolute w-32 h-32 bg-primary/20 blur-[60px] rounded-full animate-pulse"></div>
                             </div>
@@ -222,14 +222,14 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    <div className="h-40 md:h-32 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-white/10 p-4 flex flex-col justify-between">
+                    <div className="h-40 md:h-32 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-border-dark p-4 flex flex-col justify-between">
                         {/* Timeline Bar */}
                         <div className="w-full h-8 flex items-center gap-2 md:gap-4 group">
                             <span className="text-xs font-mono text-slate-600 dark:text-zinc-400 w-12 md:w-16 text-right">00:00:12</span>
-                            <div className="flex-1 h-1.5 bg-slate-200 dark:bg-zinc-800 rounded-full relative cursor-pointer overflow-visible">
+                            <div className="flex-1 h-1.5 bg-slate-200 dark:bg-surface-card rounded-full relative cursor-pointer overflow-visible">
                                 <div className="absolute left-0 top-0 h-full bg-primary w-1/3 rounded-full"></div>
                                 <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-transform duration-200 z-10 border border-slate-200 dark:border-none"></div>
-                                <div className="hidden md:block absolute left-1/3 bottom-4 -translate-x-1/2 bg-white dark:bg-zinc-800 text-slate-800 dark:text-white text-[10px] font-mono px-2 py-1 rounded border border-slate-200 dark:border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="hidden md:block absolute left-1/3 bottom-4 -translate-x-1/2 bg-white dark:bg-surface-card text-slate-800 dark:text-white text-[10px] font-mono px-2 py-1 rounded border border-slate-200 dark:border-border-dark opacity-0 group-hover:opacity-100 transition-opacity">
                                     Shot_01_Sprint
                                 </div>
                             </div>
@@ -254,7 +254,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                         <span className="text-slate-700 dark:text-white font-bold">Proxy Render</span>
                                         <span className="text-slate-400 dark:text-gray-400">78%</span>
                                     </div>
-                                    <div className="w-full h-1 bg-slate-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                    <div className="w-full h-1 bg-slate-200 dark:bg-surface-card rounded-full overflow-hidden">
                                         <div className="h-full bg-primary w-[78%]"></div>
                                     </div>
                                 </div>
@@ -269,8 +269,8 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                 </main>
 
                 {/* Right Sidebar: AI Co-pilot */}
-                <aside className={`w-80 flex-shrink-0 flex flex-col bg-gray-50 dark:bg-background-dark border-l border-slate-200 dark:border-white/10 absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
-                    <div className="p-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-background-dark z-10">
+                <aside className={`w-80 flex-shrink-0 flex flex-col bg-gray-50 dark:bg-background-dark border-l border-slate-200 dark:border-border-dark absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
+                    <div className="p-4 border-b border-slate-200 dark:border-border-dark flex items-center justify-between bg-white dark:bg-background-dark z-10">
                         <div className="flex items-center gap-2">
                             <span className="material-icons-outlined text-blue-600 dark:text-blue-400">smart_toy</span>
                             <h2 className="font-display font-bold text-slate-900 dark:text-white">AI Co-pilot</h2>
@@ -279,11 +279,11 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-6 flex flex-col">
                         <div className="text-center">
-                            <span className="text-[10px] text-slate-500 dark:text-zinc-700 font-mono bg-slate-200 dark:bg-zinc-900/50 px-2 py-1 rounded">Today, 10:23 AM</span>
+                            <span className="text-[10px] text-slate-500 dark:text-zinc-700 font-mono bg-slate-200 dark:bg-surface-card px-2 py-1 rounded">Today, 10:23 AM</span>
                         </div>
 
                         <div className="flex flex-col items-end gap-1 ml-4 animate-fade-in-up">
-                            <div className="bg-white border border-slate-200 dark:bg-zinc-800 dark:border-white/10 text-slate-800 dark:text-gray-100 text-sm p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-full">
+                            <div className="bg-white border border-slate-200 dark:bg-surface-card dark:border-border-dark text-slate-800 dark:text-gray-100 text-sm p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-full">
                                 Swap the second clip for a close-up
                             </div>
                             <div className="flex items-center gap-2">
@@ -312,10 +312,10 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    <div className="p-4 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-background-dark">
+                    <div className="p-4 border-t border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark">
                         <div className="relative group">
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-emerald-900 rounded-lg blur opacity-20 group-focus-within:opacity-50 transition duration-500 hidden dark:block"></div>
-                            <div className="relative flex items-center bg-slate-50 dark:bg-zinc-900 rounded-lg border border-slate-200 dark:border-white/10 focus-within:border-primary/50 transition-colors">
+                            <div className="relative flex items-center bg-slate-50 dark:bg-surface-card rounded-lg border border-slate-200 dark:border-border-dark focus-within:border-primary/50 transition-colors">
                                 <input
                                     className="w-full bg-transparent border-none text-sm text-slate-800 dark:text-white focus:ring-0 py-3 pl-3 pr-10 font-mono placeholder-slate-400 dark:placeholder-zinc-600 focus:outline-none"
                                     placeholder="Command agents..."

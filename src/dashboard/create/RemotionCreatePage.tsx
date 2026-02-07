@@ -26,7 +26,7 @@ const TremCreate: React.FC<TremCreateProps> = ({ onNavigate, onSelectRepo }) => 
     };
 
     return (
-        <div className="flex flex-col min-h-full relative bg-slate-50 dark:bg-black transition-colors duration-300">
+        <div className="flex flex-col min-h-full relative bg-slate-50 dark:bg-background-dark transition-colors duration-300">
             {/* Top Navigation Header */}
             <TopNavigation onNavigate={onNavigate} activeTab="create" />
 

@@ -31,9 +31,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
     );
 
     return (
-        <div className="flex flex-col h-full bg-[#09090b] text-slate-200 font-sans overflow-hidden">
+        <div className="flex flex-col h-full bg-background-dark text-slate-200 font-sans overflow-hidden">
             {/* Minimal Header */}
-            <header className="h-14 flex-shrink-0 flex items-center px-6 border-b border-white/5 bg-[#09090b]">
+            <header className="h-14 flex-shrink-0 flex items-center px-6 border-b border-border-dark bg-background-dark">
                 <button
                     onClick={() => onNavigate && onNavigate('dashboard')}
                     className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
@@ -45,7 +45,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Minimal Dark Sidebar */}
-                <aside className="w-64 flex-shrink-0 border-r border-white/5 bg-[#09090b] py-6 px-3 flex flex-col gap-1">
+                <aside className="w-64 flex-shrink-0 border-r border-border-dark bg-background-dark py-6 px-3 flex flex-col gap-1">
                     <div className="px-4 mb-6">
                         <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">Settings</span>
                     </div>
@@ -56,7 +56,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                     {renderSidebarItem('api_keys', 'API Keys', 'vpn_key')}
 
                     <div className="mt-auto px-4">
-                        <div className="flex items-center gap-3 py-3 border-t border-white/5">
+                        <div className="flex items-center gap-3 py-3 border-t border-border-dark">
                             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-black">
                                 T
                             </div>
@@ -69,7 +69,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                 </aside>
 
                 {/* Main Content Area */}
-                <main className="flex-1 overflow-y-auto bg-[#09090b]">
+                <main className="flex-1 overflow-y-auto bg-background-dark">
                     <div className="max-w-3xl mx-auto py-12 px-8">
 
                         {/* GENERAL TAB */}
@@ -107,14 +107,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                     <div className="ml-9 space-y-4">
                                         <p className="text-gray-400 text-sm">Manage how Trem handles local media caching and proxy generation.</p>
 
-                                        <div className="p-4 rounded-lg border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                                        <div className="p-4 rounded-lg border border-border-dark bg-surface-card flex items-center justify-between">
                                             <div>
                                                 <div className="text-sm font-medium text-white">Auto-Generate Proxies</div>
                                                 <div className="text-xs text-gray-500 mt-1">Automatically create 1080p ProRes proxies for ingest.</div>
                                             </div>
                                             <div className="relative inline-block w-10 h-6 align-middle select-none transition duration-200 ease-in">
                                                 <input type="checkbox" name="toggle" id="proxy-toggle" className="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 checked:border-primary transition-all duration-200 right-4 top-1" defaultChecked />
-                                                <label htmlFor="proxy-toggle" className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-800 cursor-pointer border border-white/10"></label>
+                                                <label htmlFor="proxy-toggle" className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-800 cursor-pointer border border-border-dark"></label>
                                             </div>
                                         </div>
                                     </div>
@@ -166,7 +166,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
 
                                     <div className="ml-9">
                                         <div className="relative group max-w-sm">
-                                            <select className="w-full bg-[#18181b] hover:bg-[#27272a] border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                                            <select className="w-full bg-surface-card hover:bg-white/5 border border-border-dark rounded-lg px-4 py-2.5 text-sm text-white appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
                                                 <option>Gemini 1.5 Pro (Multimodal) — Recommended</option>
                                                 <option>GPT-4o (Reasoning)</option>
                                                 <option>Claude 3.5 Sonnet (Creative)</option>
@@ -193,7 +193,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                             { title: 'Smart Cut', desc: 'Remove silence and bad takes', icon: 'content_cut' },
                                             { title: 'Captioning', desc: 'Generate subtitles automatically', icon: 'subtitles' },
                                         ].map((task, i) => (
-                                            <div key={i} className="p-4 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors cursor-pointer group">
+                                            <div key={i} className="p-4 rounded-lg border border-border-dark bg-surface-card hover:bg-white/5 transition-colors cursor-pointer group">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="material-icons-outlined text-gray-400 group-hover:text-primary transition-colors">{task.icon}</span>
                                                     <div className="w-4 h-4 rounded border border-gray-600 group-hover:border-primary"></div>
@@ -224,13 +224,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                     <input
                                         type="password"
                                         placeholder="Paste your Frame.io Developer Token"
-                                        className="w-full bg-[#18181b] border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                        className="w-full bg-surface-card border border-border-dark rounded-lg px-4 py-3 text-sm text-white placeholder-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                     />
 
                                     <div>
                                         <a href="#" className="text-sm text-emerald-400 dark:text-primary hover:text-emerald-300 dark:hover:text-primary_hover hover:underline mb-2 inline-block">Manage tokens in Frame.io Dashboard</a>
 
-                                        <div className="bg-[#18181b] border border-white/5 rounded-lg p-5 mt-4">
+                                        <div className="bg-surface-card border border-border-dark rounded-lg p-5 mt-4">
                                             <h4 className="text-sm font-bold text-white mb-3">Quick Setup</h4>
                                             <ol className="list-decimal list-inside space-y-2 text-sm text-gray-400">
                                                 <li>Navigate to your <span className="text-white">Frame.io Developer Dashboard</span>.</li>
@@ -279,7 +279,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                         </div>
                                     </div>
 
-                                    <div className="border border-white/5 rounded-lg overflow-hidden">
+                                    <div className="border border-border-dark rounded-lg overflow-hidden">
                                         <table className="w-full text-left text-sm">
                                             <thead className="bg-white/5 text-gray-400 font-medium">
                                                 <tr>
@@ -289,7 +289,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                                     <th className="px-6 py-3 font-medium text-right">Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-white/5 bg-[#18181b]/50">
+                                            <tbody className="divide-y divide-border-dark bg-surface-card">
                                                 <tr className="group hover:bg-white/[0.02] transition-colors">
                                                     <td className="px-6 py-4 text-white font-mono">render-node-01</td>
                                                     <td className="px-6 py-4">
@@ -312,7 +312,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onNavigate }) => {
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <div className="px-6 py-4 bg-white/[0.02] border-t border-white/5 text-center text-xs text-gray-500">
+                                        <div className="px-6 py-4 bg-white/[0.02] border-t border-border-dark text-center text-xs text-gray-500">
                                             No more keys to display
                                         </div>
                                     </div>

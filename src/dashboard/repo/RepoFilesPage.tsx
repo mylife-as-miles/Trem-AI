@@ -545,7 +545,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
 
             <div className="flex-1 flex overflow-hidden relative bg-white dark:bg-background-dark">
                 {/* Sidebar Tree */}
-                <div className={`w-80 border-r border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-[#0A0A0A] overflow-y-auto p-3 flex-shrink-0 flex flex-col gap-4 transition-colors duration-300`}>
+                <div className={`w-80 border-r border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-surface-card overflow-y-auto p-3 flex-shrink-0 flex flex-col gap-4 transition-colors duration-300`}>
 
                     <div className="px-2 pb-2 text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest flex justify-between items-center border-b border-slate-200 dark:border-white/5">
                         <span>Explorer</span>
@@ -558,10 +558,10 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 </div>
 
                 {/* Editor / Preview Area */}
-                <div className="flex-1 flex flex-col bg-white dark:bg-[#09090b] min-w-0 relative transition-colors duration-300">
+                <div className="flex-1 flex flex-col bg-white dark:bg-background-dark min-w-0 relative transition-colors duration-300">
                     {selectedFile ? (
                         <>
-                            <div className="h-10 px-4 flex items-center justify-between bg-slate-50 dark:bg-[#0A0A0A] border-b border-slate-200 dark:border-white/5">
+                            <div className="h-10 px-4 flex items-center justify-between bg-slate-50 dark:bg-surface-card border-b border-slate-200 dark:border-border-dark">
                                 <span className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-zinc-400">
                                     <span className="material-icons-outlined text-sm text-slate-400 dark:text-zinc-500">description</span>
                                     {selectedFile.name}
@@ -569,7 +569,7 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                                 <span className="text-[10px] uppercase font-mono text-slate-400 dark:text-zinc-600">{selectedFile.id}</span>
                             </div>
 
-                            <div className="flex-1 overflow-hidden relative flex flex-col bg-white dark:bg-[#050505]">
+                            <div className="flex-1 overflow-hidden relative flex flex-col bg-white dark:bg-background-dark">
                                 {/* Media Rendering Logic */}
                                 {['mp4', 'mov', 'webm'].some(ext => (selectedFile.name || '').toLowerCase().endsWith(ext)) ? (
                                     <div className="w-full h-full flex items-center justify-center bg-background-dark/90 backdrop-blur-sm">

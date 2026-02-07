@@ -198,7 +198,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
         <div className="flex flex-col min-h-full relative fade-in bg-slate-50/50 dark:bg-background-dark font-sans">
 
             {/* Header / Breadcrumb Area */}
-            <div className="sticky top-0 z-30 flex items-center justify-between px-6 h-14 bg-slate-50/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5">
+            <div className="sticky top-0 z-30 flex items-center justify-between px-6 h-14 bg-slate-50/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-border-dark">
                 <div className="flex items-center gap-4">
                     {onBack && (
                         <button
@@ -235,7 +235,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                     <div className="relative group w-full max-w-3xl mx-auto">
 
 
-                        <div className="relative bg-white dark:bg-background-dark border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[320px]">
+                        <div className="relative bg-white dark:bg-surface-card border border-slate-200 dark:border-border-dark rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[320px]">
 
                             {/* Input Area */}
                             <div className="flex-1 p-6 relative">
@@ -256,7 +256,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                 {selectedAssetIds.length > 0 && (
                                     <div className="absolute bottom-6 left-16 right-6 flex flex-wrap gap-2 pointer-events-none">
                                         {selectedAssetIds.map(id => (
-                                            <div key={id} className="pointer-events-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-sm animate-in fade-in zoom-in-95 duration-200">
+                                            <div key={id} className="pointer-events-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-border-dark text-xs font-medium text-slate-700 dark:text-slate-200 shadow-sm animate-in fade-in zoom-in-95 duration-200">
                                                 <span className="material-icons-outlined text-[10px] opacity-70">movie</span>
                                                 <span className="max-w-[100px] truncate">Asset {id.slice(0, 4)}</span>
                                                 <button
@@ -272,7 +272,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                             </div>
 
                             {/* Toolbar / Action Bar */}
-                            <div className="px-6 py-4 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="px-6 py-4 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-border-dark flex flex-col sm:flex-row items-center justify-between gap-4">
 
                                 {/* Tools */}
                                 <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
@@ -280,7 +280,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                     {/* Asset Library Trigger */}
                                     <button
                                         onClick={() => setShowAssetLibrary(true)}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white dark:hover:bg-white/10 border border-transparent hover:border-slate-200 dark:hover:border-white/10 transition-all text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium whitespace-nowrap"
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white dark:hover:bg-white/10 border border-transparent hover:border-slate-200 dark:hover:border-border-dark transition-all text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium whitespace-nowrap"
                                         title="Add Assets"
                                     >
                                         <span className="material-icons-outlined text-lg">video_library</span>
@@ -307,8 +307,8 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                                         </button>
 
                                         {isAgentDropdownOpen && (
-                                            <div className="absolute bottom-full left-0 mb-2 w-72 bg-white dark:bg-[#111] border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col origin-bottom-left animate-in fade-in zoom-in-95 duration-100">
-                                                <div className="p-2 border-b border-slate-100 dark:border-white/5">
+                                            <div className="absolute bottom-full left-0 mb-2 w-72 bg-white dark:bg-surface-card border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col origin-bottom-left animate-in fade-in zoom-in-95 duration-100">
+                                                <div className="p-2 border-b border-slate-100 dark:border-border-dark">
                                                     <input
                                                         type="text"
                                                         placeholder="Search agents..."
@@ -389,7 +389,7 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
                             <button
                                 key={i}
                                 onClick={() => setPrompt(sugg)}
-                                className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-white/5 hover:border-primary/20 dark:hover:border-primary/20 bg-white dark:bg-white/5 hover:bg-primary/5 dark:hover:bg-primary/5 text-xs text-slate-500 dark:text-slate-400 transition-colors"
+                                className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-border-dark hover:border-primary/20 dark:hover:border-primary/20 bg-white dark:bg-surface-card hover:bg-primary/5 dark:hover:bg-primary/5 text-xs text-slate-500 dark:text-slate-400 transition-colors"
                             >
                                 {sugg}
                             </button>
