@@ -39,10 +39,10 @@ const AlertDialog: React.FC<AlertDialogProps> = ({
             icon: 'warning'
         },
         info: {
-            iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-            iconColor: 'text-blue-600 dark:text-blue-400',
-            buttonBg: 'bg-blue-600 hover:bg-blue-700',
-            buttonRing: 'focus:ring-blue-500',
+            iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
+            iconColor: 'text-emerald-600 dark:text-emerald-400',
+            buttonBg: 'bg-emerald-600 hover:bg-emerald-700',
+            buttonRing: 'focus:ring-emerald-500',
             icon: 'info'
         }
     };

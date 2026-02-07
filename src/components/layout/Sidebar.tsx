@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
         {/* Search */}
         <div className={`p-4 ${isCollapsed ? 'hidden' : 'block'}`}>
           <div className="relative group">
-            <span className="absolute left-3 top-2.5 text-slate-400 group-focus-within:text-blue-500 transition-colors material-icons-outlined text-sm">search</span>
+            <span className="absolute left-3 top-2.5 text-slate-400 group-focus-within:text-emerald-500 transition-colors material-icons-outlined text-sm">search</span>
             <input
               className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-sm rounded-lg py-2 pl-9 pr-3 focus:ring-1 focus:ring-primary focus:border-primary placeholder-slate-500 text-slate-700 dark:text-gray-200 transition-all font-mono outline-none"
               placeholder="Search..."
