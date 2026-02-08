@@ -64,7 +64,7 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
                             className="text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors mb-1"
                             onClick={() => onNavigate && onNavigate('repo')}
                         >
-                            {repoData ? repoData.name : 'nike-commercial'}
+                            {repoData ? repoData.name : 'untitled-project'}
                         </span>
                         <div className="flex items-center gap-2">
                             <span className="text-slate-400">Comparing:</span>

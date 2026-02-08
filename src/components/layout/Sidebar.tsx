@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, RepoData } from '../../utils/db';
+import { useTremStore } from '../../store/useTremStore';
+import { useRepos } from '../../hooks/useQueries';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -10,27 +12,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelectRepo }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  // Since we are using a custom DB wrapper and not real Dexie hooks yet (due to npm install fail assumption),
-  // we will standard useEffect to load data. UseLiveQuery is for real Dexie.
-  // We'll mimic live query with an interval or event listener if needed, but for now just load on mount/open.
-  const [repos, setRepos] = useState<RepoData[]>([]);
-
-  useEffect(() => {
-    const loadRepos = async () => {
-      try {
-        const data = await db.getAllRepos();
-        setRepos(data);
-      } catch (e) {
-        console.error("Failed to load repos", e);
-      }
-    };
-    loadRepos();
-
-    // Simple polling to keep sidebar fresh when new repo created
-    const interval = setInterval(loadRepos, 2000);
-    return () => clearInterval(interval);
-  }, []);
+  const repoData = useTremStore((state) => state.repoData);
+  const { data: repos = [] } = useRepos();
 
   const handleRepoClick = (repo: RepoData) => {
     if (onSelectRepo) {
@@ -116,9 +99,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
                 </button>
               </li>
               <li>
-                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Edit: nike-commercial" : ""}>
+                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? `Edit: ${repoData?.name || 'project'}` : ""}>
                   <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">edit</span>
-                  {!isCollapsed && <span className="truncate">Edit: nike-commercial</span>}
+                  {!isCollapsed && <span className="truncate">Edit: {repoData?.name || 'project'}</span>}
                 </button>
               </li>
               <li>

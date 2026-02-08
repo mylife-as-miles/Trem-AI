@@ -75,7 +75,7 @@ interface TimelineEditorProps {
 
 const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
     const [activeTab, setActiveTab] = useState<'timeline' | 'instructions' | 'copilot'>('instructions');
-    const { editPlan } = useTremStore();
+    const { editPlan, repoData } = useTremStore();
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
 
@@ -201,7 +201,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                             className="text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors"
                             onClick={() => onNavigate && onNavigate('repo')}
                         >
-                            nike-commercial
+                            {repoData?.name || 'untitled-project'}
                         </span>
                         <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
                         <span className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-white/5 px-2 py-1 rounded border border-slate-200 dark:border-white/10">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTremStore } from '../../store/useTremStore';
 
 interface RepoHeaderProps {
   onMenuClick: () => void;
@@ -6,6 +7,9 @@ interface RepoHeaderProps {
 }
 
 const RepoHeader: React.FC<RepoHeaderProps> = ({ onMenuClick, onSettingsClick }) => {
+  const repoData = useTremStore((state) => state.repoData);
+  const repoName = repoData?.name || 'untitled-project';
+
   return (
     <header className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-slate-200 dark:border-white/10 bg-background-light/80 dark:bg-black/80 backdrop-blur-md sticky top-0 z-10">
       <div className="flex items-center gap-4">
@@ -19,7 +23,7 @@ const RepoHeader: React.FC<RepoHeaderProps> = ({ onMenuClick, onSettingsClick })
         <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
           <span className="material-icons-outlined text-lg">movie</span>
           <span className="text-sm font-mono hidden sm:inline">client /</span>
-          <span className="text-slate-900 dark:text-white font-medium font-mono text-base tracking-tight truncate max-w-[150px] sm:max-w-none">nike-commercial</span>
+          <span className="text-slate-900 dark:text-white font-medium font-mono text-base tracking-tight truncate max-w-[150px] sm:max-w-none">{repoName}</span>
         </div>
         <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] border border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-white/5 uppercase font-mono tracking-wider">Private</span>
       </div>
