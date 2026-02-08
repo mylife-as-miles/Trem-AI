@@ -71,13 +71,13 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
     };
 
     return (
-        <div className="relative w-full h-[620px] flex items-center justify-center overflow-visible perspective-1000" ref={containerRef}>
+        <div className="relative w-full h-[600px] flex items-center justify-center overflow-visible perspective-1000" ref={containerRef}>
 
             {/* Background Ambience */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black pointer-events-none z-40"></div>
 
             {/* Spotlight Effect behind active card */}
-            <div className={`absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[100px] rounded-full transition-opacity duration-1000 z-0 ${activeIndex >= 0 ? 'opacity-100' : 'opacity-0'}`}></div>
+            <div className={`absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[100px] rounded-full transition-opacity duration-1000 z-0 ${activeIndex >= 0 ? 'opacity-100' : 'opacity-0'}`}></div>
 
             {/* Render Cards */}
             <div className="relative w-full h-full flex items-center justify-center transform-style-preserve-3d">
@@ -89,7 +89,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
                     return (
                         <div
                             key={template.id}
-                            className="absolute top-[35%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-[450px]"
+                            className="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-[450px]"
                             style={{
                                 transform: style.transform,
                                 zIndex: style.zIndex,
@@ -124,7 +124,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute bottom-10 left-0 right-0 flex justify-center gap-8 z-50">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-8 z-[60]">
                 <button
                     onClick={() => setActiveIndex(prev => (prev - 1 + templates.length) % templates.length)}
                     className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/10 transition-colors"
