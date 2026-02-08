@@ -204,9 +204,9 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                             nike-commercial
                         </span>
                         <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
-                        <span className="text-slate-500">timelines</span>
-                        <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
-                        <span className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-white/5 px-2 py-1 rounded border border-slate-200 dark:border-white/10">main_edit</span>
+                        <span className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-white/5 px-2 py-1 rounded border border-slate-200 dark:border-white/10">
+                            {editPlan?.title || 'Main Sequence'}
+                        </span>
                     </nav>
                 </div>
                 <div className="flex items-center gap-3">
@@ -237,15 +237,16 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                     </div>
 
                     {/* Display Edit Plan if available */}
+                    {/* Display Edit Plan if available */}
                     {editPlan && (
                         <div className="px-4 pt-4 pb-0">
                             <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-2">
                                 <div className="text-xs font-bold text-primary mb-1 flex items-center gap-2">
                                     <span className="material-icons-outlined text-sm">smart_toy</span>
-                                    Active Plan
+                                    Active Plan: {editPlan.title || 'Untitled'}
                                 </div>
                                 <div className="text-[10px] text-slate-300">
-                                    {Array.isArray(editPlan) ? `${editPlan.length} tasks synced` : 'Plan configuration loaded'}
+                                    {editPlan.tasks && Array.isArray(editPlan.tasks) ? `${editPlan.tasks.length} tasks synced` : 'Plan configuration loaded'}
                                 </div>
                             </div>
                         </div>
@@ -297,7 +298,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                     height: '100%',
                                 }}
                                 inputProps={{
-                                    title: editPlan && Array.isArray(editPlan) ? `Synced Plan (${editPlan.length} edits)` : 'Trem AI Project'
+                                    title: editPlan?.title || 'Trem AI Project'
                                 }}
                             />
 

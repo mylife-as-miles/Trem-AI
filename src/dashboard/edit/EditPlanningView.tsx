@@ -80,14 +80,14 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
                 </div>
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={() => onApprove({})}
+                        onClick={() => onApprove({ title: 'Auto-Edit V1', tasks: [] })}
                         className="px-4 py-2 rounded-md border border-primary/40 hover:border-primary/80 hover:bg-primary/5 text-primary transition-colors text-xs font-bold tracking-wide uppercase font-display flex items-center gap-2"
                     >
                         <span className="material-icons-outlined text-sm">smart_toy</span>
                         Auto-Execute
                     </button>
                     <button
-                        onClick={() => onApprove(MOCK_NARRATIVE)}
+                        onClick={() => onApprove({ title: 'Strategic Edit', tasks: MOCK_NARRATIVE })}
                         className="px-4 py-2 rounded-md bg-primary hover:bg-emerald-400 text-black text-xs font-bold shadow-[0_0_15px_rgba(34,197,94,0.4)] transition-all tracking-wide uppercase flex items-center gap-2 font-display"
                     >
                         <span className="material-icons-outlined text-sm">done_all</span>

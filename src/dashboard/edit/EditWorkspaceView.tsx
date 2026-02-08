@@ -3,6 +3,7 @@ import { interpretAgentCommand } from '../../services/gemini/edit/index';
 // Note: TopNavigation is now handled in the parent container
 import { db, RepoData, AssetData } from '../../utils/db';
 import AssetLibrary from '../assets/AssetLibraryPage';
+import { useTremStore } from '../../store/useTremStore';
 
 interface EditWorkspaceViewProps {
     onNavigate: (view: any) => void; // Using any for compatibility with common types
@@ -146,6 +147,13 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
             // Edit Logic (Auto-Execute)
             const response = await interpretAgentCommand(prompt);
             setFeedback(response);
+
+            // Update Store with Auto-Execute Plan
+            useTremStore.getState().setEditPlan({
+                title: 'Auto-Execute Run',
+                tasks: [],
+                description: response
+            });
 
             setTimeout(() => {
                 onNavigate('timeline');
