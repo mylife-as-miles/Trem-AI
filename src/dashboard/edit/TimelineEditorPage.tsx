@@ -148,7 +148,38 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
         <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
 
             {/* Top Navigation */}
-            <TopNavigation onNavigate={onNavigate} activeTab="edit" />
+            <TopNavigation onNavigate={onNavigate} activeTab="timeline" />
+
+            {/* Sub-Header: Project Context & Actions */}
+            <div className="h-14 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-border-dark bg-white/95 dark:bg-background-dark z-20">
+                <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]">
+                        <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
+                    </div>
+                    <nav className="flex items-center text-sm font-mono tracking-tight hidden md:flex">
+                        <span className="text-slate-500">nike-commercial</span>
+                        <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
+                        <span className="text-slate-500">timelines</span>
+                        <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
+                        <span className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-white/5 px-2 py-1 rounded border border-slate-200 dark:border-white/10">main_edit</span>
+                    </nav>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center -space-x-2 mr-4 hidden sm:flex">
+                        <div className="w-8 h-8 rounded-full border-2 border-white dark:border-black bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] text-slate-600 dark:text-white font-bold">AI</div>
+                    </div>
+                    <button
+                        onClick={() => onNavigate && onNavigate('diff')}
+                        className="hidden sm:block px-4 py-2 rounded-md border border-slate-300 dark:border-border-dark text-slate-600 dark:text-zinc-300 text-xs font-bold font-display uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                    >
+                        Compare & Commit
+                    </button>
+                    <button className="px-4 py-2 rounded-md bg-primary text-black text-xs font-bold font-display uppercase tracking-wider hover:bg-primary_hover transition-colors flex items-center gap-2 shadow-lg">
+                        <span className="material-icons-outlined text-sm">ios_share</span>
+                        <span className="hidden sm:inline">Export</span>
+                    </button>
+                </div>
+            </div>
 
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden relative">
