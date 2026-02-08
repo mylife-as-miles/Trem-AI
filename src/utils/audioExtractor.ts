@@ -68,15 +68,38 @@ export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
         // Decode
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
-        // Mix down to mono for efficiency if needed, or just take channel 0
-        // We'll just take the first channel (mono) to save tokens/bandwidth
+        // Mix down to mono for efficiency
         const channelData = audioBuffer.getChannelData(0);
+        const originalSampleRate = audioBuffer.sampleRate;
 
-        // Resample/Downsample if needed? 
-        // Whisper handles 16khz well. But keeping original rate is fine usually.
-        // Let's stick to original rate but mono.
+        // Downsample to 16kHz (Whisper's native rate) to reduce file size
+        // This reduces size by ~2.7x for 44.1kHz source, ~3x for 48kHz source
+        const TARGET_SAMPLE_RATE = 16000;
+        let finalSamples: Float32Array;
+        let finalSampleRate: number;
 
-        const wavBlob = encodeWAV(channelData, audioBuffer.sampleRate);
+        if (originalSampleRate > TARGET_SAMPLE_RATE) {
+            // Downsample using linear interpolation
+            const ratio = originalSampleRate / TARGET_SAMPLE_RATE;
+            const newLength = Math.floor(channelData.length / ratio);
+            finalSamples = new Float32Array(newLength);
+
+            for (let i = 0; i < newLength; i++) {
+                const srcIndex = i * ratio;
+                const srcIndexFloor = Math.floor(srcIndex);
+                const srcIndexCeil = Math.min(srcIndexFloor + 1, channelData.length - 1);
+                const t = srcIndex - srcIndexFloor;
+                // Linear interpolation for smoother downsampling
+                finalSamples[i] = channelData[srcIndexFloor] * (1 - t) + channelData[srcIndexCeil] * t;
+            }
+            finalSampleRate = TARGET_SAMPLE_RATE;
+            console.log(`Audio downsampled: ${originalSampleRate}Hz → ${TARGET_SAMPLE_RATE}Hz (${(channelData.length * 2 / 1024 / 1024).toFixed(1)}MB → ${(finalSamples.length * 2 / 1024 / 1024).toFixed(1)}MB)`);
+        } else {
+            finalSamples = channelData;
+            finalSampleRate = originalSampleRate;
+        }
+
+        const wavBlob = encodeWAV(finalSamples, finalSampleRate);
         return wavBlob;
 
     } catch (error) {
