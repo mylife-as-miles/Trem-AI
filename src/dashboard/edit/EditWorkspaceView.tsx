@@ -4,6 +4,7 @@ import { interpretAgentCommand } from '../../services/gemini/edit/index';
 import { db, RepoData, AssetData } from '../../utils/db';
 import AssetLibrary from '../assets/AssetLibraryPage';
 import { useTremStore } from '../../store/useTremStore';
+import { useRepos } from '../../hooks/useQueries';
 
 interface EditWorkspaceViewProps {
     onNavigate: (view: any) => void; // Using any for compatibility with common types
@@ -34,7 +35,8 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
     const [feedback, setFeedback] = useState<string | null>(null);
 
     // Repo Selection State
-    const [repos, setRepos] = useState<RepoData[]>([]);
+    // Repo Selection State
+    const { data: repos = [], isLoading: isLoadingRepos } = useRepos();
     const [selectedRepoId, setSelectedRepoId] = useState<number | undefined>(initialRepo?.id);
     const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
     const [repoSearch, setRepoSearch] = useState("");
@@ -62,20 +64,11 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
         }
     }, [templateMode]);
 
-    // Fetch Repos
+    // Initialize Selected Repo
     useEffect(() => {
-        const loadRepos = async () => {
-            try {
-                const data = await db.getAllRepos();
-                setRepos(data);
-                if (initialRepo && !selectedRepoId) {
-                    setSelectedRepoId(initialRepo.id);
-                }
-            } catch (error) {
-                console.error("Failed to load repos:", error);
-            }
-        };
-        loadRepos();
+        if (initialRepo && !selectedRepoId) {
+            setSelectedRepoId(initialRepo.id);
+        }
 
         // Click outside listener
         const handleClickOutside = (event: MouseEvent) => {

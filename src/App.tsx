@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import RemotionEditPage from './dashboard/edit/RemotionEditPage';
 import TremCreate from './dashboard/create/RemotionCreatePage';
@@ -13,6 +13,7 @@ import SettingsView from './dashboard/settings/SettingsPage';
 
 import { db, RepoData } from './utils/db';
 import { useTremStore, ViewType } from './store/useTremStore';
+import { useRepo } from './hooks/useQueries';
 
 const App: React.FC = () => {
     // Global State
@@ -24,6 +25,22 @@ const App: React.FC = () => {
         setRepoData,
         setIsSidebarOpen
     } = useTremStore();
+
+    // Local State for Query
+    const [activeRepoId, setActiveRepoId] = useState<number | undefined>(undefined);
+    const { data: fetchedRepo, isLoading: isRepoLoading } = useRepo(activeRepoId);
+
+    // Sync Query Data to Store
+    useEffect(() => {
+        if (fetchedRepo) {
+            setRepoData(fetchedRepo);
+        } else if (activeRepoId && !isRepoLoading && !fetchedRepo) {
+            // Repo not found
+            // console.warn("Repo not found for ID:", activeRepoId);
+            // window.history.replaceState({}, '', '/trem-edit');
+            // setCurrentView('trem-edit');
+        }
+    }, [fetchedRepo, setRepoData, activeRepoId, isRepoLoading, setCurrentView]);
 
     // Initial Route Handling & PopState Listener
     useEffect(() => {
@@ -42,26 +59,14 @@ const App: React.FC = () => {
                 const id = parts[2] ? parseInt(parts[2]) : null;
 
                 if (id && !isNaN(id)) {
-                    // Start loading repo
-                    try {
-                        const data = await db.getRepo(id);
-                        if (data) {
-                            setRepoData(data);
-                            if (path.endsWith('/files')) {
-                                setCurrentView('repo-files');
-                            } else if (path.endsWith('/logs')) {
-                                setCurrentView('repo-logs');
-                            } else {
-                                setCurrentView('repo');
-                            }
-                        } else {
-                            // Repo not found, redirect to dashboard
-                            window.history.replaceState({}, '', '/trem-edit');
-                            setCurrentView('trem-edit');
-                        }
-                    } catch (e) {
-                        console.error("Failed to route to repo:", e);
-                        setCurrentView('trem-edit');
+                    setActiveRepoId(id);
+                    // View logic
+                    if (path.endsWith('/files')) {
+                        setCurrentView('repo-files');
+                    } else if (path.endsWith('/logs')) {
+                        setCurrentView('repo-logs');
+                    } else {
+                        setCurrentView('repo');
                     }
                 }
             } else {

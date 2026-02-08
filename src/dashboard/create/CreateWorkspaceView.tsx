@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { generateRemotionProject } from '../../services/gemini/create/index';
 // Note: TopNavigation is now handled in the parent container
 import { db, RepoData, AssetData } from '../../utils/db';
+import { useRepos } from '../../hooks/useQueries';
 import AssetLibrary from '../assets/AssetLibraryPage';
 
 interface CreateWorkspaceViewProps {
@@ -62,19 +63,9 @@ const CreateWorkspaceView: React.FC<CreateWorkspaceViewProps> = ({ onNavigate, o
     const agentDropdownRef = useRef<HTMLDivElement>(null);
 
     // Repos (Still needed for "Recent Projects" list, but not the dropdown)
-    const [repos, setRepos] = useState<RepoData[]>([]);
+    const { data: repos = [] } = useRepos();
 
     useEffect(() => {
-        const loadRepos = async () => {
-            try {
-                const data = await db.getAllRepos();
-                setRepos(data);
-            } catch (error) {
-                console.error("Failed to load repos:", error);
-            }
-        };
-        loadRepos();
-
         // Click outside listener
         const handleClickOutside = (event: MouseEvent) => {
             if (agentDropdownRef.current && !agentDropdownRef.current.contains(event.target as Node)) {

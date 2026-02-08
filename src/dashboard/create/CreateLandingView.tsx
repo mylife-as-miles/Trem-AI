@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, RepoData } from '../../utils/db'; // We need recent projects
+import { useRepos } from '../../hooks/useQueries';
 import TemplateCarousel from './components/TemplateCarousel';
 
 interface CreateLandingViewProps {
@@ -67,19 +68,7 @@ const TEMPLATE_CARDS = [
 ];
 
 const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate, onSelectRepo }) => {
-    const [repos, setRepos] = useState<RepoData[]>([]);
-
-    useEffect(() => {
-        const loadRepos = async () => {
-            try {
-                const data = await db.getAllRepos();
-                setRepos(data);
-            } catch (error) {
-                console.error("Failed to load repos:", error);
-            }
-        };
-        loadRepos();
-    }, []);
+    const { data: repos = [] } = useRepos();
 
     return (
         <div className="flex-1 p-6 md:p-10 fade-in bg-slate-50/50 dark:bg-background-dark min-h-full font-sans">

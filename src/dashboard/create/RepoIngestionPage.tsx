@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AssetLibrary from '../assets/AssetLibraryPage';
 import TopNavigation from '../../components/layout/TopNavigation';
 import { db, RepoData } from '../../utils/db';
+import { useCreateRepo } from '../../hooks/useQueries';
 import { generateRepoStructure, analyzeAsset } from '../../services/gemini/repo/index';
 import { extractAudioFromVideo } from '../../utils/audioExtractor';
 import { extractFramesFromVideo } from '../../utils/frameExtractor';
@@ -50,6 +51,9 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         { id: 3, status: 'idle', task: 'Waiting...' },
         { id: 4, status: 'idle', task: 'Waiting...' }
     ]);
+
+    // Mutation
+    const createRepoMutation = useCreateRepo();
 
     // Ingestion Simulation - REAL PARALLEL PROCESSING
     useEffect(() => {
@@ -401,11 +405,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         ];
 
         try {
-            const newRepoId = await db.addRepo({
+            const newRepoId = await createRepoMutation.mutateAsync({
                 name: repoName,
                 brief: repoBrief,
-                created: Date.now(),
-                assets: selectedAssets,
+                assets: (selectedAssets as any[]), // Cast to bypass strict asset type check for now or match DB
                 fileSystem: newFS
             });
 

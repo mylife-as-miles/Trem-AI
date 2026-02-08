@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TopNavigation from '../../components/layout/TopNavigation';
 import { RepoData, db } from '../../utils/db'; // Added db import
+import { useUpdateRepo } from '../../hooks/useQueries';
 import AlertDialog from '../../components/ui/AlertDialog';
 import { analyzeAsset, generateRepoStructure } from '../../services/gemini/repo/index';
 import { transcribeAudio } from '../../services/whisperService';
@@ -41,6 +42,9 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
     const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
     const [showTerminal, setShowTerminal] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Queries
+    const updateRepoMutation = useUpdateRepo();
 
     // Initialize files from repoData
     useEffect(() => {
@@ -134,7 +138,10 @@ const RepoFilesView: React.FC<RepoFilesViewProps> = ({ onNavigate, repoData }) =
                 // Update version/modified if tracked
             };
 
-            await db.updateRepo(repoData.id, updatedRepoData);
+            await updateRepoMutation.mutateAsync({
+                id: repoData.id,
+                updates: updatedRepoData
+            });
 
             // Update Local State
             setFiles(fsWithCommit);
