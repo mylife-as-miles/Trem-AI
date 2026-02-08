@@ -77,7 +77,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black pointer-events-none z-40"></div>
 
             {/* Spotlight Effect behind active card */}
-            <div className={`absolute top-[10%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[100px] rounded-full transition-opacity duration-1000 z-0 ${activeIndex >= 0 ? 'opacity-100' : 'opacity-0'}`}></div>
+            <div className={`absolute top-[5%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[100px] rounded-full transition-opacity duration-1000 z-0 ${activeIndex >= 0 ? 'opacity-100' : 'opacity-0'}`}></div>
 
             {/* Render Cards */}
             <div className="relative w-full h-full flex items-center justify-center transform-style-preserve-3d">
@@ -89,7 +89,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
                     return (
                         <div
                             key={template.id}
-                            className="absolute top-[10%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-[450px]"
+                            className="absolute top-[5%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-[450px]"
                             style={{
                                 transform: style.transform,
                                 zIndex: style.zIndex,
