@@ -11,15 +11,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { input } = req.body;
+    const { input, version } = req.body;
+
+    // Use provided version or default to OpenAI Whisper
+    const modelVersion = version || "openai/whisper:8099696689d249cf8b122d833c36ac3f75505c666a395ca40ef26f68e7d3d16e";
 
     const output = await replicate.run(
-      "openai/whisper:8099696689d249cf8b122d833c36ac3f75505c666a395ca40ef26f68e7d3d16e",
+      modelVersion,
       {
-        input: {
-          ...input,
-          transcription: 'srt', // Ensure SRT is requested
-        }
+        input: input
       }
     );
 

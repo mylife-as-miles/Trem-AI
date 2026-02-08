@@ -244,3 +244,40 @@ const mockTranscription = (): WhisperTranscription => {
         language: 'en'
     };
 };
+
+/**
+ * Transcribe using WhisperX for word-level timestamps (Replicate)
+ */
+export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<any> => {
+    try {
+        const base64Audio = await blobToDataURL(audioBlob);
+
+        const response = await fetch('/api/predictions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                version: 'carnifexer/whisperx:1e0315854645f245d04ff09f5442778e97b8588243c7fe40c644806bde297e04',
+                input: {
+                    audio: base64Audio,
+                    debug: true,
+                    only_text: false,
+                    align_output: true
+                }
+            })
+        });
+
+        if (!response.ok) {
+            console.error(`WhisperX Replicate error: ${response.statusText}`);
+            return null;
+        }
+
+        const output = await response.json();
+        return output;
+
+    } catch (error) {
+        console.error('WhisperX transcription error:', error);
+        return null;
+    }
+};

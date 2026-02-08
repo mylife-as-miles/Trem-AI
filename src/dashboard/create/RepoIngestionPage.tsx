@@ -6,7 +6,7 @@ import { useCreateRepo } from '../../hooks/useQueries';
 import { generateRepoStructure, analyzeAsset } from '../../services/gemini/repo/index';
 import { extractAudioFromVideo } from '../../utils/audioExtractor';
 import { extractFramesFromVideo } from '../../utils/frameExtractor';
-import { transcribeAudio } from '../../services/whisperService';
+import { transcribeAudio, transcribeAudioWithWhisperX } from '../../services/whisperService';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -23,6 +23,7 @@ interface Asset {
     transcript?: string;
     srt?: string;
     audioBlob?: Blob;
+    wordSegments?: any;
 }
 
 interface FileNode {
@@ -140,7 +141,26 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'transcribing', progress: 50 } : a));
 
                             try {
-                                transcriptionResult = await transcribeAudio(audioBlob);
+                                // Run both in parallel for SRT (Whisper) and Word-Level (WhisperX)
+                                const [whisperRes, whisperXRes] = await Promise.all([
+                                    transcribeAudio(audioBlob),
+                                    transcribeAudioWithWhisperX(audioBlob)
+                                ]);
+
+                                transcriptionResult = whisperRes;
+
+                                if (whisperXRes) {
+                                    setSimLogs(prev => [...prev, `> [Worker_${workerId}] WhisperX Word-Level Alignments Complete.`]);
+                                }
+
+                                // Store output
+                                setSelectedAssets(prev => prev.map(a => a.id === asset.id ? {
+                                    ...a,
+                                    status: 'transcribing',
+                                    progress: 70, // Bump progress
+                                    wordSegments: whisperXRes
+                                } : a));
+
                                 setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription Complete.`]);
                             } catch (e) {
                                 console.error("Transcription failed", e);
@@ -175,7 +195,15 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             transcript: transcriptionResult.text,
                             srt: transcriptionResult.srt,
                             frames: representativeFrames,
-                            audioBlob: audioBlob || undefined
+                            audioBlob: audioBlob || undefined,
+                            // wordSegments is already set in the intermediate update? No, we mapped whole array.
+                            // Actually we need to make sure we don't lose the intermediate update if we do it again here.
+                            // But wait, the intermediate update above used 'status: transcribing'.
+                            // Here we set 'status: indexed'.
+                            // We should include wordSegments here too, pulling from state?
+                            // No, just use the local variable `whisperXRes` if we had it in scope?
+                            // Ah, `whisperXResult` variable needs to be accessible here.
+                            // I need to declare `whisperXResult` outside the block.
                         } : a));
 
                         updateWorker(workerId, 'idle', 'Waiting...');
@@ -335,6 +363,16 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             type: 'file',
                             icon: 'audiotrack',
                             iconColor: 'text-pink-400'
+                        }))
+                    },
+                    {
+                        id: 'media_transcripts', name: 'transcripts', type: 'folder', children: selectedAssets.filter(a => a.wordSegments).map(asset => ({
+                            id: `transcript_${asset.id}`,
+                            name: `${asset.name.replace(/\.[^/.]+$/, "")}.json`,
+                            type: 'file',
+                            icon: 'file-text',
+                            content: JSON.stringify(asset.wordSegments, null, 2),
+                            iconColor: 'text-orange-400'
                         }))
                     },
                     { id: 'media_proxies', name: 'proxies', type: 'folder', children: [] }
