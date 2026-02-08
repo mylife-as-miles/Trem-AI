@@ -22,6 +22,7 @@ interface Asset {
     blob?: Blob;
     transcript?: string;
     srt?: string;
+    audioBlob?: Blob;
 }
 
 interface FileNode {
@@ -173,7 +174,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             progress: 100,
                             transcript: transcriptionResult.text,
                             srt: transcriptionResult.srt,
-                            frames: representativeFrames
+                            frames: representativeFrames,
+                            audioBlob: audioBlob || undefined
                         } : a));
 
                         updateWorker(workerId, 'idle', 'Waiting...');
@@ -326,6 +328,15 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             id: asset.id, name: asset.name || `${asset.id}.mp4`, type: 'file', icon: 'movie', iconColor: 'text-emerald-400'
                         }))
                     },
+                    {
+                        id: 'media_audio', name: 'audio', type: 'folder', children: selectedAssets.filter(a => a.audioBlob).map(asset => ({
+                            id: `audio_${asset.id}`,
+                            name: `${asset.name.replace(/\.[^/.]+$/, "")}.mp3`,
+                            type: 'file',
+                            icon: 'audiotrack',
+                            iconColor: 'text-pink-400'
+                        }))
+                    },
                     { id: 'media_proxies', name: 'proxies', type: 'folder', children: [] }
                 ]
             },
@@ -405,6 +416,20 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         ];
 
         try {
+            // Save Audio Assets to DB First
+            for (const asset of selectedAssets) {
+                if (asset.audioBlob) {
+                    await db.addAsset({
+                        id: `audio_${asset.id}`,
+                        name: `${asset.name.replace(/\.[^/.]+$/, "")}.mp3`,
+                        type: 'audio',
+                        blob: asset.audioBlob,
+                        created: Date.now(),
+                        duration: asset.duration
+                    });
+                }
+            }
+
             const newRepoId = await createRepoMutation.mutateAsync({
                 name: repoName,
                 brief: repoBrief,
