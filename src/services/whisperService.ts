@@ -34,6 +34,14 @@ export const transcribeAudio = async (
     } = {}
 ): Promise<WhisperTranscription> => {
     try {
+        // Check file size - Vercel has ~4.5MB payload limit, base64 adds 33% overhead
+        // Limit to 3MB to be safe (will become ~4MB in base64)
+        const MAX_SIZE_MB = 3;
+        if (audioBlob.size > MAX_SIZE_MB * 1024 * 1024) {
+            console.warn(`Audio file too large (${(audioBlob.size / 1024 / 1024).toFixed(1)}MB > ${MAX_SIZE_MB}MB limit). Using mock transcription.`);
+            return mockTranscription();
+        }
+
         // Convert blob to base64 data URL
         const base64Audio = await blobToDataURL(audioBlob);
 
@@ -257,6 +265,13 @@ const mockTranscription = (): WhisperTranscription => {
  */
 export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<any> => {
     try {
+        // Check file size - Vercel has ~4.5MB payload limit
+        const MAX_SIZE_MB = 3;
+        if (audioBlob.size > MAX_SIZE_MB * 1024 * 1024) {
+            console.warn(`Audio file too large for WhisperX (${(audioBlob.size / 1024 / 1024).toFixed(1)}MB). Skipping word-level timestamps.`);
+            return null;
+        }
+
         const base64Audio = await blobToDataURL(audioBlob);
 
         const response = await fetch('/api/predictions', {
