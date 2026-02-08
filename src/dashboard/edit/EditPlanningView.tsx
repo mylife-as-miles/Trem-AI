@@ -86,8 +86,8 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-border-dark bg-white/50 dark:bg-white/[0.02] backdrop-blur-sm sticky top-0 z-10">
-                    <button onClick={onBack} className="text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
-                        <span className="material-icons-outlined text-lg">arrow_back</span>
+                    <button onClick={onBack} className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
+                        <span className="material-icons-outlined text-sm">arrow_back</span>
                         Back to Workspace
                     </button>
                     <div className="flex items-center gap-2">
@@ -103,14 +103,14 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
                     {chatMessages.map((msg, idx) => (
                         <div key={idx} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'agent'
-                                    ? 'bg-gradient-to-br from-primary to-indigo-600 text-white shadow-lg'
-                                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                ? 'bg-gradient-to-br from-primary to-indigo-600 text-white shadow-lg'
+                                : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                                 }`}>
                                 <span className="material-icons-outlined text-sm">{msg.role === 'agent' ? 'smart_toy' : 'person'}</span>
                             </div>
                             <div className={`rounded-2xl px-5 py-3.5 max-w-[85%] text-sm leading-relaxed shadow-sm ${msg.role === 'agent'
-                                    ? 'bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-white/10'
-                                    : 'bg-primary text-white shadow-primary/20 shadow-lg'
+                                ? 'bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-white/10'
+                                : 'bg-primary text-slate-900 font-medium shadow-primary/20 shadow-lg'
                                 }`}>
                                 {msg.text}
                             </div>
@@ -178,14 +178,14 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
                                 key={item.id}
                                 onClick={() => togglePlanItem(item.id)}
                                 className={`group flex items-start gap-4 p-4 rounded-xl border transition-all cursor-pointer select-none ${item.status === 'rejected'
-                                        ? 'bg-slate-100 dark:bg-white/5 border-transparent opacity-60'
-                                        : 'bg-white dark:bg-surface-card border-slate-200 dark:border-border-dark shadow-sm hover:border-primary/50 hover:shadow-md'
+                                    ? 'bg-slate-100 dark:bg-white/5 border-transparent opacity-60'
+                                    : 'bg-white dark:bg-surface-card border-slate-200 dark:border-border-dark shadow-sm hover:border-primary/50 hover:shadow-md'
                                     }`}
                                 style={{ animationDelay: `${idx * 100}ms` }}
                             >
                                 <div className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center transition-colors ${item.status === 'rejected'
-                                        ? 'border-slate-300 dark:border-slate-600 bg-transparent'
-                                        : 'border-primary bg-primary text-white'
+                                    ? 'border-slate-300 dark:border-slate-600 bg-transparent'
+                                    : 'border-primary bg-primary text-white'
                                     }`}>
                                     {item.status !== 'rejected' && <span className="material-icons-outlined text-xs">check</span>}
                                 </div>
@@ -197,9 +197,9 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
                                     </div>
                                     <div className="flex items-center gap-2 mt-2">
                                         <span className={`text-[10px] px-2 py-0.5 rounded border uppercase tracking-wide ${item.type === 'cut' ? 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300' :
-                                                item.type === 'audio' ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-300' :
-                                                    item.type === 'effect' ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-300' :
-                                                        'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300'
+                                            item.type === 'audio' ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-300' :
+                                                item.type === 'effect' ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-300' :
+                                                    'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300'
                                             }`}>
                                             {item.type}
                                         </span>
