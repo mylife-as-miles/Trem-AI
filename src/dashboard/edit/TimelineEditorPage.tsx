@@ -4,6 +4,8 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { CSS } from '@dnd-kit/utilities';
 import TopNavigation from '../../components/layout/TopNavigation';
 import { useTremStore } from '../../store/useTremStore';
+import { Player, PlayerRef } from '@remotion/player';
+import { MyVideo } from '../../remotion/MyVideo';
 
 interface Clip {
     id: string;
@@ -112,13 +114,21 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
         }
     ]);
 
-    // Simulate Playback
+    // Sync Player State with UI (Optional: Use Player's onFrameUpdate if we want precise scrubber sync)
+    // For now, simpler interval is okay for UI feedback, but connecting to Player's event is better.
+    // However, Player callback is in the component props.
+
+    // We can use a simple effect to poll current frame if playing
     useEffect(() => {
         let interval: NodeJS.Timeout;
         if (isPlaying) {
             interval = setInterval(() => {
-                setCurrentTime(prev => (prev + 1) % 100);
-            }, 100);
+                if (playerRef.current) {
+                    const frame = playerRef.current.getCurrentFrame();
+                    const total = 900; // Match durationInFrames
+                    setCurrentTime((frame / total) * 100);
+                }
+            }, 1000 / 30); // 30fps poll
         }
         return () => clearInterval(interval);
     }, [isPlaying]);
@@ -142,7 +152,37 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
         }
     };
 
-    const togglePlay = () => setIsPlaying(!isPlaying);
+
+
+    const playerRef = React.useRef<PlayerRef>(null);
+
+    const togglePlay = () => {
+        const playing = !isPlaying;
+        setIsPlaying(playing);
+        if (playerRef.current) {
+            if (playing) {
+                playerRef.current.play();
+            } else {
+                playerRef.current.pause();
+            }
+        }
+    };
+
+    const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const width = rect.width;
+        const percentage = Math.max(0, Math.min(1, x / width));
+
+        // Assume 30 second timeline for now = 900 frames
+        const totalFrames = 900;
+        const frame = Math.floor(percentage * totalFrames);
+
+        if (playerRef.current) {
+            playerRef.current.seekTo(frame);
+        }
+        setCurrentTime(percentage * 100);
+    };
 
     return (
         <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
@@ -243,24 +283,40 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                 <main className="flex-1 flex flex-col relative bg-background-dark border-r border-slate-200 dark:border-border-dark z-0 min-w-0">
                     {/* Viewer */}
                     <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black">
-                        <div className="relative w-full aspect-video bg-background-dark border border-border-dark rounded-lg shadow-2xl overflow-hidden group max-h-[60vh]">
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10 pointer-events-none"></div>
-                            <div className="absolute inset-0 flex items-center justify-center bg-background-dark">
-                                {/* Simulated Video Content */}
-                                <div className="w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
-                                <div className={`absolute w-32 h-32 bg-primary/20 blur-[60px] rounded-full transition-transform duration-[2000ms] ${isPlaying ? 'scale-150 animate-pulse' : 'scale-100'}`}></div>
-                            </div>
-                            <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+                        <div className="relative w-full aspect-video bg-background-dark border border-border-dark rounded-lg shadow-2xl overflow-hidden group max-h-[60vh] flex items-center justify-center">
+                            <Player
+                                ref={playerRef}
+                                component={MyVideo}
+                                durationInFrames={900}
+                                compositionWidth={1920}
+                                compositionHeight={1080}
+                                fps={30}
+                                controls={false} // Use our custom controls
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                                inputProps={{
+                                    title: editPlan && Array.isArray(editPlan) ? `Synced Plan (${editPlan.length} edits)` : 'Trem AI Project'
+                                }}
+                            />
+
+                            {/* Overlay Play Button (only when paused) */}
+                            {!isPlaying && (
+                                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 backdrop-blur-[1px] transition-opacity">
+                                    <button
+                                        onClick={togglePlay}
+                                        className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-primary hover:border-primary transition-all transform hover:scale-110 shadow-lg"
+                                    >
+                                        <span className="material-icons-outlined text-4xl ml-1">play_arrow</span>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Rec Indicator */}
+                            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none">
                                 <span className={`w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ${isPlaying ? 'animate-pulse' : 'opacity-50'}`}></span>
-                                <span className="text-xs font-mono text-white/80 drop-shadow-md">REC [PROXY]</span>
-                            </div>
-                            <div className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-0' : 'opacity-100 group-hover:opacity-100'}`}>
-                                <button
-                                    onClick={togglePlay}
-                                    className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-primary hover:border-primary transition-all transform hover:scale-110 shadow-lg"
-                                >
-                                    <span className="material-icons-outlined text-4xl ml-1">play_arrow</span>
-                                </button>
+                                <span className="text-xs font-mono text-white/80 drop-shadow-md">LIVE PREVIEW</span>
                             </div>
                         </div>
                     </div>
@@ -269,13 +325,13 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         {/* Timeline Bar */}
                         <div className="w-full h-8 flex items-center gap-2 md:gap-4 group">
                             <span className="text-xs font-mono text-slate-600 dark:text-zinc-400 w-12 md:w-16 text-right">00:00:{Math.floor(currentTime / 2)}</span>
-                            <div className="flex-1 h-1.5 bg-slate-200 dark:bg-surface-card rounded-full relative cursor-pointer overflow-visible">
+                            <div className="flex-1 h-1.5 bg-slate-200 dark:bg-surface-card rounded-full relative cursor-pointer overflow-visible" onClick={handleSeek}>
                                 <div
                                     className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-100 ease-linear"
                                     style={{ width: `${currentTime}%` }}
                                 ></div>
                                 <div
-                                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-all duration-100 z-10 border border-slate-200 dark:border-none"
+                                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-all duration-100 z-10 border border-slate-200 dark:border-none pointer-events-none"
                                     style={{ left: `${currentTime}%` }}
                                 ></div>
                             </div>
