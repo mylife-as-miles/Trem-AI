@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Sidebar from './components/layout/Sidebar';
-import TremEdit from './dashboard/edit/AgentEditPage';
+import RemotionEditPage from './dashboard/edit/RemotionEditPage';
 import TremCreate from './dashboard/create/RemotionCreatePage';
 import TimelineEditor from './dashboard/edit/TimelineEditorPage';
 import VideoRepoOverview from './dashboard/repo/RepoOverviewPage';
@@ -137,7 +137,7 @@ const App: React.FC = () => {
         switch (currentView) {
             case 'dashboard':
             case 'trem-edit':
-                return <TremEdit onNavigate={handleNavigate} onSelectRepo={handleSelectRepo} />;
+                return <RemotionEditPage onNavigate={handleNavigate} onSelectRepo={handleSelectRepo} />;
             case 'trem-create':
                 return <TremCreate onNavigate={handleNavigate} onSelectRepo={handleSelectRepo} />;
             case 'timeline':
@@ -157,7 +157,7 @@ const App: React.FC = () => {
             case 'settings':
                 return <SettingsView onNavigate={handleNavigate} />;
             default:
-                return <TremEdit onNavigate={handleNavigate} />;
+                return <RemotionEditPage onNavigate={handleNavigate} />;
         }
     };
 
