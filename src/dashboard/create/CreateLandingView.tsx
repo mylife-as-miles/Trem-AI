@@ -83,7 +83,7 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
 
     return (
         <div className="flex-1 p-6 md:p-10 fade-in bg-slate-50/50 dark:bg-background-dark min-h-full font-sans">
-            <div className="max-w-6xl mx-auto space-y-16">
+            <div className="max-w-6xl mx-auto space-y-8">
 
                 {/* Hero Section */}
                 <div className="text-center space-y-6 py-8 md:py-12">

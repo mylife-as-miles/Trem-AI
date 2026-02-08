@@ -113,7 +113,7 @@ const TemplateCard3D: React.FC<TemplateCard3DProps> = ({
 
                     {/* Name */}
                     <div className="text-center mb-4 border-b border-zinc-800 pb-2">
-                        <h3 className={`font-display font-bold text-2xl uppercase tracking-tight ${isActive ? 'text-white' : 'text-zinc-400'} truncate`}>
+                        <h3 className={`font-display font-bold text-xl uppercase tracking-tight ${isActive ? 'text-white' : 'text-zinc-400'} line-clamp-2 leading-tight h-14 flex items-center justify-center`}>
                             {title}
                         </h3>
                     </div>
