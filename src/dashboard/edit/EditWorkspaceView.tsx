@@ -204,7 +204,7 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
                     {/* Main Command Center Card */}
                     <div className="relative group w-full max-w-3xl mx-auto">
 
-                        <div className="relative bg-white dark:bg-surface-card border border-slate-200 dark:border-border-dark rounded-2xl shadow-xl overflow-hidden flex flex-col min-h-[320px]">
+                        <div className="relative bg-white dark:bg-surface-card border border-slate-200 dark:border-border-dark rounded-2xl shadow-xl flex flex-col min-h-[320px]">
 
                             {/* Input Area */}
                             <div className="flex-1 p-6 relative">
