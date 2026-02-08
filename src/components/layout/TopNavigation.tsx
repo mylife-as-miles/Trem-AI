@@ -2,7 +2,7 @@ import React from 'react';
 
 interface TopNavigationProps {
     onNavigate?: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'repo-files' | 'trem-create' | 'trem-edit') => void;
-    activeTab?: 'edit' | 'create';
+    activeTab?: 'edit' | 'create' | 'assets' | 'diff' | 'timeline';
 }
 
 const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) => {
@@ -46,7 +46,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onNavigate, activeTab }) 
                     onClick={() => onNavigate?.('trem-edit')}
                     className={`
                         px-8 py-3 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2
-                        ${activeTab === 'edit'
+                        ${(activeTab === 'edit' || activeTab === 'diff' || activeTab === 'timeline')
                             ? 'bg-primary text-black font-extrabold shadow-sm'
                             : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
                         }
