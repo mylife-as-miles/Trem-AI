@@ -102,7 +102,7 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
                 <div className="w-1/2 flex flex-col border-r border-white/10 bg-black relative">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-30 pointer-events-none"></div>
 
-                    <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar pb-40">
                         {chatMessages.map((msg, idx) => (
                             <div key={idx} className={`flex gap-4 max-w-[90%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse text-right' : ''}`}>
                                 {msg.role === 'agent' && (
@@ -115,8 +115,8 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
 
                                 <div className={`flex flex-col gap-2 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                     <div className={`px-6 py-4 rounded-2xl text-sm leading-relaxed font-light ${msg.role === 'agent'
-                                            ? 'rounded-tl-sm bg-white/5 border border-white/10 text-slate-100'
-                                            : 'rounded-tr-sm bg-white/10 border border-white/10 text-slate-200'
+                                        ? 'rounded-tl-sm bg-white/5 border border-white/10 text-slate-100'
+                                        : 'rounded-tr-sm bg-white/10 border border-white/10 text-slate-200'
                                         }`}>
                                         <p className="mb-2">{msg.text}</p>
                                         {msg.metadata && (
@@ -144,7 +144,7 @@ const EditPlanningView: React.FC<EditPlanningViewProps> = ({ prompt, repo, onApp
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-6 pt-2 bg-gradient-to-t from-black via-black to-transparent z-10">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 pt-10 bg-gradient-to-t from-black via-black to-transparent z-10 w-full">
                         <div className="relative group">
                             <div className="absolute inset-0 bg-primary/20 rounded-xl blur-sm group-focus-within:bg-primary/30 transition-all"></div>
                             <div className="relative bg-surface-card border border-white/10 rounded-xl overflow-hidden shadow-2xl flex flex-col">
