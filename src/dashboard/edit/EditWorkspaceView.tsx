@@ -226,7 +226,7 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
                             <div className="px-6 py-4 bg-slate-50/50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-border-dark flex flex-col sm:flex-row items-center justify-between gap-4">
 
                                 {/* Tools */}
-                                <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
+                                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
 
                                     {/* Repo Dropdown */}
                                     <div className="relative" ref={repoDropdownRef}>
