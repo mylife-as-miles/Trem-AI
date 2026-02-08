@@ -147,17 +147,22 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
     return (
         <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
 
-            {/* Top Navigation */}
-            <TopNavigation onNavigate={onNavigate} activeTab="timeline" />
-
-            {/* Sub-Header: Project Context & Actions */}
-            <div className="h-14 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-border-dark bg-white/95 dark:bg-background-dark z-20">
+            {/* Main Header: Project Context & Actions */}
+            <div className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-border-dark bg-white/95 dark:bg-background-dark z-20">
                 <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]">
-                        <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
+                    <div
+                        className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(34,197,94,0.5)] cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => onNavigate && onNavigate('repo')}
+                    >
+                        <span className="material-icons-outlined text-xl">auto_awesome_motion</span>
                     </div>
                     <nav className="flex items-center text-sm font-mono tracking-tight hidden md:flex">
-                        <span className="text-slate-500">nike-commercial</span>
+                        <span
+                            className="text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors"
+                            onClick={() => onNavigate && onNavigate('repo')}
+                        >
+                            nike-commercial
+                        </span>
                         <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
                         <span className="text-slate-500">timelines</span>
                         <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>

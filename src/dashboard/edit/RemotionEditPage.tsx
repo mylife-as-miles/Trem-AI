@@ -52,8 +52,39 @@ const RemotionEditPage: React.FC<RemotionEditProps> = ({ onNavigate, onSelectRep
 
     return (
         <div className="flex flex-col min-h-full relative bg-slate-50 dark:bg-background-dark transition-colors duration-300">
-            {/* Top Navigation Header */}
-            <TopNavigation onNavigate={onNavigate} activeTab="edit" />
+            {/* Top Navigation Header - Only on Landing */}
+            {viewMode === 'landing' && <TopNavigation onNavigate={onNavigate} activeTab="edit" />}
+
+            {/* Repo Header for Workspace/Planning */}
+            {viewMode !== 'landing' && selectedRepo && (
+                <div className="h-14 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-border-dark bg-white/95 dark:bg-background-dark z-20">
+                    <div className="flex items-center gap-4">
+                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]">
+                            <span className="material-icons-outlined text-lg">folder_open</span>
+                        </div>
+                        <nav className="flex items-center text-sm font-mono tracking-tight">
+                            <span
+                                className="text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors"
+                                onClick={handleBackToLanding}
+                            >
+                                {selectedRepo.name}
+                            </span>
+                            <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
+                            <span className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-white/5 px-2 py-1 rounded border border-slate-200 dark:border-white/10">
+                                {viewMode}
+                            </span>
+                        </nav>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleBackToLanding}
+                            className="px-3 py-1.5 rounded-md border border-slate-200 dark:border-border-dark text-slate-500 hover:text-slate-900 dark:hover:text-white text-xs font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        >
+                            Back to Projects
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Main Content Area */}
             {viewMode === 'landing' ? (

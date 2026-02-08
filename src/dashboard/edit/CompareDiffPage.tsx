@@ -50,22 +50,33 @@ const CompareDiffView: React.FC<CompareDiffViewProps> = ({ onNavigate }) => {
 
     return (
         <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 font-sans overflow-hidden selection:bg-primary selection:text-white transition-colors duration-200">
-            {/* Top Navigation */}
-            <TopNavigation onNavigate={onNavigate} activeTab="diff" />
-
-            {/* Sub-Header for Context */}
-            <div className="h-12 border-b border-border-dark bg-surface-card flex items-center justify-between px-6 flex-shrink-0">
+            {/* Main Header: Context & Actions */}
+            <div className="h-16 border-b border-border-dark bg-surface-card flex items-center justify-between px-6 flex-shrink-0 z-30 relative">
                 <div className="flex items-center gap-4 text-xs font-mono">
-                    <div className="flex items-center gap-2">
-                        <span className="text-slate-400">Comparing:</span>
-                        <div className="flex items-center gap-2 px-2 py-1 rounded bg-white/5 border border-white/10 text-slate-300">
-                            <span className="material-icons-outlined text-sm">call_split</span>
-                            main
-                        </div>
-                        <span className="material-icons-outlined text-slate-500 text-sm">arrow_forward</span>
-                        <div className="flex items-center gap-2 px-2 py-1 rounded bg-primary/10 border border-primary/20 text-primary">
-                            <span className="material-icons-outlined text-sm">call_split</span>
-                            faster-cut
+                    <div
+                        className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(34,197,94,0.5)] cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => onNavigate && onNavigate('repo')}
+                    >
+                        <span className="material-icons-outlined text-xl">folder_open</span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span
+                            className="text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer transition-colors mb-1"
+                            onClick={() => onNavigate && onNavigate('repo')}
+                        >
+                            {repoData ? repoData.name : 'nike-commercial'}
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-slate-400">Comparing:</span>
+                            <div className="flex items-center gap-2 px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">
+                                <span className="material-icons-outlined text-[10px]">call_split</span>
+                                main
+                            </div>
+                            <span className="material-icons-outlined text-slate-500 text-sm">arrow_forward</span>
+                            <div className="flex items-center gap-2 px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary">
+                                <span className="material-icons-outlined text-[10px]">call_split</span>
+                                faster-cut
+                            </div>
                         </div>
                     </div>
                 </div>
