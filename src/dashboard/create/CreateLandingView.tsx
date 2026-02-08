@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, RepoData } from '../../utils/db'; // We need recent projects
+import TemplateCarousel from './components/TemplateCarousel';
 
 interface CreateLandingViewProps {
     onSelectTemplate: (template: string) => void;
@@ -106,51 +107,12 @@ const CreateLandingView: React.FC<CreateLandingViewProps> = ({ onSelectTemplate,
                         <h2 className="text-sm font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Start New Project</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                        {TEMPLATE_CARDS.map((card) => (
-                            <button
-                                key={card.id}
-                                onClick={() => onSelectTemplate(card.title)}
-                                className="group relative flex flex-col items-start text-left h-72 rounded-2xl transition-all duration-500 hover:-translate-y-2"
-                            >
-                                <div className="absolute inset-0 bg-white dark:bg-surface-card rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm transition-all duration-500"></div>
-
-                                {/* Card Image / Icon Area */}
-                                <div className="relative w-full h-40 bg-slate-50 dark:bg-background-dark rounded-t-2xl overflow-hidden flex items-center justify-center border-b border-slate-100 dark:border-border-dark group-hover:border-transparent transition-colors">
-                                    {card.image ? (
-                                        <>
-                                            <div className="absolute inset-0 bg-slate-900/5 dark:bg-white/5 group-hover:bg-slate-900/0 dark:group-hover:bg-white/10 transition-colors z-10"></div>
-                                            <div className="transform group-hover:scale-110 transition-transform duration-700 ease-out">
-                                                <span className={`material-icons-outlined text-6xl text-slate-200 dark:text-white/10 group-hover:text-primary/20 transition-colors`}>
-                                                    {card.icon}
-                                                </span>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center transition-transform duration-500">
-                                            <span className="material-icons-outlined text-3xl text-black">add</span>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Card Content */}
-                                <div className="relative p-5 flex flex-col flex-1 w-full z-10">
-                                    <div className="flex items-center justify-between w-full mb-2">
-                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-primary transition-colors">
-                                            {card.title}
-                                        </h3>
-                                    </div>
-                                    <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2 mix-blend-plus-lighter">
-                                        {card.description}
-                                    </p>
-
-                                    <div className="mt-auto pt-4 flex items-center text-xs font-medium text-emerald-600 dark:text-primary opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                                        <span>Create Project</span>
-                                        <span className="material-icons-outlined text-sm ml-1">arrow_forward</span>
-                                    </div>
-                                </div>
-                            </button>
-                        ))}
+                    {/* 3D Carousel Selection */}
+                    <div className="relative -mx-10 md:-mx-20 lg:-mx-32 fade-in-up">
+                        <TemplateCarousel
+                            templates={TEMPLATE_CARDS}
+                            onSelect={(template) => onSelectTemplate(template.title)}
+                        />
                     </div>
                 </div>
 
