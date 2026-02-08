@@ -10,6 +10,7 @@ interface EditWorkspaceViewProps {
     onBack?: () => void;
     initialRepo?: RepoData;
     templateMode?: string;
+    onPlan?: (prompt: string) => void;
 }
 
 const SUGGESTIONS = [
@@ -26,7 +27,7 @@ const MSG_MODES = [
     { id: 'start', label: 'Start / Auto-Execute', icon: 'play_arrow', description: 'Immediately execute the command.' },
 ];
 
-const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSelectRepo, onBack, initialRepo, templateMode }) => {
+const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSelectRepo, onBack, initialRepo, templateMode, onPlan }) => {
     const [prompt, setPrompt] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
@@ -131,11 +132,18 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
 
     const handleSubmit = async () => {
         if (!prompt.trim()) return;
+
+        // Interactive Mode -> Go to Planning View
+        if (selectedModeId === 'interactive' && onPlan) {
+            onPlan(prompt);
+            return;
+        }
+
         setIsProcessing(true);
         setFeedback(null);
 
         try {
-            // Edit Logic
+            // Edit Logic (Auto-Execute)
             const response = await interpretAgentCommand(prompt);
             setFeedback(response);
 
