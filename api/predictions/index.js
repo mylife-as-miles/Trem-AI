@@ -14,16 +14,15 @@ export default async function handler(req, res) {
     const { input, version } = req.body;
 
     // Use provided version or default to OpenAI Whisper
-    const modelVersion = version || "openai/whisper:8099696689d249cf8b122d833c36ac3f75505c666a395ca40ef26f68e7d3d16e";
+    const modelString = version || "openai/whisper:8099696689d249cf8b122d833c36ac3f75505c666a395ca40ef26f68e7d3d16e";
+    const versionId = modelString.includes(':') ? modelString.split(':')[1] : modelString;
 
-    const output = await replicate.run(
-      modelVersion,
-      {
-        input: input
-      }
-    );
+    const prediction = await replicate.predictions.create({
+      version: versionId,
+      input: input
+    });
 
-    res.status(200).json(output);
+    res.status(201).json(prediction);
   } catch (error) {
     console.error('Error running Whisper:', error);
     res.status(500).json({ error: error.message || 'Internal Server Error' });

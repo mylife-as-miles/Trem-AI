@@ -141,11 +141,9 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'transcribing', progress: 50 } : a));
 
                             try {
-                                // Run both in parallel for SRT (Whisper) and Word-Level (WhisperX)
-                                const [whisperRes, whisperXRes] = await Promise.all([
-                                    transcribeAudio(audioBlob),
-                                    transcribeAudioWithWhisperX(audioBlob)
-                                ]);
+                                // Run sequential to avoid network congestion/timeouts
+                                const whisperRes = await transcribeAudio(audioBlob);
+                                const whisperXRes = await transcribeAudioWithWhisperX(audioBlob);
 
                                 transcriptionResult = whisperRes;
 

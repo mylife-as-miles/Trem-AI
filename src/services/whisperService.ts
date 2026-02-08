@@ -94,12 +94,19 @@ export const transcribeAudio = async (
         }
 
         // 3. Parse JSON safely
-        let output;
+        // 3. Parse JSON safely
+        let prediction;
         try {
-            output = JSON.parse(responseText);
+            prediction = JSON.parse(responseText);
         } catch (e) {
             console.warn('Failed to parse successful response as JSON:', responseText.substring(0, 100));
             return mockTranscription();
+        }
+
+        // 4. Poll for completion if needed (Replicate API always returns prediction object first)
+        let output = prediction.output;
+        if (prediction.id && (prediction.status === 'starting' || prediction.status === 'processing')) {
+            output = await pollPrediction(prediction.id);
         }
 
         return parseWhisperOutput(output);
@@ -273,11 +280,37 @@ export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<any>
             return null;
         }
 
-        const output = await response.json();
+        const prediction = await response.json();
+
+        // Poll if not complete
+        let output = prediction.output;
+        if (prediction.id && (prediction.status === 'starting' || prediction.status === 'processing')) {
+            output = await pollPrediction(prediction.id);
+        }
+
         return output;
 
     } catch (error) {
         console.error('WhisperX transcription error:', error);
         return null;
+    }
+};
+async function pollPrediction(id: string): Promise<any> {
+    while (true) {
+        const response = await fetch(`/api/predictions/${id}`);
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`Polling failed: ${response.status} ${text}`);
+        }
+
+        const prediction = await response.json();
+        if (prediction.status === 'succeeded') {
+            return prediction.output;
+        } else if (prediction.status === 'failed' || prediction.status === 'canceled') {
+            throw new Error(`Prediction ${prediction.status}`);
+        }
+
+        // Wait 1s
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
 };
