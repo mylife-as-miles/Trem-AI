@@ -20,9 +20,7 @@ const RemotionEditPage: React.FC<RemotionEditProps> = ({ onNavigate, onSelectRep
         setSelectedRepo(repo);
         setSelectedTemplate(undefined);
         setViewMode('workspace');
-        if (onSelectRepo) {
-            onSelectRepo(repo);
-        }
+        // Do not call parent onSelectRepo to avoid auto-navigation to standard repo view
     };
 
     const handleSelectTemplate = (template: string) => {
@@ -53,7 +51,7 @@ const RemotionEditPage: React.FC<RemotionEditProps> = ({ onNavigate, onSelectRep
                 <div className="flex-1 overflow-hidden">
                     <EditWorkspaceView
                         onNavigate={onNavigate}
-                        onSelectRepo={onSelectRepo}
+                        onSelectRepo={handleSelectRepo}
                         onBack={handleBackToLanding}
                         initialRepo={selectedRepo}
                         templateMode={selectedTemplate}
