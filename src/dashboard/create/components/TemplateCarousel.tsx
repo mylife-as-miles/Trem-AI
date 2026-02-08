@@ -8,21 +8,34 @@ interface TemplateCarouselProps {
 
 const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect }) => {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [isExiting, setIsExiting] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const handleSelect = (template: any) => {
+        if (isExiting) return;
+        setIsExiting(true);
+        setTimeout(() => {
+            onSelect(template);
+        }, 800);
+    };
 
     // Keyboard Navigation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (isExiting) return;
+
             if (e.key === 'ArrowRight') {
                 setActiveIndex(prev => (prev + 1) % templates.length);
             } else if (e.key === 'ArrowLeft') {
                 setActiveIndex(prev => (prev - 1 + templates.length) % templates.length);
+            } else if (e.key === 'Enter') {
+                handleSelect(templates[activeIndex]);
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [templates.length]);
+    }, [templates.length, activeIndex, isExiting, templates]);
 
     // Calculate styles for 3D Carousel (Cover Flow)
     const getCardStyle = (index: number) => {
@@ -39,6 +52,19 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
         let zIndex = 50 - absOffset;
         let opacity = 1 - (absOffset * 0.15); // Slight fade for distant items
         let filter = `blur(${absOffset * 2}px)`; // Blur distant items
+        let transition = 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+
+        if (isExiting) {
+            transition = 'all 0.8s cubic-bezier(0.6, 0.05, 0.01, 0.9)'; // Fast start, slow end
+            if (isActive) {
+                transform = 'translateX(0) translateZ(200px) rotateY(0) scale(1.5)';
+                opacity = 0;
+            } else {
+                transform = `translateX(${offset * 400}px) translateZ(-500px) rotateY(${offset * 10}deg) scale(0.5)`;
+                opacity = 0;
+            }
+            return { transform, zIndex, opacity, filter, transition };
+        }
 
         if (isActive) {
             transform = 'translateX(0) translateZ(0) rotateY(0) scale(1.1)';
@@ -54,10 +80,6 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
             // Push back in Z space
             const translationZ = -200 - (absOffset * 50);
 
-            // Add slight "stacking" illusion where they peek from behind
-            // If offset is +1 (right), it moves right.
-            // But we want a "Cover Flow" where they bunch up a bit?
-            // Let's stick to simple distribution first.
             transform = `translateX(${translationX}px) translateZ(${translationZ}px) rotateY(${rotationY}deg) scale(0.9)`;
         }
 
@@ -66,7 +88,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
             zIndex,
             opacity,
             filter,
-            transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            transition
         };
     };
 
@@ -74,10 +96,10 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
         <div className="relative w-full h-[600px] flex items-center justify-center overflow-visible perspective-1000 py-4" ref={containerRef}>
 
             {/* Background Ambience */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black pointer-events-none z-40"></div>
+            <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black pointer-events-none z-40 transition-opacity duration-1000 ${isExiting ? 'opacity-0' : 'opacity-100'}`}></div>
 
             {/* Spotlight Effect behind active card */}
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 blur-[80px] rounded-full transition-opacity duration-1000 z-0 ${activeIndex >= 0 ? 'opacity-100' : 'opacity-0'}`}></div>
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 blur-[80px] rounded-full transition-opacity duration-1000 z-0 ${activeIndex >= 0 && !isExiting ? 'opacity-100' : 'opacity-0'}`}></div>
 
             {/* Render Cards */}
             <div className="relative w-full h-full flex items-center justify-center transform-style-preserve-3d">
@@ -96,11 +118,12 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
                                 opacity: style.opacity,
                                 filter: style.filter,
                                 transition: style.transition,
-                                transformOrigin: 'center center' // Important for rotation
+                                transformOrigin: 'center center', // Important for rotation
+                                pointerEvents: isExiting ? 'none' : 'auto'
                             }}
                             onClick={() => {
                                 if (index === activeIndex) {
-                                    onSelect(template);
+                                    handleSelect(template);
                                 } else {
                                     setActiveIndex(index);
                                 }
@@ -124,7 +147,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-8 z-50">
+            <div className={`absolute bottom-4 left-0 right-0 flex justify-center gap-8 z-50 transition-opacity duration-500 ${isExiting ? 'opacity-0' : 'opacity-100'}`}>
                 <button
                     onClick={() => setActiveIndex(prev => (prev - 1 + templates.length) % templates.length)}
                     className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/10 transition-colors"
@@ -148,7 +171,7 @@ const TemplateCarousel: React.FC<TemplateCarouselProps> = ({ templates, onSelect
             </div>
 
             {/* Keyboard Hint */}
-            <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] text-zinc-500 font-mono uppercase tracking-widest opacity-50">
+            <div className={`absolute bottom-4 left-0 right-0 text-center text-[10px] text-zinc-500 font-mono uppercase tracking-widest opacity-50 transition-opacity duration-500 ${isExiting ? 'opacity-0' : 'opacity-50'}`}>
                 Use Arrow Keys to Navigate • Click to Select
             </div>
         </div>
