@@ -4,6 +4,7 @@ import { RepoData } from '../../utils/db';
 import EditLandingView from './EditLandingView';
 import EditWorkspaceView from './EditWorkspaceView';
 import EditPlanningView from './EditPlanningView';
+import { useTremStore } from '../../store/useTremStore';
 
 interface RemotionEditProps {
     onNavigate: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets' | 'settings' | 'create-repo' | 'trem-create' | 'trem-edit') => void;
@@ -17,7 +18,7 @@ const RemotionEditPage: React.FC<RemotionEditProps> = ({ onNavigate, onSelectRep
     const [selectedRepo, setSelectedRepo] = useState<RepoData | undefined>(undefined);
     const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
     const [currentPrompt, setCurrentPrompt] = useState("");
-    const [editPlan, setEditPlan] = useState<any>(null);
+    const setEditPlan = useTremStore((state) => state.setEditPlan);
 
     const handleSelectRepo = (repo: RepoData) => {
         setSelectedRepo(repo);

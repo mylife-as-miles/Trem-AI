@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import TopNavigation from '../../components/layout/TopNavigation';
+import { useTremStore } from '../../store/useTremStore';
 
 interface Clip {
     id: string;
@@ -33,7 +35,7 @@ const SortableClip = ({ clip }: { clip: Clip }) => {
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`clip-card glass-panel rounded-lg p-3 cursor-move group relative mb-3 ${clip.isAiEdit ? 'border-l-2 border-l-primary' : ''}`}>
             {clip.isAiEdit && (
-                <div className="absolute -right-1 -top-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_5px_rgba(168,85,247,0.8)] z-10"></div>
+                <div className="absolute -right-1 -top-1 w-2 h-2 bg-primary rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)] z-10"></div>
             )}
             <div className={`absolute left-0 top-0 bottom-0 w-1 ${clip.colorClass} rounded-l-lg opacity-50 group-hover:opacity-100 transition-opacity`}></div>
             <div className="flex gap-3">
@@ -66,11 +68,15 @@ const SortableClip = ({ clip }: { clip: Clip }) => {
 };
 
 interface TimelineEditorProps {
-    onNavigate?: (view: 'timeline' | 'dashboard' | 'repo' | 'diff' | 'assets') => void;
+    onNavigate: (view: any) => void;
 }
 
 const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
-    const [activeTab, setActiveTab] = useState<'timeline' | 'instructions' | 'copilot'>('timeline');
+    const [activeTab, setActiveTab] = useState<'timeline' | 'instructions' | 'copilot'>('instructions');
+    const { editPlan } = useTremStore();
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+
     const [clips, setClips] = useState<Clip[]>([
         {
             id: '1',
@@ -100,11 +106,22 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
             description: 'Crossing the line, slow mo',
             type: 'LOG',
             icon: 'flag',
-            colorClass: 'bg-primary', // Adjusted from UI but keeping distinct
+            colorClass: 'bg-primary',
             gradientClass: 'from-green-900/40 to-black',
             isAiEdit: true,
         }
     ]);
+
+    // Simulate Playback
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isPlaying) {
+            interval = setInterval(() => {
+                setCurrentTime(prev => (prev + 1) % 100);
+            }, 100);
+        }
+        return () => clearInterval(interval);
+    }, [isPlaying]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -125,43 +142,13 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
         }
     };
 
+    const togglePlay = () => setIsPlaying(!isPlaying);
+
     return (
         <div className="flex flex-col h-full bg-background-light dark:bg-background-dark text-slate-800 dark:text-white font-sans overflow-hidden relative selection:bg-primary selection:text-white">
-            {/* Header */}
-            <header className="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-slate-200 dark:border-border-dark bg-white/95 dark:bg-background-dark z-20">
-                <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                        <span className="material-icons-outlined text-lg">auto_awesome_motion</span>
-                    </div>
-                    <nav className="flex items-center text-sm font-mono tracking-tight hidden md:flex">
-                        <span className="text-slate-500">nike-commercial</span>
-                        <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
-                        <span className="text-slate-500">timelines</span>
-                        <span className="mx-2 text-slate-400 dark:text-gray-700">/</span>
-                        <span className="text-slate-900 dark:text-white font-bold bg-slate-100 dark:bg-white/5 px-2 py-1 rounded border border-slate-200 dark:border-white/10">main_edit</span>
-                    </nav>
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center -space-x-2 mr-4 hidden sm:flex">
-                        <img
-                            alt="User"
-                            className="w-8 h-8 rounded-full border-2 border-white dark:border-black"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfOTDE_X3JwToSHTjUFVUtEmOhsNZj6RL934lNVNkkJ_7-dUJZEIfrP-BB4R4yKz6DimrwF9peEsyj_o_qTyGoJMJOIY6497yHymfN_9F7STpDS1WU4VhqLtB4lv5rUS9pq_am9pw4b9Oa84Xtx6eWZ8hdpz0VKq6xB3s-x830O9tK35zH4IDI59VYtVh53_FTHTGcjhnrq1u24Z-SHawNiXKPLY7e3aK6NGBtwHSbiXSaWb5DZhnQiVdO59VHXuxa09qplRDAhcE"
-                        />
-                        <div className="w-8 h-8 rounded-full border-2 border-white dark:border-black bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] text-slate-600 dark:text-white">AI</div>
-                    </div>
-                    <button
-                        onClick={() => onNavigate && onNavigate('diff')}
-                        className="hidden sm:block px-4 py-2 rounded-md border border-slate-300 dark:border-border-dark text-slate-600 dark:text-zinc-300 text-xs font-bold font-display uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-                    >
-                        Compare & Commit
-                    </button>
-                    <button className="px-4 py-2 rounded-md bg-primary text-black text-xs font-bold font-display uppercase tracking-wider hover:bg-primary_hover transition-colors flex items-center gap-2">
-                        <span className="material-icons-outlined text-sm">ios_share</span>
-                        <span className="hidden sm:inline">Export</span>
-                    </button>
-                </div>
-            </header>
+
+            {/* Top Navigation */}
+            <TopNavigation onNavigate={onNavigate} activeTab="edit" />
 
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden relative">
@@ -172,6 +159,22 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         <h2 className="font-display font-bold text-lg text-slate-900 dark:text-white">Instruction Stack</h2>
                         <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400 uppercase border border-slate-200 dark:border-border-dark px-1.5 py-0.5 rounded bg-slate-50 dark:bg-surface-card">OTIO v2.1</span>
                     </div>
+
+                    {/* Display Edit Plan if available */}
+                    {editPlan && (
+                        <div className="px-4 pt-4 pb-0">
+                            <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-2">
+                                <div className="text-xs font-bold text-primary mb-1 flex items-center gap-2">
+                                    <span className="material-icons-outlined text-sm">smart_toy</span>
+                                    Active Plan
+                                </div>
+                                <div className="text-[10px] text-slate-300">
+                                    {Array.isArray(editPlan) ? `${editPlan.length} tasks synced` : 'Plan configuration loaded'}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex-1 overflow-y-auto p-4 space-y-3">
                         <div className="text-xs font-mono text-slate-500 dark:text-gray-500 uppercase mb-2 ml-1">Sequence A</div>
 
@@ -202,20 +205,24 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
 
                 {/* Center: Viewer & Timeline */}
                 <main className="flex-1 flex flex-col relative bg-background-dark border-r border-slate-200 dark:border-border-dark z-0 min-w-0">
-                    {/* Viewer kept dark for standard video editing look */}
+                    {/* Viewer */}
                     <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black">
                         <div className="relative w-full aspect-video bg-background-dark border border-border-dark rounded-lg shadow-2xl overflow-hidden group max-h-[60vh]">
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 z-10 pointer-events-none"></div>
                             <div className="absolute inset-0 flex items-center justify-center bg-background-dark">
+                                {/* Simulated Video Content */}
                                 <div className="w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
-                                <div className="absolute w-32 h-32 bg-primary/20 blur-[60px] rounded-full animate-pulse"></div>
+                                <div className={`absolute w-32 h-32 bg-primary/20 blur-[60px] rounded-full transition-transform duration-[2000ms] ${isPlaying ? 'scale-150 animate-pulse' : 'scale-100'}`}></div>
                             </div>
                             <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse"></span>
+                                <span className={`w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ${isPlaying ? 'animate-pulse' : 'opacity-50'}`}></span>
                                 <span className="text-xs font-mono text-white/80 drop-shadow-md">REC [PROXY]</span>
                             </div>
-                            <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-primary hover:border-primary transition-all transform hover:scale-110 shadow-lg">
+                            <div className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity ${isPlaying ? 'opacity-0' : 'opacity-100 group-hover:opacity-100'}`}>
+                                <button
+                                    onClick={togglePlay}
+                                    className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-primary hover:border-primary transition-all transform hover:scale-110 shadow-lg"
+                                >
                                     <span className="material-icons-outlined text-4xl ml-1">play_arrow</span>
                                 </button>
                             </div>
@@ -225,13 +232,16 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                     <div className="h-40 md:h-32 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-border-dark p-4 flex flex-col justify-between">
                         {/* Timeline Bar */}
                         <div className="w-full h-8 flex items-center gap-2 md:gap-4 group">
-                            <span className="text-xs font-mono text-slate-600 dark:text-zinc-400 w-12 md:w-16 text-right">00:00:12</span>
+                            <span className="text-xs font-mono text-slate-600 dark:text-zinc-400 w-12 md:w-16 text-right">00:00:{Math.floor(currentTime / 2)}</span>
                             <div className="flex-1 h-1.5 bg-slate-200 dark:bg-surface-card rounded-full relative cursor-pointer overflow-visible">
-                                <div className="absolute left-0 top-0 h-full bg-primary w-1/3 rounded-full"></div>
-                                <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-transform duration-200 z-10 border border-slate-200 dark:border-none"></div>
-                                <div className="hidden md:block absolute left-1/3 bottom-4 -translate-x-1/2 bg-white dark:bg-surface-card text-slate-800 dark:text-white text-[10px] font-mono px-2 py-1 rounded border border-slate-200 dark:border-border-dark opacity-0 group-hover:opacity-100 transition-opacity">
-                                    Shot_01_Sprint
-                                </div>
+                                <div
+                                    className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-100 ease-linear"
+                                    style={{ width: `${currentTime}%` }}
+                                ></div>
+                                <div
+                                    className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] transform scale-0 group-hover:scale-125 transition-all duration-100 z-10 border border-slate-200 dark:border-none"
+                                    style={{ left: `${currentTime}%` }}
+                                ></div>
                             </div>
                             <span className="text-xs font-mono text-slate-400 dark:text-gray-500 w-12 md:w-16">00:01:30</span>
                         </div>
@@ -240,14 +250,16 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="flex items-center gap-1 justify-center w-full md:w-auto">
                                 <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span className="material-icons-outlined">skip_previous</span></button>
-                                <button className="p-2 text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"><span className="material-icons-outlined text-3xl">play_circle_filled</span></button>
+                                <button onClick={togglePlay} className="p-2 text-slate-900 dark:text-white hover:text-primary transition-colors">
+                                    <span className="material-icons-outlined text-3xl">{isPlaying ? 'pause_circle_filled' : 'play_circle_filled'}</span>
+                                </button>
                                 <button className="p-2 text-slate-400 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors"><span className="material-icons-outlined">skip_next</span></button>
                             </div>
 
                             <div className="flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-md px-4 py-2 w-full max-w-md mx-4 hidden sm:flex">
                                 <div className="relative">
                                     <div className="w-2 h-2 bg-primary rounded-full animate-ping absolute opacity-75"></div>
-                                    <div className="w-2 h-2 bg-primary rounded-full relative shadow-[0_0_8px_rgba(168,85,247,0.8)]"></div>
+                                    <div className="w-2 h-2 bg-primary rounded-full relative shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center text-[10px] uppercase font-mono tracking-wider mb-1">
@@ -259,11 +271,6 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="flex items-center gap-2 text-slate-400 dark:text-gray-400 hidden md:flex">
-                                <button className="p-2 hover:text-slate-900 dark:hover:text-white"><span className="material-icons-outlined text-lg">volume_up</span></button>
-                                <button className="p-2 hover:text-slate-900 dark:hover:text-white"><span className="material-icons-outlined text-lg">fullscreen</span></button>
-                            </div>
                         </div>
                     </div>
                 </main>
@@ -272,11 +279,12 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                 <aside className={`w-80 flex-shrink-0 flex flex-col bg-gray-50 dark:bg-background-dark border-l border-slate-200 dark:border-border-dark absolute top-0 bottom-0 right-0 z-30 lg:relative transition-transform duration-300 ${activeTab === 'copilot' ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}`}>
                     <div className="p-4 border-b border-slate-200 dark:border-border-dark flex items-center justify-between bg-white dark:bg-background-dark z-10">
                         <div className="flex items-center gap-2">
-                            <span className="material-icons-outlined text-blue-600 dark:text-blue-400">smart_toy</span>
+                            <span className="material-icons-outlined text-primary">smart_toy</span>
                             <h2 className="font-display font-bold text-slate-900 dark:text-white">AI Co-pilot</h2>
                         </div>
                         <button className="text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white"><span className="material-icons-outlined">history</span></button>
                     </div>
+
                     <div className="flex-1 overflow-y-auto p-4 space-y-6 flex flex-col">
                         <div className="text-center">
                             <span className="text-[10px] text-slate-500 dark:text-zinc-700 font-mono bg-slate-200 dark:bg-surface-card px-2 py-1 rounded">Today, 10:23 AM</span>
@@ -293,14 +301,14 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
 
                         <div className="flex flex-col items-start gap-1 mr-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                             <div className="flex gap-2 w-full">
-                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary to-emerald-800 flex items-center justify-center shrink-0 mt-1 shadow-[0_0_10px_rgba(217,248,95,0.4)]">
+                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary to-emerald-800 flex items-center justify-center shrink-0 mt-1 shadow-[0_0_10px_rgba(34,197,94,0.4)]">
                                     <span className="material-icons-outlined text-[14px] text-white">auto_awesome</span>
                                 </div>
                                 <div className="flex-1">
-                                    <div className="bg-white dark:bg-primary/5 text-slate-700 dark:text-gray-200 text-sm p-3 rounded-2xl rounded-tl-sm border border-slate-200 dark:border-primary/20 backdrop-blur-sm shadow-sm dark:shadow-[0_0_20px_-5px_rgba(168,85,247,0.15)]">
+                                    <div className="bg-white dark:bg-primary/5 text-slate-700 dark:text-gray-200 text-sm p-3 rounded-2xl rounded-tl-sm border border-slate-200 dark:border-primary/20 backdrop-blur-sm shadow-sm dark:shadow-[0_0_20px_-5px_rgba(34,197,94,0.15)]">
                                         <p className="mb-3 leading-relaxed">I'm on it. I've identified <span className="text-slate-700 dark:text-white font-mono text-xs bg-slate-100 dark:bg-white/10 px-1 rounded">Shot_02_CloseUp</span> as the best candidate.</p>
                                         <div className="bg-slate-50 dark:bg-background-dark/40 rounded border border-slate-200 dark:border-primary/30 p-2.5 flex items-center gap-3">
-                                            <span className="material-icons-outlined text-blue-600 dark:text-blue-400 animate-spin text-lg">sync</span>
+                                            <span className="material-icons-outlined text-primary animate-spin text-lg">sync</span>
                                             <div>
                                                 <div className="text-xs font-bold text-slate-800 dark:text-white mb-0.5">Updating OTIO instructions...</div>
                                                 <div className="text-[10px] font-mono text-slate-500 dark:text-gray-400">Re-rendering proxy (Layer 3)</div>
@@ -333,32 +341,6 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ onNavigate }) => {
                     </div>
                 </aside>
             </div>
-
-            {/* Mobile Tab Navigation */}
-            <div className="lg:hidden h-14 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-white/10 flex items-center justify-around px-4 z-40">
-                <button
-                    onClick={() => setActiveTab('instructions')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'instructions' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
-                >
-                    <span className="material-icons-outlined">list</span>
-                    <span className="text-[10px]">Stack</span>
-                </button>
-                <button
-                    onClick={() => setActiveTab('timeline')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'timeline' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
-                >
-                    <span className="material-icons-outlined">movie</span>
-                    <span className="text-[10px]">Timeline</span>
-                </button>
-                <button
-                    onClick={() => setActiveTab('copilot')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'copilot' ? 'text-primary' : 'text-slate-500 dark:text-gray-500'}`}
-                >
-                    <span className="material-icons-outlined">smart_toy</span>
-                    <span className="text-[10px]">AI Co-pilot</span>
-                </button>
-            </div>
-
         </div>
     );
 };
