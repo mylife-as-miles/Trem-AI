@@ -21,21 +21,9 @@ const SUGGESTIONS = [
     "Stabilize shaky footage in the B-roll"
 ];
 
-interface AgentOption {
-    id: string;
-    label: string;
-    category: 'Persona' | 'Model' | 'Workflow';
-    icon: string;
-    description: string;
-}
-
-const AGENT_OPTIONS: AgentOption[] = [
-    { id: 'creative-director', label: 'Creative Director', category: 'Persona', icon: 'auto_fix_high', description: 'Focuses on aesthetics, pacing, and brand alignment.' },
-    { id: 'technical-editor', label: 'Technical Editor', category: 'Persona', icon: 'build', description: 'Optimizes for code quality, Remotion best practices, and performance.' },
-    { id: 'social-manager', label: 'Social Media Manager', category: 'Persona', icon: 'share', description: 'Optimizes for engagement, vertical formats, and trends.' },
-    { id: 'model-pro', label: 'Gemini 1.5 Pro', category: 'Model', icon: 'psychology', description: 'Highest fidelity reasoning for complex logic.' },
-    { id: 'model-flash', label: 'Gemini Flash', category: 'Model', icon: 'bolt', description: 'Fastest generation speed for rapid prototyping.' },
-    { id: 'workflow-remotion', label: 'Remotion Standard', category: 'Workflow', icon: 'movie', description: 'Standard 2D video composition workflow.' },
+const MSG_MODES = [
+    { id: 'interactive', label: 'Interactive Planning', icon: 'forum', description: 'Collaborate on the plan before execution.' },
+    { id: 'start', label: 'Start / Auto-Execute', icon: 'play_arrow', description: 'Immediately execute the command.' },
 ];
 
 const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSelectRepo, onBack, initialRepo, templateMode }) => {
@@ -43,12 +31,17 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
     const [isProcessing, setIsProcessing] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
 
-    // Initial Prompt from Template
-    useEffect(() => {
-        if (templateMode) {
-            setPrompt(`Apply ${templateMode} to the current sequence...`);
-        }
-    }, [templateMode]);
+    // Repo Selection State
+    const [repos, setRepos] = useState<RepoData[]>([]);
+    const [selectedRepoId, setSelectedRepoId] = useState<number | undefined>(initialRepo?.id);
+    const [isRepoDropdownOpen, setIsRepoDropdownOpen] = useState(false);
+    const [repoSearch, setRepoSearch] = useState("");
+    const repoDropdownRef = useRef<HTMLDivElement>(null);
+
+    // Mode Selection State
+    const [selectedModeId, setSelectedModeId] = useState<string>("interactive");
+    const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
+    const modeDropdownRef = useRef<HTMLDivElement>(null);
 
     // Typewriter State
     const [suggestionIndex, setSuggestionIndex] = useState(0);
@@ -60,20 +53,35 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
     const [showAssetLibrary, setShowAssetLibrary] = useState(false);
     const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>([]);
 
-    // Agent Settings State
-    const [selectedAgentId, setSelectedAgentId] = useState<string>("technical-editor");
-    const [isAgentDropdownOpen, setIsAgentDropdownOpen] = useState(false);
-    const [agentSearch, setAgentSearch] = useState("");
-    const agentDropdownRef = useRef<HTMLDivElement>(null);
-
-    // If initialRepo has assets, maybe pre-select them? 
-    // For now, let's just keep selectedAssetIds empty unless user adds more.
-
+    // Initial Prompt from Template
     useEffect(() => {
+        if (templateMode) {
+            setPrompt(`Apply ${templateMode} to the current sequence...`);
+        }
+    }, [templateMode]);
+
+    // Fetch Repos
+    useEffect(() => {
+        const loadRepos = async () => {
+            try {
+                const data = await db.getAllRepos();
+                setRepos(data);
+                if (initialRepo && !selectedRepoId) {
+                    setSelectedRepoId(initialRepo.id);
+                }
+            } catch (error) {
+                console.error("Failed to load repos:", error);
+            }
+        };
+        loadRepos();
+
         // Click outside listener
         const handleClickOutside = (event: MouseEvent) => {
-            if (agentDropdownRef.current && !agentDropdownRef.current.contains(event.target as Node)) {
-                setIsAgentDropdownOpen(false);
+            if (repoDropdownRef.current && !repoDropdownRef.current.contains(event.target as Node)) {
+                setIsRepoDropdownOpen(false);
+            }
+            if (modeDropdownRef.current && !modeDropdownRef.current.contains(event.target as Node)) {
+                setIsModeDropdownOpen(false);
             }
         };
 
@@ -81,7 +89,7 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [initialRepo, selectedRepoId]);
 
     // Typewriter Effect
     useEffect(() => {
@@ -131,13 +139,6 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
             const response = await interpretAgentCommand(prompt);
             setFeedback(response);
 
-            // Should we add selected assets to the repo?
-            if (selectedAssetIds.length > 0 && initialRepo) {
-                // Logic to add assets to existing repo would need a db update method
-                // db.addAssetsToRepo(initialRepo.id, selectedAssetIds...)
-                console.log("Adding assets to edit context:", selectedAssetIds);
-            }
-
             setTimeout(() => {
                 onNavigate('timeline');
             }, 1500);
@@ -156,20 +157,12 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
         }
     }
 
-    const filteredAgents = AGENT_OPTIONS.filter(agent =>
-        agent.label.toLowerCase().includes(agentSearch.toLowerCase()) ||
-        agent.description.toLowerCase().includes(agentSearch.toLowerCase())
+    const filteredRepos = repos.filter(repo =>
+        repo.name.toLowerCase().includes(repoSearch.toLowerCase())
     );
 
-    const activeAgent = AGENT_OPTIONS.find(a => a.id === selectedAgentId) || AGENT_OPTIONS[0];
-
-    // Grouping for display
-    const groupedAgents = filteredAgents.reduce((acc, agent) => {
-        if (!acc[agent.category]) acc[agent.category] = [];
-        acc[agent.category].push(agent);
-        return acc;
-    }, {} as Record<string, AgentOption[]>);
-
+    const activeRepo = repos.find(r => r.id === selectedRepoId) || (initialRepo || { name: 'Select Repo' });
+    const activeMode = MSG_MODES.find(m => m.id === selectedModeId) || MSG_MODES[0];
 
     return (
         <div className="flex flex-col min-h-full relative fade-in bg-slate-50/50 dark:bg-background-dark font-sans">
@@ -189,7 +182,7 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
                         <span className="text-slate-500 dark:text-gray-500">Trem Edit</span>
                         <span className="text-slate-300 dark:text-gray-700">/</span>
                         <span className="font-semibold text-slate-900 dark:text-white">
-                            {initialRepo ? initialRepo.name : "Current Project"}
+                            {activeRepo.name}
                         </span>
                     </div>
                 </div>
@@ -204,7 +197,7 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
                             How should we edit this?
                         </h1>
                         <p className="text-lg text-slate-500 dark:text-gray-400 max-w-2xl mx-auto">
-                            Describe your changes, select your editor persona, and let Trem AI handle the execution.
+                            Describe your changes, select your repository, and choose your execution mode.
                         </p>
                     </div>
 
@@ -227,24 +220,6 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
                                     onKeyDown={handleKeyDown}
                                     autoFocus
                                 />
-
-                                {/* Selected Assets Chips (Overlay) */}
-                                {selectedAssetIds.length > 0 && (
-                                    <div className="absolute bottom-6 left-16 right-6 flex flex-wrap gap-2 pointer-events-none">
-                                        {selectedAssetIds.map(id => (
-                                            <div key={id} className="pointer-events-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-border-dark text-xs font-medium text-slate-700 dark:text-slate-200 shadow-sm animate-in fade-in zoom-in-95 duration-200">
-                                                <span className="material-icons-outlined text-[10px] opacity-70">movie</span>
-                                                <span className="max-w-[100px] truncate">Asset {id.slice(0, 4)}</span>
-                                                <button
-                                                    onClick={() => setSelectedAssetIds(prev => prev.filter(p => p !== id))}
-                                                    className="ml-1 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                                                >
-                                                    <span className="material-icons-outlined text-[12px] block">close</span>
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
                             </div>
 
                             {/* Toolbar / Action Bar */}
@@ -253,70 +228,99 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
                                 {/* Tools */}
                                 <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
 
-                                    {/* Asset Library Trigger */}
-                                    <button
-                                        onClick={() => setShowAssetLibrary(true)}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white dark:hover:bg-white/10 border border-transparent hover:border-slate-200 dark:hover:border-border-dark transition-all text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-medium whitespace-nowrap"
-                                        title="Add Assets"
-                                    >
-                                        <span className="material-icons-outlined text-lg">video_library</span>
-                                        <span>Assets</span>
-                                        {selectedAssetIds.length > 0 && (
-                                            <span className="bg-primary text-black text-[10px] px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold ml-0.5">{selectedAssetIds.length}</span>
-                                        )}
-                                    </button>
-
-                                    <div className="w-px h-4 bg-slate-200 dark:bg-white/10 mx-1"></div>
-
-                                    {/* Agent Selector */}
-                                    <div className="relative" ref={agentDropdownRef}>
+                                    {/* Repo Dropdown */}
+                                    <div className="relative" ref={repoDropdownRef}>
                                         <button
-                                            onClick={() => setIsAgentDropdownOpen(!isAgentDropdownOpen)}
-                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all whitespace-nowrap ${isAgentDropdownOpen
+                                            onClick={() => setIsRepoDropdownOpen(!isRepoDropdownOpen)}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all whitespace-nowrap ${isRepoDropdownOpen
                                                 ? 'bg-primary/20 dark:bg-primary/10 border-primary/30 dark:border-primary/20 text-emerald-700 dark:text-primary'
                                                 : 'border-transparent hover:bg-white dark:hover:bg-white/10 hover:border-slate-200 dark:hover:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                                 }`}
                                         >
-                                            <span className="material-icons-outlined text-lg">{activeAgent.icon}</span>
-                                            <span>{activeAgent.label}</span>
+                                            <span className="material-icons-outlined text-lg">folder_open</span>
+                                            <span className="max-w-[150px] truncate">{activeRepo.name}</span>
                                             <span className="material-icons-outlined text-xs opacity-50">expand_more</span>
                                         </button>
 
-                                        {isAgentDropdownOpen && (
+                                        {isRepoDropdownOpen && (
                                             <div className="absolute bottom-full left-0 mb-2 w-72 bg-white dark:bg-surface-card border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col origin-bottom-left animate-in fade-in zoom-in-95 duration-100">
                                                 <div className="p-2 border-b border-slate-100 dark:border-border-dark">
                                                     <input
                                                         type="text"
-                                                        placeholder="Search agents..."
+                                                        placeholder="Search repositories..."
                                                         className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-primary text-slate-700 dark:text-gray-200 placeholder-slate-400"
-                                                        value={agentSearch}
-                                                        onChange={(e) => setAgentSearch(e.target.value)}
+                                                        value={repoSearch}
+                                                        onChange={(e) => setRepoSearch(e.target.value)}
                                                         autoFocus
                                                     />
                                                 </div>
                                                 <div className="max-h-60 overflow-y-auto p-1 custom-scrollbar">
-                                                    {Object.entries(groupedAgents).map(([category, agents]) => (
-                                                        <div key={category} className="mb-1">
-                                                            <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-600">{category}</div>
-                                                            {agents.map(agent => (
-                                                                <button
-                                                                    key={agent.id}
-                                                                    onClick={() => {
-                                                                        setSelectedAgentId(agent.id);
-                                                                        setIsAgentDropdownOpen(false);
-                                                                        setAgentSearch("");
-                                                                    }}
-                                                                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 ${selectedAgentId === agent.id
-                                                                        ? 'bg-primary/20 dark:bg-primary/10 text-emerald-700 dark:text-primary'
-                                                                        : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300'
-                                                                        }`}
-                                                                >
-                                                                    <span className="material-icons-outlined text-sm opacity-70">{agent.icon}</span>
-                                                                    <span className="flex-1">{agent.label}</span>
-                                                                    {selectedAgentId === agent.id && <span className="material-icons-outlined text-sm">check</span>}
-                                                                </button>
-                                                            ))}
-                                                        </div>
+                                                    {filteredRepos.length === 0 ? (
+                                                        <div className="px-3 py-2 text-xs text-slate-400 text-center">No projects found</div>
+                                                    ) : (
+                                                        filteredRepos.map(repo => (
+                                                            <button
+                                                                key={repo.id}
+                                                                onClick={() => {
+                                                                    setSelectedRepoId(repo.id);
+                                                                    setIsRepoDropdownOpen(false);
+                                                                    setRepoSearch("");
+                                                                    if (onSelectRepo) onSelectRepo(repo);
+                                                                }}
+                                                                className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors flex items-center gap-2 ${selectedRepoId === repo.id
+                                                                    ? 'bg-primary/20 dark:bg-primary/10 text-emerald-700 dark:text-primary'
+                                                                    : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300'
+                                                                    }`}
+                                                            >
+                                                                <span className="material-icons-outlined text-sm opacity-70">movie</span>
+                                                                <span className="flex-1 truncate">{repo.name}</span>
+                                                                {selectedRepoId === repo.id && <span className="material-icons-outlined text-sm">check</span>}
+                                                            </button>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="w-px h-4 bg-slate-200 dark:bg-white/10 mx-1"></div>
+
+                                    {/* Mode Selector */}
+                                    <div className="relative" ref={modeDropdownRef}>
+                                        <button
+                                            onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all whitespace-nowrap ${isModeDropdownOpen
+                                                ? 'bg-primary/20 dark:bg-primary/10 border-primary/30 dark:border-primary/20 text-emerald-700 dark:text-primary'
+                                                : 'border-transparent hover:bg-white dark:hover:bg-white/10 hover:border-slate-200 dark:hover:border-white/10 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                                }`}
+                                        >
+                                            <span className="material-icons-outlined text-lg">{activeMode.icon}</span>
+                                            <span>{activeMode.label}</span>
+                                            <span className="material-icons-outlined text-xs opacity-50">expand_more</span>
+                                        </button>
+
+                                        {isModeDropdownOpen && (
+                                            <div className="absolute bottom-full left-0 mb-2 w-64 bg-white dark:bg-surface-card border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col origin-bottom-left animate-in fade-in zoom-in-95 duration-100">
+                                                <div className="p-1">
+                                                    {MSG_MODES.map(mode => (
+                                                        <button
+                                                            key={mode.id}
+                                                            onClick={() => {
+                                                                setSelectedModeId(mode.id);
+                                                                setIsModeDropdownOpen(false);
+                                                            }}
+                                                            className={`w-full text-left px-3 py-2.5 rounded-lg text-xs transition-colors flex items-start gap-3 ${selectedModeId === mode.id
+                                                                ? 'bg-primary/20 dark:bg-primary/10 text-emerald-700 dark:text-primary'
+                                                                : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300'
+                                                                }`}
+                                                        >
+                                                            <span className="material-icons-outlined text-lg opacity-70 mt-0.5">{mode.icon}</span>
+                                                            <div className="flex-1">
+                                                                <div className="font-medium">{mode.label}</div>
+                                                                <div className="text-[10px] opacity-70 mt-0.5 leading-tight">{mode.description}</div>
+                                                            </div>
+                                                            {selectedModeId === mode.id && <span className="material-icons-outlined text-sm mt-0.5">check</span>}
+                                                        </button>
                                                     ))}
                                                 </div>
                                             </div>
@@ -332,9 +336,9 @@ const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSel
                                 >
                                     <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity"></div>
                                     <div className="flex items-center gap-2 relative z-10">
-                                        <span className={isProcessing ? "animate-pulse" : ""}>{isProcessing ? 'Processing' : 'Execute Edit'}</span>
+                                        <span className={isProcessing ? "animate-pulse" : ""}>{isProcessing ? 'Processing' : (selectedModeId === 'interactive' ? 'Plan Changes' : 'Execute Edit')}</span>
                                         <span className={`material-icons-outlined text-base ${isProcessing ? 'animate-spin' : ''}`}>
-                                            {isProcessing ? 'sync' : 'auto_fix_high'}
+                                            {isProcessing ? 'sync' : (selectedModeId === 'interactive' ? 'forum' : 'auto_fix_high')}
                                         </span>
                                     </div>
                                 </button>
