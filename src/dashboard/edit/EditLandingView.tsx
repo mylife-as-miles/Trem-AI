@@ -1,50 +1,115 @@
 import React, { useState, useEffect } from 'react';
 import { db, RepoData } from '../../utils/db';
 import TemplateCarousel from '../create/components/TemplateCarousel';
-// Import assets or placeholders as needed
 
 interface EditLandingViewProps {
     onSelectRepo: (repo: RepoData) => void;
+    onSelectTemplate: (template: string) => void;
     onNavigate: (view: any) => void;
 }
 
-const EditLandingView: React.FC<EditLandingViewProps> = ({ onSelectRepo, onNavigate }) => {
+const EDIT_TEMPLATES = [
+    {
+        id: 'auto-zoom',
+        title: 'Auto Zoom Keyframe',
+        description: 'Automatically apply smooth keyframe zooms and pans to keep subjects dynamic.',
+        image: 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?auto=format&fit=crop&q=80&w=400',
+        icon: 'zoom_in'
+    },
+    {
+        id: 'text-behind',
+        title: 'Text Behind Subject',
+        description: 'Place text behind a person using AI segmentation and depth layering.',
+        image: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=400',
+        icon: 'layers'
+    },
+    {
+        id: 'motion-tracking',
+        title: 'Motion Tracking Text',
+        description: 'Text that follows a moving subject across the frame automatically.',
+        image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=400',
+        icon: 'ads_click'
+    },
+    {
+        id: 'kinetic-typography',
+        title: 'Auto Captions / Kinetic',
+        description: 'Word-by-word animated transcriptions with pop, bounce, and flash styles.',
+        image: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?auto=format&fit=crop&q=80&w=400',
+        icon: 'subtitles'
+    },
+    {
+        id: 'invisible-jump',
+        title: 'Invisible Jump Cuts',
+        description: 'Instant zoom in/out at cuts to add impact and retention.',
+        image: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=400',
+        icon: 'content_cut'
+    },
+    {
+        id: 'remove-silence',
+        title: 'Remove Awkward Silences',
+        description: 'Automatically detect and cut silence to keep the flow tight.',
+        image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&q=80&w=400',
+        icon: 'graphic_eq'
+    },
+    {
+        id: 'beat-sync',
+        title: 'Beat-Synced Transitions',
+        description: 'Align cuts, flashes, and effects to the audio rhythm automatically.',
+        image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=400',
+        icon: 'music_note'
+    },
+    {
+        id: 'speed-ramping',
+        title: 'Smooth Speed Ramping',
+        description: 'Accelerate and decelerate clip speed for dramatic effect.',
+        image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=400',
+        icon: 'speed'
+    },
+    {
+        id: '3d-parallax',
+        title: '3D Zoom / Parallax',
+        description: 'Layered channel camera effects for depth and lens movement.',
+        image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=400',
+        icon: '3d_rotation'
+    },
+    {
+        id: 'text-motion',
+        title: 'Text Motion Effects',
+        description: 'Slides, bounces, wiggles, and shakes triggered by word timing.',
+        image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=400',
+        icon: 'animation'
+    },
+    {
+        id: 'visual-timers',
+        title: 'Progress Bar / Timers',
+        description: 'Animated bars indicating video progress for viewer retention.',
+        image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=400',
+        icon: 'hourglass_bottom'
+    },
+    {
+        id: 'bg-replace',
+        title: 'AI Background Replace',
+        description: 'Remove background without greenscreen and replace with dynamic imagery.',
+        image: 'https://images.unsplash.com/photo-1508614999368-9260051292e5?auto=format&fit=crop&q=80&w=400',
+        icon: 'wallpaper'
+    },
+    {
+        id: 'scratch',
+        title: 'Edit From Scratch',
+        description: 'Start with a blank workspace and your own creative direction.',
+        image: '',
+        icon: 'add_circle'
+    }
+];
+
+const EditLandingView: React.FC<EditLandingViewProps> = ({ onSelectRepo, onSelectTemplate, onNavigate }) => {
     const [repos, setRepos] = useState<RepoData[]>([]);
-    const [carouselItems, setCarouselItems] = useState<any[]>([]);
 
     useEffect(() => {
         const loadRepos = async () => {
             try {
                 const data = await db.getAllRepos();
                 setRepos(data);
-
-                // Map repos to carousel cards
-                if (data.length > 0) {
-                    const mapped = data.map((repo, index) => ({
-                        id: String(repo.id),
-                        title: repo.name,
-                        description: repo.brief || 'No description',
-                        // Use a deterministic unplash image based on index or existing metadata
-                        image: `https://images.unsplash.com/photo-${[
-                            '1555421689-491a97ff2040',
-                            '1551288049-bebda4e38f71',
-                            '1516321318423-f06f85e504b3',
-                            '1536440136628-849c177e76a1',
-                            '1611162617474-5b21e879e113'
-                        ][index % 5]}?auto=format&fit=crop&q=80&w=400`,
-                        icon: 'movie_edit'
-                    }));
-                    setCarouselItems(mapped);
-                } else {
-                    // Placeholder if no projects
-                    setCarouselItems([{
-                        id: 'create-new',
-                        title: 'No Projects Found',
-                        description: 'Create a new project to get started',
-                        image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=400',
-                        icon: 'add_circle'
-                    }]);
-                }
             } catch (error) {
                 console.error("Failed to load repos:", error);
             }
@@ -53,14 +118,7 @@ const EditLandingView: React.FC<EditLandingViewProps> = ({ onSelectRepo, onNavig
     }, []);
 
     const handleCarouselSelect = (item: any) => {
-        if (item.id === 'create-new') {
-            onNavigate('trem-create');
-            return;
-        }
-        const repo = repos.find(r => String(r.id) === item.id);
-        if (repo) {
-            onSelectRepo(repo);
-        }
+        onSelectTemplate(item.title);
     };
 
     return (
@@ -79,31 +137,29 @@ const EditLandingView: React.FC<EditLandingViewProps> = ({ onSelectRepo, onNavig
                     </h1>
 
                     <p className="text-xl text-slate-500 dark:text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
-                        Select a project to resume editing or refine your content with AI tools.
+                        Select an editing technique or a recent project to get started.
                     </p>
                 </div>
 
                 {/* Carousel Section */}
                 <div>
                     <div className="flex items-center justify-between mb-6 px-2">
-                        <h2 className="text-sm font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Resume Editing</h2>
+                        <h2 className="text-sm font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Start Editing</h2>
                     </div>
 
                     {/* 3D Carousel Selection */}
                     <div className="relative -mx-10 md:-mx-20 lg:-mx-32 fade-in-up">
-                        {carouselItems.length > 0 && (
-                            <TemplateCarousel
-                                templates={carouselItems}
-                                onSelect={(item) => handleCarouselSelect(item)}
-                            />
-                        )}
+                        <TemplateCarousel
+                            templates={EDIT_TEMPLATES}
+                            onSelect={(item) => handleCarouselSelect(item)}
+                        />
                     </div>
                 </div>
 
                 {/* Projects Section (Grid) */}
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2 pt-8 border-t border-slate-200/60 dark:border-border-dark">
-                        <h2 className="text-sm font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">All Projects</h2>
+                        <h2 className="text-sm font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Recent Projects</h2>
                         {repos.length > 0 && (
                             <button className="text-xs text-emerald-600 dark:text-primary hover:text-emerald-700 dark:hover:text-primary_hover font-medium transition-colors">
                                 View all

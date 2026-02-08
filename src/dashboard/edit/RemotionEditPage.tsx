@@ -14,18 +14,27 @@ type EditViewMode = 'landing' | 'workspace';
 const RemotionEditPage: React.FC<RemotionEditProps> = ({ onNavigate, onSelectRepo }) => {
     const [viewMode, setViewMode] = useState<EditViewMode>('landing');
     const [selectedRepo, setSelectedRepo] = useState<RepoData | undefined>(undefined);
+    const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
 
     const handleSelectRepo = (repo: RepoData) => {
         setSelectedRepo(repo);
+        setSelectedTemplate(undefined);
         setViewMode('workspace');
         if (onSelectRepo) {
             onSelectRepo(repo);
         }
     };
 
+    const handleSelectTemplate = (template: string) => {
+        setSelectedTemplate(template);
+        setSelectedRepo(undefined);
+        setViewMode('workspace');
+    };
+
     const handleBackToLanding = () => {
         setViewMode('landing');
         setSelectedRepo(undefined);
+        setSelectedTemplate(undefined);
     };
 
     return (
@@ -37,15 +46,17 @@ const RemotionEditPage: React.FC<RemotionEditProps> = ({ onNavigate, onSelectRep
             {viewMode === 'landing' ? (
                 <EditLandingView
                     onSelectRepo={handleSelectRepo}
+                    onSelectTemplate={handleSelectTemplate}
                     onNavigate={onNavigate}
                 />
             ) : (
                 <div className="flex-1 overflow-hidden">
                     <EditWorkspaceView
                         onNavigate={onNavigate}
-                        onSelectRepo={onSelectRepo} // Optional: Pass down if needed for dropdown
+                        onSelectRepo={onSelectRepo}
                         onBack={handleBackToLanding}
                         initialRepo={selectedRepo}
+                        templateMode={selectedTemplate}
                     />
                 </div>
             )}

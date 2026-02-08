@@ -9,6 +9,7 @@ interface EditWorkspaceViewProps {
     onSelectRepo?: (repo: RepoData) => void;
     onBack?: () => void;
     initialRepo?: RepoData;
+    templateMode?: string;
 }
 
 const SUGGESTIONS = [
@@ -37,10 +38,17 @@ const AGENT_OPTIONS: AgentOption[] = [
     { id: 'workflow-remotion', label: 'Remotion Standard', category: 'Workflow', icon: 'movie', description: 'Standard 2D video composition workflow.' },
 ];
 
-const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSelectRepo, onBack, initialRepo }) => {
+const EditWorkspaceView: React.FC<EditWorkspaceViewProps> = ({ onNavigate, onSelectRepo, onBack, initialRepo, templateMode }) => {
     const [prompt, setPrompt] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const [feedback, setFeedback] = useState<string | null>(null);
+
+    // Initial Prompt from Template
+    useEffect(() => {
+        if (templateMode) {
+            setPrompt(`Apply ${templateMode} to the current sequence...`);
+        }
+    }, [templateMode]);
 
     // Typewriter State
     const [suggestionIndex, setSuggestionIndex] = useState(0);
