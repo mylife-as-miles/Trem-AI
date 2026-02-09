@@ -93,6 +93,13 @@ export const transcribeAudio = async (
         // 1. Check for HTTP errors
         if (!response.ok) {
             let errorDetails = {};
+            const isHtml = responseText.trim().startsWith('<');
+
+            if (isHtml) {
+                console.warn('API returned HTML instead of JSON. Likely 404 or SPA fallback.', responseText.substring(0, 100));
+                throw new Error('API Error: Endpoint not found. Are you running "vercel dev"? (Received HTML)');
+            }
+
             try {
                 errorDetails = JSON.parse(responseText);
             } catch {
@@ -112,8 +119,13 @@ export const transcribeAudio = async (
         }
 
         // 2. Validate JSON Content-Type (optional but good practice)
+        // If we got past !response.ok, check content-type to be sure
         const contentType = response.headers.get("content-type");
         if (contentType && !contentType.includes("application/json")) {
+            const isHtml = responseText.trim().startsWith('<');
+            if (isHtml) {
+                throw new Error('API Error: Endpoint returned HTML. Are you running "vercel dev"?');
+            }
             console.warn(`API returned unexpected content-type: ${contentType}. Likely SPA fallback or 404.`);
             console.warn('Response preview:', responseText.substring(0, 100));
             return mockTranscription();
@@ -124,6 +136,9 @@ export const transcribeAudio = async (
         try {
             prediction = JSON.parse(responseText);
         } catch (e) {
+            if (responseText.trim().startsWith('<')) {
+                throw new Error('API Error: Endpoint returned HTML. Are you running "vercel dev"?');
+            }
             console.warn('Failed to parse successful response as JSON:', responseText.substring(0, 100));
             return mockTranscription();
         }
@@ -139,7 +154,10 @@ export const transcribeAudio = async (
             try {
                 output = JSON.parse(output);
             } catch (e) {
-                console.warn('Failed to parse Whisper output string:', e);
+                // It might actually be just a string (plain text transcription)
+                // WhisperX usually implies JSON, but standard Whisper can be text.
+                // We'll leave it as string if it fails to parse.
+                // console.warn('Output is string but not JSON:', output);
             }
         }
 
@@ -337,11 +355,26 @@ export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<Whis
         });
 
         if (!response.ok) {
-            console.error(`WhisperX Replicate error: ${response.statusText}`);
+            const responseText = await response.text();
+
+            if (responseText.trim().startsWith('<')) {
+                throw new Error('API Error: Endpoint returned HTML. Are you running "vercel dev"?');
+            }
+
+            console.error(`WhisperX Replicate error: ${response.statusText} - ${responseText}`);
             return null;
         }
 
-        const prediction = await response.json();
+        const responseText = await response.text();
+        let prediction;
+        try {
+            prediction = JSON.parse(responseText);
+        } catch (e) {
+            if (responseText.trim().startsWith('<')) {
+                throw new Error('API Error: Endpoint returned HTML. Are you running "vercel dev"?');
+            }
+            throw e;
+        }
 
         // Poll if not complete
         let output = prediction.output;
