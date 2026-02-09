@@ -1,7 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { db, RepoData } from '../../utils/db';
+import { db, RepoData, PendingRepoData } from '../../utils/db';
 import { useTremStore } from '../../store/useTremStore';
 import { useRepos } from '../../hooks/useQueries';
+import { useBackgroundIngestionStore } from '../../services/backgroundIngestion';
+
+// Component to display active background ingestion jobs
+const ActiveJobsList: React.FC<{ isCollapsed: boolean; onNavigate: any }> = ({ isCollapsed, onNavigate }) => {
+  const activeJobIds = useBackgroundIngestionStore(state => state.activeJobs);
+  const [jobs, setJobs] = useState<PendingRepoData[]>([]);
+
+  useEffect(() => {
+    const loadJobs = async () => {
+      const all = await Promise.all(activeJobIds.map(id => db.getPendingRepo(id)));
+      setJobs(all.filter(j => !!j) as PendingRepoData[]);
+    };
+    loadJobs();
+    const interval = setInterval(loadJobs, 2000);
+    return () => clearInterval(interval);
+  }, [activeJobIds]);
+
+  if (jobs.length === 0) return null;
+
+  return (
+    <ul className="space-y-1 mb-2">
+      {jobs.map(job => (
+        <li key={job.id}>
+          <button
+            onClick={() => onNavigate('create-repo')}
+            className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 ${isCollapsed ? 'justify-center' : ''}`}
+            title={isCollapsed ? `Ingesting: ${job.name}` : ''}
+          >
+            <span className="material-icons-outlined text-sm animate-spin">sync</span>
+            {!isCollapsed && <span className="truncate">Ingesting: {job.name}</span>}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 interface SidebarProps {
   isOpen: boolean;
@@ -91,23 +127,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onNavigate, onSelect
             {!isCollapsed && (
               <h3 className="px-2 text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-gray-500 mb-2 mt-2 font-bold whitespace-nowrap overflow-hidden">Active Processing</h3>
             )}
+            <ActiveJobsList isCollapsed={isCollapsed} onNavigate={onNavigate} />
             <ul className="space-y-1">
-              <li>
-                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Ingest: 4k_Raw_Footage_A" : ""}>
-                  <span className="material-icons-outlined text-sm animate-pulse">data_usage</span>
-                  {!isCollapsed && <span className="truncate">Ingest: 4k_Raw_Footage_A</span>}
-                </button>
-              </li>
               <li>
                 <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? `Edit: ${repoData?.name || 'project'}` : ""}>
                   <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">edit</span>
                   {!isCollapsed && <span className="truncate">Edit: {repoData?.name || 'project'}</span>}
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onNavigate('timeline')} className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 dark:hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''}`} title={isCollapsed ? "Render: Social_Cut_v3" : ""}>
-                  <span className="material-icons-outlined text-sm text-slate-400 group-hover:text-primary transition-colors">movie_filter</span>
-                  {!isCollapsed && <span className="truncate">Render: Social_Cut_v3</span>}
                 </button>
               </li>
             </ul>

@@ -29,3 +29,24 @@ root.render(
         </QueryClientProvider>
     </React.StrictMode>
 );
+
+// Register Service Worker
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(registration => {
+                console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+                console.log('SW registration failed: ', registrationError);
+            });
+    });
+}
+// For dev, we might need a different strategy or just rely on Vite's dev server handling it?
+// VitePWA plugin handles dev if `devOptions: { enabled: true }` is set.
+// It usually registers it automatically if `registerType: 'autoUpdate'` is set?
+// Actually, with `injectManifest`, we might need manual registration or use the `virtual:pwa-register` module.
+// Let's use the explicit registration which is safer for our custom logic.
+if ('serviceWorker' in navigator && import.meta.env.DEV) {
+    navigator.serviceWorker.register('/sw.js', { type: 'module' });
+}

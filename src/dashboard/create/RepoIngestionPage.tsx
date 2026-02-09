@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import AssetLibrary from '../assets/AssetLibraryPage';
 import TopNavigation from '../../components/layout/TopNavigation';
-import { db, RepoData } from '../../utils/db';
+import { db, RepoData, AssetData } from '../../utils/db';
 import { useCreateRepo } from '../../hooks/useQueries';
 import { generateRepoStructure, analyzeAsset } from '../../services/gemini/repo/index';
 import { extractAudioFromVideo } from '../../utils/audioExtractor';
 import { extractFramesFromVideo } from '../../utils/frameExtractor';
 import { transcribeAudio, transcribeAudioWithWhisperX, WhisperXOutput } from '../../services/whisperService';
+import { backgroundIngestion } from '../../services/backgroundIngestion';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -44,6 +45,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
     const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
     const [generatedRepoData, setGeneratedRepoData] = useState<any>(null);
+    const [useBackgroundMode, setUseBackgroundMode] = useState(false);
+
 
     // Advanced Simulation State
     const [simLogs, setSimLogs] = useState<string[]>([]);
@@ -343,9 +346,57 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
         setSelectedAssets(newAssets);
         setIsAssetModalOpen(false);
+
         if (newAssets.length > 0) {
-            setStep('ingest');
+            if (useBackgroundMode) {
+                // Queue to Service Worker and navigate away
+                await handleStartBackground(newAssets);
+            } else {
+                // Run in foreground (existing behavior)
+                setStep('ingest');
+            }
         }
+    };
+
+    const handleStartBackground = async (assets: Asset[]) => {
+        // Generate a unique ID for this pending repo
+        const pendingRepoId = `pending_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+        // Convert assets to AssetData format for DB
+        const dbAssets: AssetData[] = await Promise.all(assets.map(async a => {
+            const dbAsset = await db.getAsset(a.id);
+            return {
+                id: a.id,
+                name: a.name,
+                type: dbAsset?.type || 'video',
+                blob: dbAsset?.blob,
+                url: dbAsset?.url,
+                created: dbAsset?.created || Date.now(),
+                duration: a.duration,
+                status: 'pending' as const,
+                progress: 0
+            };
+        }));
+
+        // Start background ingestion
+        await backgroundIngestion.startIngestion(pendingRepoId, {
+            id: pendingRepoId,
+            name: repoName || 'Untitled Repo',
+            brief: repoBrief,
+            assets: dbAssets,
+            jobStatus: 'idle', // Will be set to 'ingesting' by the service
+            createdAt: Date.now()
+        });
+
+        // Show confirmation and allow user to navigate away
+        setSimLogs(prev => [...prev,
+        `> Background ingestion started for ${assets.length} assets.`,
+            `> You can navigate away - progress will continue in the background.`,
+            `> Check the sidebar for status updates.`
+        ]);
+
+        // Optionally navigate to dashboard or stay
+        // onNavigate('dashboard');
     };
 
     const handleCommit = async () => {
@@ -588,6 +639,26 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         className="w-full bg-zinc-900 border border-zinc-800 rounded-lg p-4 font-mono text-sm h-32 text-white focus:border-primary focus:outline-none transition-colors resize-none placeholder-zinc-500"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Background Mode Toggle */}
+                            <div className="mt-6 flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
+                                <input
+                                    type="checkbox"
+                                    id="backgroundMode"
+                                    checked={useBackgroundMode}
+                                    onChange={(e) => setUseBackgroundMode(e.target.checked)}
+                                    className="w-5 h-5 rounded border-zinc-700 bg-zinc-800 text-primary focus:ring-primary focus:ring-offset-0"
+                                />
+                                <label htmlFor="backgroundMode" className="flex-1 cursor-pointer">
+                                    <span className="text-white font-medium">Run in Background</span>
+                                    <p className="text-xs text-zinc-400 mt-0.5">
+                                        Process assets via Service Worker. You can navigate away while ingestion continues.
+                                    </p>
+                                </label>
+                                <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded ${useBackgroundMode ? 'bg-primary/20 text-primary' : 'bg-zinc-800 text-zinc-500'}`}>
+                                    {useBackgroundMode ? 'ENABLED' : 'OFF'}
+                                </span>
                             </div>
                         </section>
 

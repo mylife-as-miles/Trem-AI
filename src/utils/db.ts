@@ -27,6 +27,25 @@ export interface AssetData {
     progress?: number;
 }
 
+export interface IngestionJob {
+    repoId: string;
+    files: { name: string, type: string, blob: Blob }[];
+    status: 'queued' | 'processing' | 'completed' | 'failed';
+    progress: number;
+    logs: string[];
+    currentFileIndex: number;
+    error?: string;
+}
+
+export interface PendingRepoData {
+    id: string; // UUID
+    name: string;
+    brief: string;
+    assets: AssetData[];
+    jobStatus: 'idle' | 'ingesting' | 'completed' | 'failed';
+    createdAt: number;
+}
+
 class TremDatabase {
     private dbName = 'TremDB';
     private version = 2;
@@ -57,6 +76,9 @@ class TremDatabase {
                 }
                 if (!db.objectStoreNames.contains('assets')) {
                     db.createObjectStore('assets', { keyPath: 'id' });
+                }
+                if (!db.objectStoreNames.contains('pendingRepos')) {
+                    db.createObjectStore('pendingRepos', { keyPath: 'id' });
                 }
             };
         });
@@ -238,6 +260,71 @@ class TremDatabase {
             request.onerror = () => {
                 reject(request.error);
             };
+        });
+    }
+
+    // Pending Repos (Jobs)
+    async addPendingRepo(repo: PendingRepoData): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['pendingRepos'], 'readwrite');
+            const store = transaction.objectStore('pendingRepos');
+            const request = store.put(repo);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async getPendingRepo(id: string): Promise<PendingRepoData | undefined> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['pendingRepos'], 'readonly');
+            const store = transaction.objectStore('pendingRepos');
+            const request = store.get(id);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async getAllPendingRepos(): Promise<PendingRepoData[]> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['pendingRepos'], 'readonly');
+            const store = transaction.objectStore('pendingRepos');
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async updatePendingRepo(id: string, updates: Partial<PendingRepoData>): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['pendingRepos'], 'readwrite');
+            const store = transaction.objectStore('pendingRepos');
+            const getRequest = store.get(id);
+
+            getRequest.onsuccess = () => {
+                const repo = getRequest.result;
+                if (repo) {
+                    const updated = { ...repo, ...updates };
+                    store.put(updated).onsuccess = () => resolve();
+                } else {
+                    reject(new Error("Pending repo not found"));
+                }
+            };
+            getRequest.onerror = () => reject(getRequest.error);
+        });
+    }
+
+    async deletePendingRepo(id: string): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['pendingRepos'], 'readwrite');
+            const store = transaction.objectStore('pendingRepos');
+            const request = store.delete(id);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
         });
     }
 }
