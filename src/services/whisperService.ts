@@ -68,6 +68,7 @@ export const transcribeAudio = async (
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${import.meta.env.VITE_REPLICATE_API_TOKEN}`,
             },
             body: JSON.stringify({
                 version: '8099696689d249cf8b122d833c36ac3f75505c666a395ca40ef26f68e7d3d16e',
@@ -342,6 +343,7 @@ export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<Whis
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${import.meta.env.VITE_REPLICATE_API_TOKEN}`,
             },
             body: JSON.stringify({
                 version: 'carnifexer/whisperx:1e0315854645f245d04ff09f5442778e97b8588243c7fe40c644806bde297e04',
@@ -400,7 +402,12 @@ export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<Whis
 };
 async function pollPrediction(id: string): Promise<any> {
     while (true) {
-        const response = await fetch(`/api/predictions/${id}`);
+        const response = await fetch(`/api/predictions/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${import.meta.env.VITE_REPLICATE_API_TOKEN}`,
+                'Content-Type': 'application/json',
+            }
+        });
         if (!response.ok) {
             const text = await response.text();
             throw new Error(`Polling failed: ${response.status} ${text}`);
