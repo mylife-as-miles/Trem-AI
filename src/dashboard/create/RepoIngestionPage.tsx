@@ -460,8 +460,22 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             else if (data.type === 'JOB_READY_TO_COMMIT') {
                 if (initialJobId && data.repoId !== initialJobId) return;
                 setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] Pipeline Analysis Complete. Ready for review.`]);
-                setStep('commit');
-                if (data.generatedData) setGeneratedRepoData(data.generatedData);
+
+                if (data.generatedData) {
+                    setGeneratedRepoData(data.generatedData);
+                    setStep('commit');
+                } else {
+                    // Fallback: Fetch from DB if payload was too large or missing
+                    db.getPendingRepo(data.repoId).then(job => {
+                        if (job && job.generatedData) {
+                            setGeneratedRepoData(job.generatedData);
+                            setStep('commit');
+                        } else {
+                            console.error("Job finished but no generated data found in DB or Payload");
+                            setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] CRITICAL: Data sync failed. Please refresh.`]);
+                        }
+                    });
+                }
             }
         };
 
