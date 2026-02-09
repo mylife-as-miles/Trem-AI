@@ -99,7 +99,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
                     // Map persisted logs
                     if (job.logs && job.logs.length > simLogs.length) {
-                        setSimLogs(job.logs.map(l => `> ${l}`));
+                        setSimLogs(job.logs);
                     }
 
                     // Map active assets to worker simulation
@@ -427,7 +427,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // Filter for current job if monitoring
             if (data.type === 'JOB_LOG') {
                 if (initialJobId && data.repoId !== initialJobId) return;
-                const logMessage = data.timestampedLog ? `> ${data.timestampedLog}` : `> [${new Date().toLocaleTimeString()}] ${data.message}`;
+                const logMessage = data.timestampedLog || `[${new Date().toLocaleTimeString()}] ${data.message}`;
                 setSimLogs(prev => {
                     if (prev.includes(logMessage)) return prev;
                     return [...prev, logMessage];

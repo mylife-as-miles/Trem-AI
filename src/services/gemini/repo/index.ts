@@ -32,7 +32,7 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
     }
 
     try {
-        const model = 'gemini-3-flash-preview';
+        const model = 'gemini-1.5-flash-latest';
         const parts: any[] = [
             { text: "Analyze this video clip based on these keyframes. Return a short description and 3 tags. Format: JSON { \"description\": \"...\", \"tags\": [...] }" }
         ];
@@ -128,9 +128,10 @@ export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
         }
 
         const config = {
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-1.5-flash-latest',
             contents: [{ role: 'user', parts }],
             generationConfig: {
+                link_to_file: true,
                 responseMimeType: 'application/json'
             }
         };

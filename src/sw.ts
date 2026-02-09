@@ -136,6 +136,7 @@ class JobManager {
 
                 } catch (e) {
                     console.error(`[SW] Asset failed`, e);
+                    await this.log(repoId, `❌ ${asset.name} failed: ${String(e)}`);
                     asset.status = 'error';
                     asset.meta = { ...asset.meta, error: String(e) };
                     repo.assets[i] = asset;
