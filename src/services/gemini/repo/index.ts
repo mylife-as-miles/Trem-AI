@@ -18,7 +18,7 @@ export interface AnalyzedAsset {
 
 /**
  * Analyzes a single asset (video/image) using keyframes or the blob itself.
- * Uses gemini-3-flash-preview.
+ * Uses gemini-1.5-flash for speed and reliability.
  */
 export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blob, images?: string[] }): Promise<AnalyzedAsset> => {
     if (!ai) {
@@ -32,7 +32,6 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
     }
 
     try {
-        const model = 'gemini-1.5-flash';
         const parts: any[] = [
             { text: "Analyze this video clip based on these keyframes. Return a short description and 3 tags. Format: JSON { \"description\": \"...\", \"tags\": [...] }" }
         ];
@@ -62,12 +61,7 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
         const config = {
             model: 'gemini-3-flash-preview',
             config: {
-                thinkingConfig: {
-                    thinkingLevel: "HIGH",
-                },
-                tools: [
-                    { codeExecution: {} },
-                ]
+                responseMimeType: 'application/json'
             },
             contents: [
                 {
@@ -93,9 +87,9 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
 
 /**
  * Generates the full repository structure based on ingested assets.
- * Uses gemini-3-flash-preview.
+ * Uses gemini-3-flash-preview with Streaming and Thinking.
  */
-export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
+export const generateRepoStructure = async (inputs: RepoGenerationInputs, onLog?: (msg: string) => void) => {
     if (!ai) {
         console.warn("Gemini API Key missing.");
         throw new Error("Gemini API Key is missing. Please configure GEMINI_API_KEY in your environment to use AI features.");
@@ -145,12 +139,29 @@ export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
         };
 
         // @ts-ignore
-        console.log("[Gemini] Requesting Repo Structure...", JSON.stringify(config.config));
-        const response = await retryWithBackoff(() => ai.models.generateContent(config as any));
-        console.log("[Gemini] Request finished.");
+        console.log("[Gemini] Requesting Repo Structure (Stream)...", JSON.stringify(config.config));
 
-        const text = response.text || "{}";
-        return extractJSON(text);
+        // Use Streaming to prevent timeouts
+        // @ts-ignore
+        const result = await ai.models.generateContentStream(config as any);
+
+        let fullText = '';
+        let lastLogTime = 0;
+
+        for await (const chunk of result) {
+            const chunkText = chunk.text || '';
+            fullText += chunkText;
+
+            // Log progress every 2 seconds to keep connection/user alive
+            const now = Date.now();
+            if (now - lastLogTime > 2000) {
+                if (onLog) onLog(`🧠 Thinking... (${fullText.length} chars generated)`);
+                lastLogTime = now;
+            }
+        }
+
+        console.log("[Gemini] Request finished.");
+        return extractJSON(fullText);
 
     } catch (error) {
         console.error("Gemini Generation Error:", error);

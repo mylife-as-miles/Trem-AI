@@ -368,6 +368,33 @@ class TremDatabase {
             request.onerror = () => reject(request.error);
         });
     }
+    async updatePendingAsset(repoId: string, assetId: string, updates: Partial<AssetData>): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['pendingRepos'], 'readwrite');
+            const store = transaction.objectStore('pendingRepos');
+            const getRequest = store.get(repoId);
+
+            getRequest.onsuccess = () => {
+                const repo = getRequest.result as PendingRepoData;
+                if (repo) {
+                    const assetIndex = repo.assets.findIndex(a => a.id === assetId);
+                    if (assetIndex !== -1) {
+                        repo.assets[assetIndex] = { ...repo.assets[assetIndex], ...updates };
+                        store.put(repo).onsuccess = () => resolve();
+                    } else {
+                        // Asset not found, maybe already removed or bad ID. 
+                        // Resolve anyway to avoid crashing the job.
+                        console.warn(`Asset ${assetId} not found in repo ${repoId} during update`);
+                        resolve();
+                    }
+                } else {
+                    reject(new Error("Pending repo not found"));
+                }
+            };
+            getRequest.onerror = () => reject(getRequest.error);
+        });
+    }
 }
 
 export const db = new TremDatabase();

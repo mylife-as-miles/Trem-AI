@@ -32,11 +32,6 @@ class JobManager {
     private processingJobs = new Set<string>();
 
     async addJob(job: IngestionJob) {
-        // Persist to DB? 
-        // Actually, the main thread likely persists the 'PendingRepoData'
-        // effectively queueing it. 
-        // But the SW needs to know what to work on.
-        // Let's assume we receive a 'START_JOB' message with the ID.
         await this.processJob(job.repoId);
     }
 
@@ -50,116 +45,32 @@ class JobManager {
 
         try {
             // 1. Get Repo Data
-            const repo = await db.getPendingRepo(repoId);
+            let repo = await db.getPendingRepo(repoId);
             if (!repo || repo.jobStatus === 'completed' || repo.jobStatus === 'ready_to_commit') {
                 this.processingJobs.delete(repoId);
                 return;
             }
 
             console.log(`[SW] Starting ingestion for ${repo.name}`);
-
-            // Notify Clients
             this.broadcast({ type: 'JOB_STARTED', repoId });
 
-            // 2. Iterate Assets
-            for (let i = 0; i < repo.assets.length; i++) {
-                const asset = repo.assets[i];
+            // 2. Parallel Asset Processing (Batch Size: 3)
+            const BATCH_SIZE = 3;
+            // Filter pending assets
+            const pendingAssets = repo.assets.filter(a => a.status !== 'ready');
 
-                // Skip if already done
-                if (asset.status === 'ready') continue;
+            for (let i = 0; i < pendingAssets.length; i += BATCH_SIZE) {
+                const batch = pendingAssets.slice(i, i + BATCH_SIZE);
+                await this.log(repoId, `⚡ Processing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(pendingAssets.length / BATCH_SIZE)}...`);
 
-                // Update status
-                asset.status = 'processing';
-                repo.assets[i] = asset;
-                await db.updatePendingRepo(repoId, { assets: repo.assets });
-                this.broadcast({ type: 'ASSET_UPDATE', repoId, asset });
-
-                try {
-                    // Real Processing in Background
-                    console.log(`[SW] Processing asset ${asset.name} (${asset.type})`);
-                    await this.log(repoId, `Processing ${asset.name} (${asset.type})...`);
-
-                    // 1. Transcribe (Dual Mode: Whisper + WhisperX)
-
-                    // 1. Transcribe (Dual Mode: Whisper + WhisperX)
-                    // Prefer optimized audio if available (created by main thread)
-                    // @ts-ignore
-                    const audioBlob = (asset.meta?.optimizedAudio as Blob) || asset.blob;
-                    // @ts-ignore
-                    const hasAudio = asset.meta?.hasAudio !== false;
-
-                    if (hasAudio && audioBlob && (asset.type === 'video' || asset.type === 'audio')) {
-                        // Check for empty blob or very small size indicating failed extraction
-                        if (audioBlob.size < 100) {
-                            console.log(`[SW] Audio blob too small (${audioBlob.size} bytes), skipping transcription.`);
-                            await this.log(repoId, `⚠️ No audio track detected, skipping transcription.`);
-                        } else {
-                            console.log(`[SW] Transcribing ${asset.name} (Standard Whisper)...`);
-                            await this.log(repoId, `🎤 Transcribing ${asset.name}...`);
-
-                            try {
-                                // @ts-ignore
-                                const standard = await transcribeAudio(audioBlob);
-                                const transcriptPreview = (standard.text || '').slice(0, 50);
-                                await this.log(repoId, `✅ Transcription complete: "${transcriptPreview}..."`);
-
-                                asset.meta = {
-                                    ...asset.meta,
-                                    transcription: standard,
-                                    srt: standard.srt
-                                };
-                            } catch (transcribeError) {
-                                console.warn("[SW] Transcription failed", transcribeError);
-                                await this.log(repoId, `⚠️ Transcription failed: ${String(transcribeError)}`);
-                                // Do not fail the asset, just continue without transcript
-                            }
-                        }
-                    }
-
-                    // 2. Analyze Content (Gemini)
-                    if (asset.blob) {
-                        console.log(`[SW] Analyzing ${asset.name}...`);
-                        await this.log(repoId, `🔍 Analyzing ${asset.name} with AI...`);
-                        // @ts-ignore - TS might complain about types if not perfectly aligned but logic holds
-                        const analysis = await analyzeAsset({
-                            id: asset.id,
-                            name: asset.name,
-                            blob: asset.blob,
-                            // Use pre-extracted frames from main thread
-                            // @ts-ignore
-                            images: asset.meta?.frames
-                        });
-
-                        const tagsPreview = (analysis.tags || []).slice(0, 3).join(', ');
-                        await this.log(repoId, `✅ Analysis complete. Tags: [${tagsPreview}]`);
-
-                        asset.meta = { ...asset.meta, analysis };
-                        asset.tags = analysis.tags;
-                        // Description could go into meta or a separate field if AssetData had one
-                    }
-
-                    asset.status = 'ready';
-                    asset.progress = 100;
-                    repo.assets[i] = asset;
-
-                    await this.log(repoId, `✨ ${asset.name} completed!`);
-
-                    // Incremental save
-                    await db.updatePendingRepo(repoId, { assets: repo.assets });
-                    this.broadcast({ type: 'ASSET_UPDATE', repoId, asset });
-
-                } catch (e) {
-                    console.error(`[SW] Asset failed`, e);
-                    await this.log(repoId, `❌ ${asset.name} failed: ${String(e)}`);
-                    asset.status = 'error';
-                    asset.meta = { ...asset.meta, error: String(e) };
-                    repo.assets[i] = asset;
-                    await db.updatePendingRepo(repoId, { assets: repo.assets });
-                    this.broadcast({ type: 'ASSET_UPDATE', repoId, asset });
-                }
+                await Promise.all(batch.map(asset => this._processSingleAsset(repoId, asset)));
             }
 
             // 3. Final Repo Generation (Big Brain Analysis)
+            // CRITICAL: Re-fetch repo to get latest updates from all parallel workers
+            repo = await db.getPendingRepo(repoId);
+            if (!repo) throw new Error("Repo Disappeared during processing");
+
             await this.log(repoId, `📝 Generating semantic repository structure...`);
 
             // Consolidate context for Repo Generation
@@ -176,12 +87,16 @@ class JobManager {
             const globalFrames = repo.assets.flatMap(a => (a.meta?.frames || []).slice(0, 2));
 
             try {
+                // Pass log callback for Streaming updates
                 const generatedData = await generateRepoStructure({
-                    duration: "Auto-detected", // SW doesn't easy access to duration text here
+                    duration: "Auto-detected",
                     transcript: fullTranscript || "No dialogue detected.",
                     sceneBoundaries: "auto-detected",
                     assetContext: analyzedData.join('\n\n'),
                     images: globalFrames
+                }, async (msg) => {
+                    // Streaming Log Handler
+                    await this.log(repoId, msg);
                 });
 
                 // Update job to ready state
@@ -211,7 +126,6 @@ class JobManager {
             }
         } catch (e) {
             console.error(`[SW] Error processing job ${repoId}`, e);
-            // Optionally update job status to failed in DB and broadcast
             this.broadcast({ type: 'JOB_FAILED', repoId, error: String(e) });
             await this.log(repoId, `CRITICAL ERROR: ${String(e)}`);
         } finally {
@@ -219,17 +133,89 @@ class JobManager {
         }
     }
 
-    private async log(repoId: string, message: string) {
-        const repo = await db.getPendingRepo(repoId);
-        if (repo) {
-            const logs = repo.logs || [];
-            const timestampedLog = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logs.push(timestampedLog);
-            await db.updatePendingRepo(repoId, { logs });
-            this.broadcast({ type: 'JOB_LOG', repoId, message, timestampedLog });
-        } else {
-            this.broadcast({ type: 'JOB_LOG', repoId, message });
+    private async _processSingleAsset(repoId: string, asset: any) {
+        try {
+            // Update status (Atomic)
+            await db.updatePendingAsset(repoId, asset.id, { status: 'processing' });
+            // Broadcast locally updated state for UI
+            this.broadcast({ type: 'ASSET_UPDATE', repoId, asset: { ...asset, status: 'processing' } });
+
+            console.log(`[SW] Processing asset ${asset.name} (${asset.type})`);
+
+            // 1. Transcribe
+            // @ts-ignore
+            const audioBlob = (asset.meta?.optimizedAudio as Blob) || asset.blob;
+            // @ts-ignore
+            const hasAudio = asset.meta?.hasAudio !== false;
+
+            let transcription = asset.meta?.transcription;
+
+            if (hasAudio && audioBlob && (asset.type === 'video' || asset.type === 'audio')) {
+                if (audioBlob.size < 100) {
+                    await this.log(repoId, `⚠️ ${asset.name}: No audio track detected.`);
+                } else {
+                    await this.log(repoId, `🎤 Transcribing ${asset.name}...`);
+                    try {
+                        // @ts-ignore
+                        const standard = await transcribeAudio(audioBlob);
+                        transcription = standard;
+
+                        await db.updatePendingAsset(repoId, asset.id, {
+                            meta: { ...asset.meta, transcription: standard, srt: standard.srt }
+                        });
+                    } catch (transcribeError) {
+                        console.warn(`[SW] Transcription failed for ${asset.name}`, transcribeError);
+                        await this.log(repoId, `⚠️ ${asset.name}: Transcription failed.`);
+                    }
+                }
+            }
+
+            // 2. Analyze Content (Gemini)
+            if (asset.blob) {
+                await this.log(repoId, `🔍 Analyzing ${asset.name}...`);
+                // @ts-ignore
+                const analysis = await analyzeAsset({
+                    id: asset.id,
+                    name: asset.name,
+                    blob: asset.blob,
+                    // @ts-ignore
+                    images: asset.meta?.frames
+                });
+
+                await this.log(repoId, `✅ ${asset.name}: Analysis complete.`);
+
+                // Atomic Update
+                await db.updatePendingAsset(repoId, asset.id, {
+                    tags: analysis.tags,
+                    meta: {
+                        ...asset.meta,
+                        analysis,
+                        transcription // Re-save ensuring both stick
+                    },
+                    status: 'ready',
+                    progress: 100
+                });
+
+                this.broadcast({ type: 'ASSET_UPDATE', repoId, asset: { ...asset, status: 'ready', progress: 100 } });
+            }
+
+        } catch (e) {
+            console.error(`[SW] Asset ${asset.name} failed`, e);
+            await this.log(repoId, `❌ ${asset.name} failed: ${String(e)}`);
+
+            await db.updatePendingAsset(repoId, asset.id, {
+                status: 'error',
+                meta: { ...asset.meta, error: String(e) }
+            });
+
+            this.broadcast({ type: 'ASSET_UPDATE', repoId, asset: { ...asset, status: 'error' } });
         }
+    }
+
+    private async log(repoId: string, message: string) {
+        // Atomic Log Append
+        await db.addLogToPendingRepo(repoId, `[${new Date().toLocaleTimeString()}] ${message}`);
+        this.broadcast({ type: 'JOB_LOG', repoId, message, timestampedLog: `[${new Date().toLocaleTimeString()}] ${message}` });
     }
 
     private broadcast(message: any) {
