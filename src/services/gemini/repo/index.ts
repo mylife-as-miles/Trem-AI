@@ -77,17 +77,9 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
             ]
         };
 
-        const response = await ai.models.generateContentStream(config as any);
-
-        let fullText = "";
-        for await (const chunk of response) {
-            if (chunk.candidates && chunk.candidates[0] && chunk.candidates[0].content && chunk.candidates[0].content.parts) {
-                const part = chunk.candidates[0].content.parts[0];
-                if (part.text) fullText += part.text;
-                // We can also log execution results if needed, but for now we just want the final JSON
-            }
-        }
-        return extractJSON(fullText || "{}");
+        const response = await ai.models.generateContent(config as any);
+        const text = response.text || "{}";
+        return extractJSON(text);
 
     } catch (e) {
         console.error(`Failed to analyze asset ${asset.name}`, e);
@@ -153,14 +145,12 @@ export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
         };
 
         // @ts-ignore
-        const response = await retryWithBackoff(() => ai.models.generateContentStream(config as any));
+        console.log("[Gemini] Requesting Repo Structure...", JSON.stringify(config.config));
+        const response = await retryWithBackoff(() => ai.models.generateContent(config as any));
+        console.log("[Gemini] Request finished.");
 
-        let fullText = "";
-        for await (const chunk of response) {
-            if (chunk.text) fullText += chunk.text;
-        }
-
-        return extractJSON(fullText || "{}");
+        const text = response.text || "{}";
+        return extractJSON(text);
 
     } catch (error) {
         console.error("Gemini Generation Error:", error);
