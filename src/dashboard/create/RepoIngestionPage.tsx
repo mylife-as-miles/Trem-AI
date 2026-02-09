@@ -83,6 +83,23 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     }));
                     setSelectedAssets(assets);
 
+                    // Map active assets to worker simulation
+                    // This makes the "Compute Cluster" UI look alive with real data
+                    const activeAssets = assets.filter(a => a.status === 'processing');
+                    setWorkers(prev => prev.map((w, i) => {
+                        const asset = activeAssets[i];
+                        if (asset) {
+                            return {
+                                ...w,
+                                status: 'analyzing',
+                                task: `Processing ${asset.name.substring(0, 20)}...`
+                            };
+                        } else {
+                            // If no asset for this worker, keep it idle or show "Ready"
+                            return { ...w, status: 'idle', task: 'Waiting...' };
+                        }
+                    }));
+
                     if (job.jobStatus === 'completed') {
                         // Job is done (though usually it's deleted from pending upon completion)
                         // If we catch it here, great. If it's gone, handle below.
@@ -405,6 +422,25 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         // Convert assets to AssetData format for DB
         const dbAssets: AssetData[] = await Promise.all(assets.map(async a => {
             const dbAsset = await db.getAsset(a.id);
+            let meta = {};
+
+            // OPTIMIZATION: Extract Audio from Video (Main Thread)
+            // This is crucial because Service Workers cannot use AudioContext for extraction
+            // and Vercel has a 4.5MB payload limit. We extract a small WAV here.
+            if (dbAsset?.blob && (dbAsset.type === 'video' || a.name.endsWith('.mp4') || a.name.endsWith('.mov'))) {
+                try {
+                    console.log(`[Ingest] Extracting optimized audio for ${a.name}...`);
+                    // @ts-ignore
+                    const audioBlob = await extractAudioFromVideo(dbAsset.blob);
+                    if (audioBlob) {
+                        console.log(`[Ingest] Audio extracted: ${(audioBlob.size / 1024 / 1024).toFixed(2)}MB`);
+                        meta = { ...meta, optimizedAudio: audioBlob };
+                    }
+                } catch (e) {
+                    console.warn("[Ingest] Audio extraction failed, falling back to full file", e);
+                }
+            }
+
             return {
                 id: a.id,
                 name: a.name,
@@ -414,7 +450,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 created: dbAsset?.created || Date.now(),
                 duration: a.duration,
                 status: 'pending' as const,
-                progress: 0
+                progress: 0,
+                meta
             };
         }));
 

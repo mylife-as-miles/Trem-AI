@@ -79,14 +79,18 @@ class JobManager {
                     console.log(`[SW] Processing asset ${asset.name} (${asset.type})`);
 
                     // 1. Transcribe (Dual Mode: Whisper + WhisperX)
-                    if (asset.blob && (asset.type === 'video' || asset.type === 'audio')) {
+                    // Prefer optimized audio if available (created by main thread)
+                    // @ts-ignore
+                    const audioBlob = (asset.meta?.optimizedAudio as Blob) || asset.blob;
+
+                    if (audioBlob && (asset.type === 'video' || asset.type === 'audio')) {
                         console.log(`[SW] Transcribing ${asset.name} (Standard Whisper)...`);
                         // @ts-ignore
-                        const standard = await transcribeAudio(asset.blob);
+                        const standard = await transcribeAudio(audioBlob);
 
                         console.log(`[SW] Transcribing ${asset.name} (WhisperX)...`);
                         // @ts-ignore
-                        const whisperx = await transcribeAudioWithWhisperX(asset.blob);
+                        const whisperx = await transcribeAudioWithWhisperX(audioBlob);
 
                         asset.meta = {
                             ...asset.meta,
