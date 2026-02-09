@@ -138,9 +138,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             console.warn("Audio extraction failed (might be image or silent video)", e);
                         }
 
-                        let transcriptionResult = { text: "", srt: "" };
+                        let transcriptionResult: any = { text: "", srt: "", segments: [] };
+
                         if (audioBlob) {
-                            setSimLogs(prev => [...prev, `> [Worker_${workerId}] Audio Extracted.Requesting Whisper API...`]);
+                            setSimLogs(prev => [...prev, `> [Worker_${workerId}] Audio Extracted. Requesting Whisper API...`]);
                             setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'transcribing', progress: 50 } : a));
 
                             try {
@@ -153,9 +154,6 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                     lastLogLength = logs.length;
 
                                     const lines = newChunk.split('\n').filter(l => l.trim());
-                                    // Filter out progress bars if they are toospammy, or keep them?
-                                    // For "Advanced" feel, let's keep them, but maybe limit update frequency if React struggles.
-                                    // For now, raw lines.
                                     setSimLogs(prev => [...prev, ...lines.map(l => `> [Worker_${workerId}] [Whisper] ${l}`)]);
                                 };
 
@@ -165,7 +163,6 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                 });
 
                                 // Reset log length for next call (if any)
-                                // actually whisperX logs are separate.
                                 lastLogLength = 0;
 
                                 // WhisperX also supports logs now
@@ -188,8 +185,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                 setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription Complete.`]);
                             } catch (e) {
                                 console.error("Transcription failed", e);
-                                setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription failed.Proceeding without audio.`]);
+                                setSimLogs(prev => [...prev, `> [Worker_${workerId}] Transcription failed. Proceeding without audio context.`]);
                             }
+                        } else {
+                            setSimLogs(prev => [...prev, `> [Worker_${workerId}] No audio track found or extraction failed. Skipping transcription.`]);
                         }
 
                         // 3. Asset Context Analysis (Gemini via Keyframes)

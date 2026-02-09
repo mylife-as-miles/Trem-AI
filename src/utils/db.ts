@@ -48,7 +48,7 @@ export interface PendingRepoData {
 
 class TremDatabase {
     private dbName = 'TremDB';
-    private version = 2;
+    private version = 3;
     private db: IDBDatabase | null = null;
 
     constructor() {
@@ -88,6 +88,22 @@ class TremDatabase {
         if (!this.db) {
             await this.init();
         }
+
+        // Critical Sanity Check: Ensure 'pendingRepos' exists
+        if (this.db && !this.db.objectStoreNames.contains('pendingRepos')) {
+            console.error("DB Corruption Detected: 'pendingRepos' store missing. Initiating emergency reset.");
+            this.db.close();
+            this.db = null;
+            await new Promise((resolve) => {
+                const req = indexedDB.deleteDatabase(this.dbName);
+                req.onsuccess = resolve;
+                req.onerror = resolve; // Proceed anyway
+                req.onblocked = resolve;
+            });
+            console.log("DB Reset Complete. Re-initializing...");
+            await this.init();
+        }
+
         return this.db!;
     }
 

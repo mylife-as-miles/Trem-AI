@@ -104,8 +104,8 @@ export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
 
     } catch (error) {
         console.error('Audio extraction error (client-side):', error);
-        // Return original blob if decoding fails (might work if it's already audio)
-        return videoBlob;
+        // Return null if decoding fails so we don't send video bytes as audio
+        return null as any;
     }
 };
 
