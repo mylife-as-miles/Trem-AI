@@ -20,6 +20,24 @@ export interface WhisperTranscription {
     language?: string;
 }
 
+export interface WhisperAPIOutput {
+    segments: {
+        id: number;
+        start: number;
+        end: number;
+        text: string;
+        seek?: number;
+        tokens?: number[];
+        avg_logprob?: number;
+        compression_ratio?: number;
+        no_speech_prob?: number;
+    }[];
+    transcription: string;
+    translation?: string | null;
+    detected_language?: string;
+}
+
+
 /**
  * Transcribe audio using Replicate's Whisper API
  * @param audioBlob - Audio file to transcribe
@@ -102,7 +120,6 @@ export const transcribeAudio = async (
         }
 
         // 3. Parse JSON safely
-        // 3. Parse JSON safely
         let prediction;
         try {
             prediction = JSON.parse(responseText);
@@ -117,6 +134,15 @@ export const transcribeAudio = async (
             output = await pollPrediction(prediction.id);
         }
 
+        // 5. Handle stringified JSON output (Replicate quirks)
+        if (typeof output === 'string') {
+            try {
+                output = JSON.parse(output);
+            } catch (e) {
+                console.warn('Failed to parse Whisper output string:', e);
+            }
+        }
+
         return parseWhisperOutput(output);
 
     } catch (error) {
@@ -129,11 +155,11 @@ export const transcribeAudio = async (
 /**
  * Parse Whisper API output into structured format
  */
-const parseWhisperOutput = (output: any): WhisperTranscription => {
+const parseWhisperOutput = (output: WhisperAPIOutput): WhisperTranscription => {
     // 1. Try to get native segments
     let segments: WhisperSegment[] = [];
     if (output.segments && Array.isArray(output.segments)) {
-        segments = output.segments.map((s: any) => ({
+        segments = output.segments.map((s) => ({
             id: s.id,
             start: s.start,
             end: s.end,
@@ -155,7 +181,13 @@ const parseWhisperOutput = (output: any): WhisperTranscription => {
     }
 
     // 3. Construct full text
-    const text = segments.map(s => s.text).join(' ');
+    // Prefer the 'transcription' field if it's plain text and not SRT
+    let text = "";
+    if (output.transcription && !isSRT) {
+        text = output.transcription;
+    } else {
+        text = segments.map(s => s.text).join(' ');
+    }
 
     return {
         text,
@@ -260,10 +292,24 @@ const mockTranscription = (): WhisperTranscription => {
     };
 };
 
+export interface WhisperXSegment {
+    start: number;
+    end: number;
+    text: string;
+    words?: {
+        word: string;
+        start: number;
+        end: number;
+        score: number;
+    }[];
+}
+
+export type WhisperXOutput = WhisperXSegment[];
+
 /**
  * Transcribe using WhisperX for word-level timestamps (Replicate)
  */
-export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<any> => {
+export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<WhisperXOutput | null> => {
     try {
         // Check file size - Vercel has ~4.5MB payload limit
         const MAX_SIZE_MB = 3;
@@ -303,7 +349,16 @@ export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<any>
             output = await pollPrediction(prediction.id);
         }
 
-        return output;
+        // Parse output if it's a string (WhisperX API sometimes returns stringified JSON)
+        if (typeof output === 'string') {
+            try {
+                output = JSON.parse(output);
+            } catch (e) {
+                console.warn('Failed to parse WhisperX output string:', e);
+            }
+        }
+
+        return output as WhisperXOutput;
 
     } catch (error) {
         console.error('WhisperX transcription error:', error);

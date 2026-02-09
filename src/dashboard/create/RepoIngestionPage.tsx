@@ -6,7 +6,7 @@ import { useCreateRepo } from '../../hooks/useQueries';
 import { generateRepoStructure, analyzeAsset } from '../../services/gemini/repo/index';
 import { extractAudioFromVideo } from '../../utils/audioExtractor';
 import { extractFramesFromVideo } from '../../utils/frameExtractor';
-import { transcribeAudio, transcribeAudioWithWhisperX } from '../../services/whisperService';
+import { transcribeAudio, transcribeAudioWithWhisperX, WhisperXOutput } from '../../services/whisperService';
 
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
@@ -23,7 +23,7 @@ interface Asset {
     transcript?: string;
     srt?: string;
     audioBlob?: Blob;
-    wordSegments?: any;
+    wordSegments?: WhisperXOutput;
 }
 
 interface FileNode {
