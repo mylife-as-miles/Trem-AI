@@ -21,18 +21,39 @@ const ActiveJobsList: React.FC<{ isCollapsed: boolean; onNavigate: any }> = ({ i
 
   if (jobs.length === 0) return null;
 
+  const handleDelete = async (e: React.MouseEvent, jobId: string) => {
+    e.stopPropagation(); // Prevent navigating to the job
+    if (confirm('Delete this pending job? This cannot be undone.')) {
+      await db.deletePendingRepo(jobId);
+      // Jobs list will auto-update on next poll
+    }
+  };
+
   return (
     <ul className="space-y-1 mb-2">
       {jobs.map(job => (
         <li key={job.id}>
-          <button
-            onClick={() => onNavigate(`create-repo/${job.id}`)}
-            className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 ${isCollapsed ? 'justify-center' : ''}`}
-            title={isCollapsed ? `Ingesting: ${job.name}` : ''}
+          <div
+            className={`w-full flex items-center gap-2 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 ${isCollapsed ? 'justify-center' : ''}`}
           >
-            <span className="material-icons-outlined text-sm animate-spin">sync</span>
-            {!isCollapsed && <span className="truncate">Ingesting: {job.name}</span>}
-          </button>
+            <button
+              onClick={() => onNavigate(`create-repo/${job.id}`)}
+              className="flex items-center gap-2 flex-1 min-w-0 text-left"
+              title={isCollapsed ? `Ingesting: ${job.name}` : ''}
+            >
+              <span className="material-icons-outlined text-sm animate-spin">sync</span>
+              {!isCollapsed && <span className="truncate">Ingesting: {job.name}</span>}
+            </button>
+            {!isCollapsed && (
+              <button
+                onClick={(e) => handleDelete(e, job.id)}
+                className="material-icons-outlined text-sm text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded p-1 transition-colors"
+                title="Delete job"
+              >
+                close
+              </button>
+            )}
+          </div>
         </li>
       ))}
     </ul>

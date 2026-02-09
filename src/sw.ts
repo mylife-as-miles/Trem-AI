@@ -88,8 +88,12 @@ class JobManager {
 
                     if (audioBlob && (asset.type === 'video' || asset.type === 'audio')) {
                         console.log(`[SW] Transcribing ${asset.name} (Standard Whisper)...`);
+                        this.broadcast({ type: 'JOB_LOG', repoId, message: `🎤 Transcribing ${asset.name}...` });
                         // @ts-ignore
                         const standard = await transcribeAudio(audioBlob);
+
+                        const transcriptPreview = (standard.text || '').slice(0, 50);
+                        this.broadcast({ type: 'JOB_LOG', repoId, message: `✅ Transcription complete: "${transcriptPreview}..."` });
 
                         asset.meta = {
                             ...asset.meta,
@@ -101,13 +105,16 @@ class JobManager {
                     // 2. Analyze Content (Gemini)
                     if (asset.blob) {
                         console.log(`[SW] Analyzing ${asset.name}...`);
-                        this.broadcast({ type: 'JOB_LOG', repoId, message: `Analyzing ${asset.name} with AI...` });
+                        this.broadcast({ type: 'JOB_LOG', repoId, message: `🔍 Analyzing ${asset.name} with AI...` });
                         // @ts-ignore - TS might complain about types if not perfectly aligned but logic holds
                         const analysis = await analyzeAsset({
                             id: asset.id,
                             name: asset.name,
                             blob: asset.blob
                         });
+
+                        const tagsPreview = (analysis.tags || []).slice(0, 3).join(', ');
+                        this.broadcast({ type: 'JOB_LOG', repoId, message: `✅ Analysis complete. Tags: [${tagsPreview}]` });
 
                         asset.meta = { ...asset.meta, analysis };
                         asset.tags = analysis.tags;
@@ -117,6 +124,8 @@ class JobManager {
                     asset.status = 'ready';
                     asset.progress = 100;
                     repo.assets[i] = asset;
+
+                    this.broadcast({ type: 'JOB_LOG', repoId, message: `✨ ${asset.name} completed!` });
 
                     // Incremental save
                     await db.updatePendingRepo(repoId, { assets: repo.assets });
