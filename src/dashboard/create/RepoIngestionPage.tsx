@@ -65,7 +65,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     // This allows clicking "New Repo" to clear the form even if a job was previously viewed
     useEffect(() => {
         if (!initialJobId) {
-            setStep('upload');
+            setStep('details');
             setRepoName('');
             setRepoBrief('');
             setSelectedAssets([]);
