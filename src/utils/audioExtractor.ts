@@ -3,61 +3,49 @@
  * Extracts audio track from video blob using Web Audio API
  */
 
+// @ts-ignore
+import * as lamejs from 'lamejs';
+
 /**
- * Extracts audio from a video blob and converts it to WAV format
+ * Extracts audio from a video blob and converts it to MP3 format
  * @param videoBlob - The video file as a Blob
- * @returns Audio blob in WAV format
+ * @returns Audio blob in MP3 format
  */
-// Helper to encode AudioBuffer to WAV
-const encodeWAV = (samples: Float32Array, sampleRate: number): Blob => {
-    const buffer = new ArrayBuffer(44 + samples.length * 2);
-    const view = new DataView(buffer);
-
-    // RIFF identifier
-    writeString(view, 0, 'RIFF');
-    // file length
-    view.setUint32(4, 36 + samples.length * 2, true);
-    // RIFF type
-    writeString(view, 8, 'WAVE');
-    // format chunk identifier
-    writeString(view, 12, 'fmt ');
-    // format chunk length
-    view.setUint32(16, 16, true);
-    // sample format (raw)
-    view.setUint16(20, 1, true);
-    // channel count (mono)
-    view.setUint16(22, 1, true);
-    // sample rate
-    view.setUint32(24, sampleRate, true);
-    // byte rate (sample rate * block align)
-    view.setUint32(28, sampleRate * 2, true);
-    // block align (channel count * bytes per sample)
-    view.setUint16(32, 2, true);
-    // bits per sample
-    view.setUint16(34, 16, true);
-    // data chunk identifier
-    writeString(view, 36, 'data');
-    // data chunk length
-    view.setUint32(40, samples.length * 2, true);
-
-    // Write samples
-    floatTo16BitPCM(view, 44, samples);
-
-    return new Blob([view], { type: 'audio/wav' });
-};
-
-const writeString = (view: DataView, offset: number, string: string) => {
-    for (let i = 0; i < string.length; i++) {
-        view.setUint8(offset + i, string.charCodeAt(i));
+// Helper to encode AudioBuffer to MP3
+const encodeMP3 = (samples: Float32Array, sampleRate: number): Blob => {
+    // Convert Float32 to Int16
+    const buffer = new Int16Array(samples.length);
+    for (let i = 0; i < samples.length; i++) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        buffer[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
     }
+
+    // Initialize Encoder
+    // Mono, SampleRate, 32kbps (sufficient for speech)
+    // @ts-ignore
+    const mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, 32);
+    const mp3Data = [];
+
+    // Encode in chunks
+    const sampleBlockSize = 1152; // multiple of 576
+    for (let i = 0; i < buffer.length; i += sampleBlockSize) {
+        const sampleChunk = buffer.subarray(i, i + sampleBlockSize);
+        const mp3buf = mp3encoder.encodeBuffer(sampleChunk);
+        if (mp3buf.length > 0) {
+            mp3Data.push(mp3buf);
+        }
+    }
+
+    // Flush
+    const mp3buf = mp3encoder.flush();
+    if (mp3buf.length > 0) {
+        mp3Data.push(mp3buf);
+    }
+
+    return new Blob(mp3Data, { type: 'audio/mp3' });
 };
 
-const floatTo16BitPCM = (output: DataView, offset: number, input: Float32Array) => {
-    for (let i = 0; i < input.length; i++, offset += 2) {
-        const s = Math.max(-1, Math.min(1, input[i]));
-        output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-    }
-};
+
 
 export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
     try {
@@ -99,8 +87,8 @@ export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
             finalSampleRate = originalSampleRate;
         }
 
-        const wavBlob = encodeWAV(finalSamples, finalSampleRate);
-        return wavBlob;
+        const mp3Blob = encodeMP3(finalSamples, finalSampleRate);
+        return mp3Blob;
 
     } catch (error) {
         console.error('Audio extraction error (client-side):', error);
