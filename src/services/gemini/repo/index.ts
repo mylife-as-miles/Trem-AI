@@ -134,7 +134,7 @@ export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
         }
 
         const config = {
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3-flash-preview',
             config: {
                 thinkingConfig: {
                     thinkingLevel: "HIGH",
