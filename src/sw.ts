@@ -8,9 +8,12 @@ declare const self: ServiceWorkerGlobalScope & {
     __WB_MANIFEST: Array<{ url: string; revision: string | null }>;
 };
 
-// Workbox manifest placeholder - required by vite-plugin-pwa injectManifest
-// This will be replaced with the precache manifest at build time
+// @ts-ignore
 const manifest = self.__WB_MANIFEST;
+if (manifest) {
+    // Prevent tree-shaking
+    console.log('SW Manifest injected', manifest);
+}
 
 // cleanup old caches
 const CACHE_NAME = 'trem-ai-cache-v1';

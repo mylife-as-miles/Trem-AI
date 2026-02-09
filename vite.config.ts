@@ -13,17 +13,19 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       VitePWA({
-        strategies: 'generateSW',
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
         registerType: 'autoUpdate',
         devOptions: {
           enabled: true,
+          type: 'module'
         },
-        workbox: {
+        injectManifest: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-          // Skip default caching for now - we only need the SW for background jobs
-          runtimeCaching: []
+          injectionPoint: 'self.__WB_MANIFEST',
         },
-        manifest: false
+        manifest: false // Disable manifest generation if not needed, or configure it
       })
     ],
     define: {
