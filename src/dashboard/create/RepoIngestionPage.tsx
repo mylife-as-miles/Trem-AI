@@ -61,6 +61,20 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         { id: 4, status: 'idle', task: 'Waiting...' }
     ]);
 
+    // Reset state when strictly entering "Create New" mode (no ID)
+    // This allows clicking "New Repo" to clear the form even if a job was previously viewed
+    useEffect(() => {
+        if (!initialJobId) {
+            setStep('upload');
+            setRepoName('');
+            setRepoBrief('');
+            setSelectedAssets([]);
+            setGeneratedRepoData(null);
+            setSimLogs([]);
+            setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Ready' })));
+        }
+    }, [initialJobId]);
+
     // Monitoring State
     useEffect(() => {
         if (initialJobId) {

@@ -77,6 +77,9 @@ class JobManager {
                 try {
                     // Real Processing in Background
                     console.log(`[SW] Processing asset ${asset.name} (${asset.type})`);
+                    this.broadcast({ type: 'JOB_LOG', repoId, message: `Processing ${asset.name} (${asset.type})...` });
+
+                    // 1. Transcribe (Dual Mode: Whisper + WhisperX)
 
                     // 1. Transcribe (Dual Mode: Whisper + WhisperX)
                     // Prefer optimized audio if available (created by main thread)
@@ -103,6 +106,7 @@ class JobManager {
                     // 2. Analyze Content (Gemini)
                     if (asset.blob) {
                         console.log(`[SW] Analyzing ${asset.name}...`);
+                        this.broadcast({ type: 'JOB_LOG', repoId, message: `Analyzing ${asset.name} with AI...` });
                         // @ts-ignore - TS might complain about types if not perfectly aligned but logic holds
                         const analysis = await analyzeAsset({
                             id: asset.id,
@@ -135,6 +139,7 @@ class JobManager {
 
             // 3. Complete Job & Promote to Real Repo
             console.log(`[SW] Job ${repoId} completed. Promoting to Repo...`);
+            this.broadcast({ type: 'JOB_LOG', repoId, message: `Job ${repoId} completed. Finalizing...` });
 
             // Construct final repo
             // Note: In a real app, we might run the AI structure generation here or trigger it later.
@@ -176,6 +181,7 @@ class JobManager {
             console.error(`[SW] Error processing job ${repoId}`, e);
             // Optionally update job status to failed in DB and broadcast
             this.broadcast({ type: 'JOB_FAILED', repoId, error: String(e) });
+            this.broadcast({ type: 'JOB_LOG', repoId, message: `CRITICAL ERROR: ${String(e)}` });
         } finally {
             this.processingJobs.delete(repoId);
         }
