@@ -1,4 +1,6 @@
 import Replicate from "replicate";
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 
 export default async function handler(req, res) {
   // Set CORS headers
