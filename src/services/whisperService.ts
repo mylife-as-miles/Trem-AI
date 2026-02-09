@@ -49,6 +49,7 @@ export const transcribeAudio = async (
     options: {
         language?: string;
         translate?: boolean;
+        onProgress?: (logs: string) => void;
     } = {}
 ): Promise<WhisperTranscription> => {
     try {
@@ -147,7 +148,7 @@ export const transcribeAudio = async (
         // 4. Poll for completion if needed (Replicate API always returns prediction object first)
         let output = prediction.output;
         if (prediction.id && (prediction.status === 'starting' || prediction.status === 'processing')) {
-            output = await pollPrediction(prediction.id);
+            output = await pollPrediction(prediction.id, options.onProgress);
         }
 
         // 5. Handle stringified JSON output (Replicate quirks)
@@ -328,7 +329,10 @@ export type WhisperXOutput = WhisperXSegment[];
 /**
  * Transcribe using WhisperX for word-level timestamps (Replicate)
  */
-export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<WhisperXOutput | null> => {
+export const transcribeAudioWithWhisperX = async (
+    audioBlob: Blob,
+    onProgress?: (logs: string) => void
+): Promise<WhisperXOutput | null> => {
     try {
         // Check file size - Vercel has ~4.5MB payload limit
         const MAX_SIZE_MB = 3;
@@ -381,7 +385,7 @@ export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<Whis
         // Poll if not complete
         let output = prediction.output;
         if (prediction.id && (prediction.status === 'starting' || prediction.status === 'processing')) {
-            output = await pollPrediction(prediction.id);
+            output = await pollPrediction(prediction.id, onProgress);
         }
 
         // Parse output if it's a string (WhisperX API sometimes returns stringified JSON)
@@ -400,7 +404,7 @@ export const transcribeAudioWithWhisperX = async (audioBlob: Blob): Promise<Whis
         return null;
     }
 };
-async function pollPrediction(id: string): Promise<any> {
+async function pollPrediction(id: string, onProgress?: (logs: string) => void): Promise<any> {
     while (true) {
         const response = await fetch(`/api/predictions/${id}`, {
             headers: {
@@ -414,6 +418,12 @@ async function pollPrediction(id: string): Promise<any> {
         }
 
         const prediction = await response.json();
+
+        // Stream logs if available
+        if (onProgress && prediction.logs) {
+            onProgress(prediction.logs);
+        }
+
         if (prediction.status === 'succeeded') {
             return prediction.output;
         } else if (prediction.status === 'failed' || prediction.status === 'canceled') {

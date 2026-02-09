@@ -141,9 +141,32 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                             setSelectedAssets(prev => prev.map(a => a.id === asset.id ? { ...a, status: 'transcribing', progress: 50 } : a));
 
                             try {
+                                // Dynamic Log Handler for this asset
+                                let lastLogLength = 0;
+                                const handleLogUpdate = (logs: string) => {
+                                    if (!logs) return;
+                                    const newChunk = logs.substring(lastLogLength);
+                                    if (!newChunk) return;
+                                    lastLogLength = logs.length;
+
+                                    const lines = newChunk.split('\n').filter(l => l.trim());
+                                    // Filter out progress bars if they are toospammy, or keep them?
+                                    // For "Advanced" feel, let's keep them, but maybe limit update frequency if React struggles.
+                                    // For now, raw lines.
+                                    setSimLogs(prev => [...prev, ...lines.map(l => `> [Worker_${workerId}] [Whisper] ${l}`)]);
+                                };
+
                                 // Run sequential to avoid network congestion/timeouts
-                                const whisperRes = await transcribeAudio(audioBlob);
-                                const whisperXRes = await transcribeAudioWithWhisperX(audioBlob);
+                                const whisperRes = await transcribeAudio(audioBlob, {
+                                    onProgress: handleLogUpdate
+                                });
+
+                                // Reset log length for next call (if any)
+                                // actually whisperX logs are separate.
+                                lastLogLength = 0;
+
+                                // WhisperX also supports logs now
+                                const whisperXRes = await transcribeAudioWithWhisperX(audioBlob, handleLogUpdate);
 
                                 transcriptionResult = whisperRes;
 
