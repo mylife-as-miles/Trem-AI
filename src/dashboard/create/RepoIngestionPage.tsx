@@ -45,7 +45,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
     const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
     const [generatedRepoData, setGeneratedRepoData] = useState<any>(null);
-    const [useBackgroundMode, setUseBackgroundMode] = useState(false);
+    const [useBackgroundMode, setUseBackgroundMode] = useState(true); // Default to TRUE
+
+
+
 
 
     // Advanced Simulation State
@@ -347,13 +350,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         setIsAssetModalOpen(false);
 
         if (newAssets.length > 0) {
-            if (useBackgroundMode) {
-                // Queue to Service Worker and navigate away
-                await handleStartBackground(newAssets);
-            } else {
-                // Run in foreground (existing behavior)
-                setStep('ingest');
-            }
+            // Always queue to Service Worker and navigate away
+            await handleStartBackground(newAssets);
         }
     };
 
@@ -640,25 +638,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                 </div>
                             </div>
 
-                            {/* Background Mode Toggle */}
-                            <div className="mt-6 flex items-center gap-3 p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-                                <input
-                                    type="checkbox"
-                                    id="backgroundMode"
-                                    checked={useBackgroundMode}
-                                    onChange={(e) => setUseBackgroundMode(e.target.checked)}
-                                    className="w-5 h-5 rounded border-zinc-700 bg-zinc-800 text-primary focus:ring-primary focus:ring-offset-0"
-                                />
-                                <label htmlFor="backgroundMode" className="flex-1 cursor-pointer">
-                                    <span className="text-white font-medium">Run in Background</span>
-                                    <p className="text-xs text-zinc-400 mt-0.5">
-                                        Process assets via Service Worker. You can navigate away while ingestion continues.
-                                    </p>
-                                </label>
-                                <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded ${useBackgroundMode ? 'bg-primary/20 text-primary' : 'bg-zinc-800 text-zinc-500'}`}>
-                                    {useBackgroundMode ? 'ENABLED' : 'OFF'}
-                                </span>
-                            </div>
+
                         </section>
 
                         {/* Step 2: Assets & Ingestion */}
@@ -797,7 +777,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                                         </div>
                                     ))}
                                 </div>
+
                             )}
+
+
                         </section>
 
                         {/* Step 3: Commit */}
@@ -905,17 +888,19 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 </div>
 
                 {/* Asset Modal */}
-                {isAssetModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-12 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm">
-                        <AssetLibrary
-                            isModal={true}
-                            onClose={() => setIsAssetModalOpen(false)}
-                            onSelect={handleAssetsSelected}
-                        />
-                    </div>
-                )}
-            </div>
-        </div>
+                {
+                    isAssetModalOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-12 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm">
+                            <AssetLibrary
+                                isModal={true}
+                                onClose={() => setIsAssetModalOpen(false)}
+                                onSelect={handleAssetsSelected}
+                            />
+                        </div>
+                    )
+                }
+            </div >
+        </div >
     );
 };
 
