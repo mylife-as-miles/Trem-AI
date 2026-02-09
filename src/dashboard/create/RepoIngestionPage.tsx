@@ -393,7 +393,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         ]);
 
         // Optionally navigate to dashboard or stay
-        // onNavigate('dashboard');
+        // Navigate to dashboard immediately
+        onNavigate('dashboard');
     };
 
     const handleCommit = async () => {
