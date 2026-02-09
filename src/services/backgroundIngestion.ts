@@ -20,6 +20,28 @@ class BackgroundIngestionService {
             });
         }
         this.syncActiveJobs();
+        this.resumeInterruptedJobs();
+    }
+
+    private async resumeInterruptedJobs() {
+        if (!('serviceWorker' in navigator)) return;
+
+        await navigator.serviceWorker.ready; // Wait for SW active
+
+        const jobs = await db.getAllPendingRepos();
+        const interrupted = jobs.filter(j => j.jobStatus === 'ingesting');
+
+        if (interrupted.length > 0) {
+            console.log(`[BackgroundIngestion] Resuming ${interrupted.length} interrupted jobs...`);
+            interrupted.forEach(job => {
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'START_INGESTION',
+                        repoId: job.id
+                    });
+                }
+            });
+        }
     }
 
     private handleMessage(data: any) {

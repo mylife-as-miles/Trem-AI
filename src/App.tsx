@@ -28,6 +28,7 @@ const App: React.FC = () => {
 
     // Local State for Query
     const [activeRepoId, setActiveRepoId] = useState<number | undefined>(undefined);
+    const [activeJobId, setActiveJobId] = useState<string | undefined>(undefined);
     const { data: fetchedRepo, isLoading: isRepoLoading } = useRepo(activeRepoId);
 
     // Sync Query Data to Store
@@ -105,8 +106,16 @@ const App: React.FC = () => {
                 break;
             default:
                 // Handle dynamic routes like repo/:id/logs
-                if (typeof view === 'string' && view.startsWith('repo/')) {
-                    url = `/${view}`;
+                if (typeof view === 'string') {
+                    if (view.startsWith('repo/')) {
+                        url = `/${view}`;
+                    } else if (view.startsWith('create-repo/')) {
+                        url = `/${view}`;
+                        const id = view.split('/')[1];
+                        setActiveJobId(id);
+                        setCurrentView('create-repo');
+                        return; // Early return as we set view manually
+                    }
                 }
                 break;
         }
@@ -154,7 +163,7 @@ const App: React.FC = () => {
             case 'assets':
                 return <AssetLibrary onNavigate={handleNavigate} />;
             case 'create-repo':
-                return <CreateRepoView onNavigate={handleNavigate} onCreateRepo={handleCreateRepo} />;
+                return <CreateRepoView onNavigate={handleNavigate} onCreateRepo={handleCreateRepo} initialJobId={activeJobId} />;
             case 'repo-files':
                 return <RepoFilesView onNavigate={handleNavigate} repoData={repoData} />;
             case 'repo-logs':

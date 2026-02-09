@@ -12,6 +12,7 @@ import { backgroundIngestion } from '../../services/backgroundIngestion';
 interface CreateRepoViewProps {
     onNavigate: (view: 'dashboard' | 'repo' | 'timeline' | 'diff' | 'assets' | 'settings' | 'create-repo') => void;
     onCreateRepo?: (data: RepoData) => void;
+    initialJobId?: string;
 }
 
 interface Asset {
@@ -38,7 +39,7 @@ interface FileNode {
     content?: string;
 }
 
-const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRepo }) => {
+const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRepo, initialJobId }) => {
     const [step, setStep] = useState<'details' | 'ingest' | 'commit'>('details');
     const [repoName, setRepoName] = useState('');
     const [repoBrief, setRepoBrief] = useState('');
@@ -59,6 +60,48 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         { id: 3, status: 'idle', task: 'Waiting...' },
         { id: 4, status: 'idle', task: 'Waiting...' }
     ]);
+
+    // Monitoring State
+    useEffect(() => {
+        if (initialJobId) {
+            setStep('ingest');
+            const poll = async () => {
+                const job = await db.getPendingRepo(initialJobId);
+                if (job) {
+                    setRepoName(job.name);
+                    setRepoBrief(job.brief);
+                    // Map assets
+                    const assets = job.assets.map(a => ({
+                        id: a.id,
+                        name: a.name,
+                        status: (a.status as any) || 'pending',
+                        progress: a.progress || 0,
+                        duration: a.duration,
+                        blob: a.blob,
+                        transcript: a.meta?.transcript?.text,
+                        srt: a.meta?.srt
+                    }));
+                    setSelectedAssets(assets);
+
+                    if (job.jobStatus === 'completed') {
+                        // Job is done (though usually it's deleted from pending upon completion)
+                        // If we catch it here, great. If it's gone, handle below.
+                        onNavigate('dashboard');
+                    }
+                } else {
+                    // Job missing? Likely completed and moved to active repos.
+                    // Or deleted.
+                    // Navigate to dashboard after a delay
+                    console.log("Job not found (completed?), navigating to dashboard");
+                    setTimeout(() => onNavigate('dashboard'), 2000);
+                }
+            };
+
+            poll();
+            const interval = setInterval(poll, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [initialJobId, onNavigate]);
 
     // Mutation
     const createRepoMutation = useCreateRepo();

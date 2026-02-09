@@ -26,7 +26,7 @@ const ActiveJobsList: React.FC<{ isCollapsed: boolean; onNavigate: any }> = ({ i
       {jobs.map(job => (
         <li key={job.id}>
           <button
-            onClick={() => onNavigate('create-repo')}
+            onClick={() => onNavigate(`create-repo/${job.id}`)}
             className={`w-full text-left flex items-center gap-3 px-2 py-2 text-sm rounded-md bg-primary/10 text-primary font-medium border border-primary/20 ${isCollapsed ? 'justify-center' : ''}`}
             title={isCollapsed ? `Ingesting: ${job.name}` : ''}
           >

@@ -220,7 +220,7 @@ const parseWhisperOutput = (output: WhisperAPIOutput): WhisperTranscription => {
 /**
  * Generate SRT string from segments
  */
-const generateSRT = (segments: WhisperSegment[]): string => {
+export const generateSRT = (segments: WhisperSegment[]): string => {
     return segments.map((seg, i) => {
         const start = formatTime(seg.start);
         const end = formatTime(seg.end);
