@@ -3,8 +3,14 @@ import { db, IngestionJob, PendingRepoData } from './utils/db';
 // Note: whisperService uses DOM APIs (FileReader, relative fetch) not available in SW.
 // For full transcription in SW, those functions would need a SW-compatible refactor.
 
-declare const self: ServiceWorkerGlobalScope;
+// Type declaration for workbox manifest
+declare const self: ServiceWorkerGlobalScope & {
+    __WB_MANIFEST: Array<{ url: string; revision: string | null }>;
+};
 
+// Workbox manifest placeholder - required by vite-plugin-pwa injectManifest
+// This will be replaced with the precache manifest at build time
+const manifest = self.__WB_MANIFEST;
 
 // cleanup old caches
 const CACHE_NAME = 'trem-ai-cache-v1';

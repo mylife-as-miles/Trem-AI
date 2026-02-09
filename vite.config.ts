@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => {
           type: 'module'
         },
         injectManifest: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+          injectionPoint: 'self.__WB_MANIFEST'
         },
         manifest: false // Disable manifest generation if not needed, or configure it
       })
