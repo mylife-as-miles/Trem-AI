@@ -335,6 +335,29 @@ class TremDatabase {
         });
     }
 
+    async addLogToPendingRepo(id: string, log: string): Promise<void> {
+        const db = await this.ensureDb();
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(['pendingRepos'], 'readwrite');
+            const store = transaction.objectStore('pendingRepos');
+            const getRequest = store.get(id);
+
+            getRequest.onsuccess = () => {
+                const repo = getRequest.result as PendingRepoData;
+                if (repo) {
+                    if (!repo.logs) repo.logs = [];
+                    repo.logs.push(log);
+                    store.put(repo).onsuccess = () => resolve();
+                } else {
+                    // If repo not found, strictly reject? Or ignore?
+                    // Rejecting helps debug timing issues.
+                    reject(new Error("Pending repo not found for logging"));
+                }
+            };
+            getRequest.onerror = () => reject(getRequest.error);
+        });
+    }
+
     async deletePendingRepo(id: string): Promise<void> {
         const db = await this.ensureDb();
         return new Promise((resolve, reject) => {

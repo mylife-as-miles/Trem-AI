@@ -511,7 +511,7 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         const initialLogs = [`[${new Date().toLocaleTimeString()}] Initializing background ingestion pipeline...`];
 
         // Create the pending repo entry first so we can attach logs to it immediately
-        await db.updatePendingRepo(pendingRepoId, {
+        await db.addPendingRepo({
             id: pendingRepoId,
             name: repoName || 'Untitled Repo',
             brief: repoBrief,
@@ -525,12 +525,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         const addPersistedLog = async (msg: string) => {
             const timestamped = `[${new Date().toLocaleTimeString()}] ${msg}`;
             setSimLogs(prev => [...prev, timestamped]);
-            const repo = await db.getPendingRepo(pendingRepoId);
-            if (repo) {
-                const logs = repo.logs || [];
-                logs.push(timestamped);
-                await db.updatePendingRepo(pendingRepoId, { logs });
-            }
+            // Use atomic update to avoid race conditions with other updates
+            await db.addLogToPendingRepo(pendingRepoId, timestamped);
         };
 
         // Convert assets to AssetData format for DB
