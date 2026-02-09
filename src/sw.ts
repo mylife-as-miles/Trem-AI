@@ -168,8 +168,14 @@ class JobManager {
             await db.deletePendingRepo(repoId);
 
             this.broadcast({ type: 'JOB_COMPLETED', repoId });
+        } catch (e) {
+            console.error(`[SW] Error processing job ${repoId}`, e);
+            // Optionally update job status to failed in DB and broadcast
+            this.broadcast({ type: 'JOB_FAILED', repoId, error: String(e) });
+        } finally {
             this.processingJobs.delete(repoId);
         }
+    }
 
     private broadcast(message: any) {
         self.clients.matchAll().then(clients => {
