@@ -77,7 +77,7 @@ class JobManager {
                 try {
                     // Real Processing in Background
                     console.log(`[SW] Processing asset ${asset.name} (${asset.type})`);
-                    this.broadcast({ type: 'JOB_LOG', repoId, message: `Processing ${asset.name} (${asset.type})...` });
+                    await this.log(repoId, `Processing ${asset.name} (${asset.type})...`);
 
                     // 1. Transcribe (Dual Mode: Whisper + WhisperX)
 
@@ -88,12 +88,12 @@ class JobManager {
 
                     if (audioBlob && (asset.type === 'video' || asset.type === 'audio')) {
                         console.log(`[SW] Transcribing ${asset.name} (Standard Whisper)...`);
-                        this.broadcast({ type: 'JOB_LOG', repoId, message: `🎤 Transcribing ${asset.name}...` });
+                        await this.log(repoId, `🎤 Transcribing ${asset.name}...`);
                         // @ts-ignore
                         const standard = await transcribeAudio(audioBlob);
 
                         const transcriptPreview = (standard.text || '').slice(0, 50);
-                        this.broadcast({ type: 'JOB_LOG', repoId, message: `✅ Transcription complete: "${transcriptPreview}..."` });
+                        await this.log(repoId, `✅ Transcription complete: "${transcriptPreview}..."`);
 
                         asset.meta = {
                             ...asset.meta,
@@ -105,7 +105,7 @@ class JobManager {
                     // 2. Analyze Content (Gemini)
                     if (asset.blob) {
                         console.log(`[SW] Analyzing ${asset.name}...`);
-                        this.broadcast({ type: 'JOB_LOG', repoId, message: `🔍 Analyzing ${asset.name} with AI...` });
+                        await this.log(repoId, `🔍 Analyzing ${asset.name} with AI...`);
                         // @ts-ignore - TS might complain about types if not perfectly aligned but logic holds
                         const analysis = await analyzeAsset({
                             id: asset.id,
@@ -117,7 +117,7 @@ class JobManager {
                         });
 
                         const tagsPreview = (analysis.tags || []).slice(0, 3).join(', ');
-                        this.broadcast({ type: 'JOB_LOG', repoId, message: `✅ Analysis complete. Tags: [${tagsPreview}]` });
+                        await this.log(repoId, `✅ Analysis complete. Tags: [${tagsPreview}]`);
 
                         asset.meta = { ...asset.meta, analysis };
                         asset.tags = analysis.tags;
@@ -128,7 +128,7 @@ class JobManager {
                     asset.progress = 100;
                     repo.assets[i] = asset;
 
-                    this.broadcast({ type: 'JOB_LOG', repoId, message: `✨ ${asset.name} completed!` });
+                    await this.log(repoId, `✨ ${asset.name} completed!`);
 
                     // Incremental save
                     await db.updatePendingRepo(repoId, { assets: repo.assets });
@@ -145,7 +145,7 @@ class JobManager {
             }
 
             // 3. Final Repo Generation (Big Brain Analysis)
-            this.broadcast({ type: 'JOB_LOG', repoId, message: `📝 Generating semantic repository structure...` });
+            await this.log(repoId, `📝 Generating semantic repository structure...`);
 
             // Consolidate context for Repo Generation
             const analyzedData: string[] = repo.assets.map(a =>
@@ -181,11 +181,11 @@ class JobManager {
                     generatedData
                 });
 
-                this.broadcast({ type: 'JOB_LOG', repoId, message: `✅ Pipeline analysis complete. Ready for review!` });
+                await this.log(repoId, `✅ Pipeline analysis complete. Ready for review!`);
 
             } catch (genErr) {
                 console.error("[SW] Repo Generation Failed", genErr);
-                this.broadcast({ type: 'JOB_LOG', repoId, message: `⚠️ AI Structure Generation failed, but assets are ready.` });
+                await this.log(repoId, `⚠️ AI Structure Generation failed, but assets are ready.`);
 
                 await db.updatePendingRepo(repoId, {
                     jobStatus: 'ready_to_commit',
@@ -198,9 +198,22 @@ class JobManager {
             console.error(`[SW] Error processing job ${repoId}`, e);
             // Optionally update job status to failed in DB and broadcast
             this.broadcast({ type: 'JOB_FAILED', repoId, error: String(e) });
-            this.broadcast({ type: 'JOB_LOG', repoId, message: `CRITICAL ERROR: ${String(e)}` });
+            await this.log(repoId, `CRITICAL ERROR: ${String(e)}`);
         } finally {
             this.processingJobs.delete(repoId);
+        }
+    }
+
+    private async log(repoId: string, message: string) {
+        const repo = await db.getPendingRepo(repoId);
+        if (repo) {
+            const logs = repo.logs || [];
+            const timestampedLog = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.push(timestampedLog);
+            await db.updatePendingRepo(repoId, { logs });
+            this.broadcast({ type: 'JOB_LOG', repoId, message, timestampedLog });
+        } else {
+            this.broadcast({ type: 'JOB_LOG', repoId, message });
         }
     }
 

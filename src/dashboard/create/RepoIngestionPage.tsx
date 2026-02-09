@@ -97,6 +97,11 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     }));
                     setSelectedAssets(assets);
 
+                    // Map persisted logs
+                    if (job.logs && job.logs.length > simLogs.length) {
+                        setSimLogs(job.logs.map(l => `> ${l}`));
+                    }
+
                     // Map active assets to worker simulation
                     // This makes the "Compute Cluster" UI look alive with real data
                     const activeAssets = assets.filter(a => a.status === 'processing');
@@ -422,7 +427,11 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // Filter for current job if monitoring
             if (data.type === 'JOB_LOG') {
                 if (initialJobId && data.repoId !== initialJobId) return;
-                setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] ${data.message}`]);
+                const logMessage = data.timestampedLog ? `> ${data.timestampedLog}` : `> [${new Date().toLocaleTimeString()}] ${data.message}`;
+                setSimLogs(prev => {
+                    if (prev.includes(logMessage)) return prev;
+                    return [...prev, logMessage];
+                });
             }
             else if (data.type === 'ASSET_UPDATE' && data.asset) {
                 if (initialJobId && data.repoId !== initialJobId) return;
