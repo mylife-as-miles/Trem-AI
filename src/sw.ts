@@ -85,9 +85,44 @@ class JobManager {
             }
         }
 
-        // 3. Complete Job
-        console.log(`[SW] Job ${repoId} completed`);
-        await db.updatePendingRepo(repoId, { jobStatus: 'completed' });
+        // 3. Complete Job & Promote to Real Repo
+        console.log(`[SW] Job ${repoId} completed. Promoting to Repo...`);
+
+        // Construct final repo
+        // Note: In a real app, we might run the AI structure generation here or trigger it later.
+        // For now, we create a basic functional repo with the ingested assets.
+        const finalRepo = {
+            name: repo.name,
+            brief: repo.brief,
+            assets: repo.assets,
+            created: repo.createdAt,
+            fileSystem: [
+                {
+                    id: 'root', name: 'root', type: 'folder', children: [
+                        {
+                            id: 'assets', name: 'Assets', type: 'folder', children: repo.assets.map(a => ({
+                                id: a.id,
+                                name: a.name,
+                                type: 'file',
+                                icon: a.type === 'video' ? 'movie' : 'description'
+                            }))
+                        },
+                        {
+                            id: 'docs', name: 'Documents', type: 'folder', children: [
+                                { id: 'readme', name: 'README.md', type: 'file', content: `# ${repo.name}\n\n${repo.brief}` }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Add to 'repos' store
+        await db.addRepo(finalRepo);
+
+        // Remove from pending
+        await db.deletePendingRepo(repoId);
+
         this.broadcast({ type: 'JOB_COMPLETED', repoId });
     }
 
