@@ -167,7 +167,16 @@ export const extractAudioFromVideo = async (videoBlob: Blob, onLog?: (msg: strin
         }
 
     } catch (error) {
+        // EncodingError usually means no audio track found in the video
+        if (String(error).includes('EncodingError') || String(error).includes('Unable to decode')) {
+            const noAudioMsg = '[AudioExtractor] No audio track detected in video source.';
+            console.log(noAudioMsg);
+            if (onLog) onLog(`ℹ️ ${noAudioMsg}`);
+            return null as any;
+        }
+
         console.error('Audio extraction error (client-side):', error);
+        if (onLog) onLog(`❌ Audio extraction error: ${String(error)}`);
         return null as any;
     }
 };

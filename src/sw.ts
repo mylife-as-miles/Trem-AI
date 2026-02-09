@@ -85,21 +85,35 @@ class JobManager {
                     // Prefer optimized audio if available (created by main thread)
                     // @ts-ignore
                     const audioBlob = (asset.meta?.optimizedAudio as Blob) || asset.blob;
+                    // @ts-ignore
+                    const hasAudio = asset.meta?.hasAudio !== false;
 
-                    if (audioBlob && (asset.type === 'video' || asset.type === 'audio')) {
-                        console.log(`[SW] Transcribing ${asset.name} (Standard Whisper)...`);
-                        await this.log(repoId, `🎤 Transcribing ${asset.name}...`);
-                        // @ts-ignore
-                        const standard = await transcribeAudio(audioBlob);
+                    if (hasAudio && audioBlob && (asset.type === 'video' || asset.type === 'audio')) {
+                        // Check for empty blob or very small size indicating failed extraction
+                        if (audioBlob.size < 100) {
+                            console.log(`[SW] Audio blob too small (${audioBlob.size} bytes), skipping transcription.`);
+                            await this.log(repoId, `⚠️ No audio track detected, skipping transcription.`);
+                        } else {
+                            console.log(`[SW] Transcribing ${asset.name} (Standard Whisper)...`);
+                            await this.log(repoId, `🎤 Transcribing ${asset.name}...`);
 
-                        const transcriptPreview = (standard.text || '').slice(0, 50);
-                        await this.log(repoId, `✅ Transcription complete: "${transcriptPreview}..."`);
+                            try {
+                                // @ts-ignore
+                                const standard = await transcribeAudio(audioBlob);
+                                const transcriptPreview = (standard.text || '').slice(0, 50);
+                                await this.log(repoId, `✅ Transcription complete: "${transcriptPreview}..."`);
 
-                        asset.meta = {
-                            ...asset.meta,
-                            transcription: standard,
-                            srt: standard.srt
-                        };
+                                asset.meta = {
+                                    ...asset.meta,
+                                    transcription: standard,
+                                    srt: standard.srt
+                                };
+                            } catch (transcribeError) {
+                                console.warn("[SW] Transcription failed", transcribeError);
+                                await this.log(repoId, `⚠️ Transcription failed: ${String(transcribeError)}`);
+                                // Do not fail the asset, just continue without transcript
+                            }
+                        }
                     }
 
                     // 2. Analyze Content (Gemini)

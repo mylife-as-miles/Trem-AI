@@ -542,7 +542,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                     // @ts-ignore
                     const audioBlob = await extractAudioFromVideo(dbAsset.blob, (msg) => addPersistedLog(msg));
                     if (audioBlob) {
-                        meta = { ...meta, optimizedAudio: audioBlob };
+                        meta = { ...meta, optimizedAudio: audioBlob, hasAudio: true };
+                    } else {
+                        // Explicitly mark as no audio if extraction returned null (e.g. no track found)
+                        meta = { ...meta, hasAudio: false };
                     }
 
                     await addPersistedLog(`Extracting frames for ${a.name}...`);
