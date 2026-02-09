@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 import { db, IngestionJob, PendingRepoData } from './utils/db';
-import { transcribeAudio, transcribeAudioWithWhisperX, generateSRT } from './services/whisperService';
+import { transcribeAudio, generateSRT } from './services/whisperService';
 import { analyzeAsset } from './services/gemini/repo/index';
 
 // Type declaration for workbox manifest
@@ -91,14 +91,9 @@ class JobManager {
                         // @ts-ignore
                         const standard = await transcribeAudio(audioBlob);
 
-                        console.log(`[SW] Transcribing ${asset.name} (WhisperX)...`);
-                        // @ts-ignore
-                        const whisperx = await transcribeAudioWithWhisperX(audioBlob);
-
                         asset.meta = {
                             ...asset.meta,
                             transcription: standard,
-                            whisperx: whisperx,
                             srt: standard.srt
                         };
                     }

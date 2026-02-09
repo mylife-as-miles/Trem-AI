@@ -138,7 +138,9 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
     const createRepoMutation = useCreateRepo();
 
     // Ingestion Simulation - REAL PARALLEL PROCESSING
+    // SKIP when in monitoring mode (initialJobId is set) - use SW logs instead
     useEffect(() => {
+        if (initialJobId) return; // Skip simulation when monitoring a background job
         if (step === 'ingest' && selectedAssets.length > 0 && !generatedRepoData) {
             setSimLogs(prev => [...prev, "> Initializing Trem-AI Compute Cluster...", "> Allocating Worker Nodes..."]);
 
@@ -404,6 +406,58 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
 
     // Check if ready to commit (Wait for both Ingestion AND Generation)
     const isIngestionComplete = selectedAssets.length > 0 && selectedAssets.every(a => a.status === 'indexed') && !!generatedRepoData;
+
+    // REAL LOGS: Listen to SW messages for background jobs
+    useEffect(() => {
+        if (!('serviceWorker' in navigator)) return;
+
+        const handleSWMessage = (event: MessageEvent) => {
+            const data = event.data;
+            if (!data) return;
+
+            // Filter for current job if monitoring
+            if (data.type === 'JOB_LOG') {
+                if (initialJobId && data.repoId !== initialJobId) return;
+                setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] ${data.message}`]);
+            }
+            else if (data.type === 'ASSET_UPDATE' && data.asset) {
+                if (initialJobId && data.repoId !== initialJobId) return;
+                setSimLogs(prev => {
+                    const lastLog = prev[prev.length - 1];
+                    const newLog = `> [${new Date().toLocaleTimeString()}] ${data.asset.name}: ${data.asset.status.toUpperCase()}`;
+                    if (lastLog === newLog) return prev;
+                    return [...prev, newLog];
+                });
+            }
+            else if (data.type === 'JOB_FAILED') {
+                if (initialJobId && data.repoId !== initialJobId) return;
+                setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] CRITICAL ERROR: ${data.error}`]);
+                setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Failed' })));
+            }
+            else if (data.type === 'JOB_COMPLETED') {
+                if (initialJobId && data.repoId !== initialJobId) return;
+                setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] Job Completed Successfully.`]);
+                setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Complete' })));
+                if (initialJobId && data.repoId === initialJobId) {
+                    setTimeout(() => onNavigate('dashboard'), 2000);
+                }
+            }
+        };
+
+        navigator.serviceWorker.addEventListener('message', handleSWMessage);
+
+        // Show initial log when entering ingest step in monitoring mode
+        if (step === 'ingest' && simLogs.length === 0 && initialJobId) {
+            setSimLogs([
+                "> Connected to Background Worker...",
+                "> Monitoring job progress..."
+            ]);
+        }
+
+        return () => {
+            navigator.serviceWorker.removeEventListener('message', handleSWMessage);
+        };
+    }, [initialJobId, step, onNavigate]);
 
     const handleAssetsSelected = async (assetIds: string[]) => {
         // Convert IDs to basic items for the list, fetching names from DB
