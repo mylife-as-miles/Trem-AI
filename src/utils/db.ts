@@ -42,7 +42,8 @@ export interface PendingRepoData {
     name: string;
     brief: string;
     assets: AssetData[];
-    jobStatus: 'idle' | 'ingesting' | 'completed' | 'failed';
+    jobStatus: 'idle' | 'ingesting' | 'completed' | 'failed' | 'ready_to_commit';
+    generatedData?: any; // Stores the final AI output before manual commit
     createdAt: number;
 }
 

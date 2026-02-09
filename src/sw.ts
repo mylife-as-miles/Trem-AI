@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import { db, IngestionJob, PendingRepoData } from './utils/db';
 import { transcribeAudio, generateSRT } from './services/whisperService';
-import { analyzeAsset } from './services/gemini/repo/index';
+import { analyzeAsset, generateRepoStructure } from './services/gemini/repo/index';
 
 // Type declaration for workbox manifest
 declare const self: ServiceWorkerGlobalScope & {
@@ -51,7 +51,7 @@ class JobManager {
         try {
             // 1. Get Repo Data
             const repo = await db.getPendingRepo(repoId);
-            if (!repo || repo.jobStatus === 'completed') {
+            if (!repo || repo.jobStatus === 'completed' || repo.jobStatus === 'ready_to_commit') {
                 this.processingJobs.delete(repoId);
                 return;
             }
@@ -110,7 +110,10 @@ class JobManager {
                         const analysis = await analyzeAsset({
                             id: asset.id,
                             name: asset.name,
-                            blob: asset.blob
+                            blob: asset.blob,
+                            // Use pre-extracted frames from main thread
+                            // @ts-ignore
+                            images: asset.meta?.frames
                         });
 
                         const tagsPreview = (analysis.tags || []).slice(0, 3).join(', ');
@@ -141,46 +144,56 @@ class JobManager {
                 }
             }
 
-            // 3. Complete Job & Promote to Real Repo
-            console.log(`[SW] Job ${repoId} completed. Promoting to Repo...`);
-            this.broadcast({ type: 'JOB_LOG', repoId, message: `Job ${repoId} completed. Finalizing...` });
+            // 3. Final Repo Generation (Big Brain Analysis)
+            this.broadcast({ type: 'JOB_LOG', repoId, message: `📝 Generating semantic repository structure...` });
 
-            // Construct final repo
-            // Note: In a real app, we might run the AI structure generation here or trigger it later.
-            // For now, we create a basic functional repo with the ingested assets.
-            const finalRepo = {
-                name: repo.name,
-                brief: repo.brief,
-                assets: repo.assets,
-                created: repo.createdAt,
-                fileSystem: [
-                    {
-                        id: 'root', name: 'root', type: 'folder', children: [
-                            {
-                                id: 'assets', name: 'Assets', type: 'folder', children: repo.assets.map(a => ({
-                                    id: a.id,
-                                    name: a.name,
-                                    type: 'file',
-                                    icon: a.type === 'video' ? 'movie' : 'description'
-                                }))
-                            },
-                            {
-                                id: 'docs', name: 'Documents', type: 'folder', children: [
-                                    { id: 'readme', name: 'README.md', type: 'file', content: `# ${repo.name}\n\n${repo.brief}` }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            };
+            // Consolidate context for Repo Generation
+            const analyzedData: string[] = repo.assets.map(a =>
+                `Asset: ${a.name}\nDescription: ${a.meta?.analysis?.description}\nTags: ${a.tags?.join(', ')}\nTranscript: ${a.meta?.transcription?.text}`
+            );
 
-            // Add to 'repos' store
-            await db.addRepo(finalRepo);
+            const fullTranscript = repo.assets
+                .map(a => a.meta?.srt || "")
+                .filter(t => t.length > 0)
+                .join("\n\n");
 
-            // Remove from pending
-            await db.deletePendingRepo(repoId);
+            // Collect frames for global analysis (limit to 2 per asset to stay in context limits)
+            const globalFrames = repo.assets.flatMap(a => (a.meta?.frames || []).slice(0, 2));
 
-            this.broadcast({ type: 'JOB_COMPLETED', repoId });
+            try {
+                const generatedData = await generateRepoStructure({
+                    duration: "Auto-detected", // SW doesn't easy access to duration text here
+                    transcript: fullTranscript || "No dialogue detected.",
+                    sceneBoundaries: "auto-detected",
+                    assetContext: analyzedData.join('\n\n'),
+                    images: globalFrames
+                });
+
+                // Update job to ready state
+                await db.updatePendingRepo(repoId, {
+                    jobStatus: 'ready_to_commit',
+                    generatedData
+                });
+
+                this.broadcast({
+                    type: 'JOB_READY_TO_COMMIT',
+                    repoId,
+                    generatedData
+                });
+
+                this.broadcast({ type: 'JOB_LOG', repoId, message: `✅ Pipeline analysis complete. Ready for review!` });
+
+            } catch (genErr) {
+                console.error("[SW] Repo Generation Failed", genErr);
+                this.broadcast({ type: 'JOB_LOG', repoId, message: `⚠️ AI Structure Generation failed, but assets are ready.` });
+
+                await db.updatePendingRepo(repoId, {
+                    jobStatus: 'ready_to_commit',
+                    generatedData: { error: "Generation failed" }
+                });
+
+                this.broadcast({ type: 'JOB_READY_TO_COMMIT', repoId });
+            }
         } catch (e) {
             console.error(`[SW] Error processing job ${repoId}`, e);
             // Optionally update job status to failed in DB and broadcast

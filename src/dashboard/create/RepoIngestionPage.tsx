@@ -114,6 +114,11 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         }
                     }));
 
+                    if (job.jobStatus === 'ready_to_commit') {
+                        setStep('commit');
+                        setGeneratedRepoData(job.generatedData);
+                    }
+
                     if (job.jobStatus === 'completed') {
                         // Job is done (though usually it's deleted from pending upon completion)
                         // If we catch it here, great. If it's gone, handle below.
@@ -438,8 +443,16 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                 setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] Job Completed Successfully.`]);
                 setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Complete' })));
                 if (initialJobId && data.repoId === initialJobId) {
-                    setTimeout(() => onNavigate('dashboard'), 2000);
+                    // Manual commit: we just wait for the JOB_READY_TO_COMMIT message 
+                    // which will switch the view to the commit step.
+                    setWorkers(w => w.map(worker => ({ ...worker, status: 'idle', task: 'Ready' })));
                 }
+            }
+            else if (data.type === 'JOB_READY_TO_COMMIT') {
+                if (initialJobId && data.repoId !== initialJobId) return;
+                setSimLogs(prev => [...prev, `> [${new Date().toLocaleTimeString()}] Pipeline Analysis Complete. Ready for review.`]);
+                setStep('commit');
+                if (data.generatedData) setGeneratedRepoData(data.generatedData);
             }
         };
 
@@ -491,9 +504,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             const dbAsset = await db.getAsset(a.id);
             let meta = {};
 
-            // OPTIMIZATION: Extract Audio from Video (Main Thread)
-            // This is crucial because Service Workers cannot use AudioContext for extraction
-            // and Vercel has a 4.5MB payload limit. We extract a small WAV here.
+            // OPTIMIZATION: Extract Audio & Frames from Video (Main Thread)
+            // This is crucial because Service Workers cannot use DOM/Audio APIs for extraction
             if (dbAsset?.blob && (dbAsset.type === 'video' || a.name.endsWith('.mp4') || a.name.endsWith('.mov'))) {
                 try {
                     console.log(`[Ingest] Extracting optimized audio for ${a.name}...`);
@@ -503,8 +515,17 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         console.log(`[Ingest] Audio extracted: ${(audioBlob.size / 1024 / 1024).toFixed(2)}MB`);
                         meta = { ...meta, optimizedAudio: audioBlob };
                     }
+
+                    console.log(`[Ingest] Extracting frames for ${a.name}...`);
+                    // Extract X frames per video for AI vision
+                    const frames = await extractFramesFromVideo(dbAsset.blob);
+                    if (frames && frames.length > 0) {
+                        console.log(`[Ingest] Extracted ${frames.length} frames.`);
+                        // @ts-ignore
+                        meta = { ...meta, frames };
+                    }
                 } catch (e) {
-                    console.warn("[Ingest] Audio extraction failed, falling back to full file", e);
+                    console.warn("[Ingest] Asset pre-processing failed, falling back to full file", e);
                 }
             }
 
