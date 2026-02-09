@@ -120,11 +120,10 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
                         onNavigate('dashboard');
                     }
                 } else {
-                    // Job missing? Likely completed and moved to active repos.
-                    // Or deleted.
-                    // Navigate to dashboard after a delay
-                    console.log("Job not found (completed?), navigating to dashboard");
-                    setTimeout(() => onNavigate('dashboard'), 2000);
+                    // Job missing? Could be a temporary state, deleted, or completed.
+                    // Don't auto-navigate here - it can cause unexpected redirects.
+                    // The JOB_COMPLETED message handler will navigate if the job finished.
+                    console.log("[Monitor] Job not found in DB. May have completed or been deleted.");
                 }
             };
 
