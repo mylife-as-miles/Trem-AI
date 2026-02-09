@@ -3,7 +3,7 @@
  * Extracts keyframes from video using server-side FFmpeg
  */
 
-export const extractFramesFromVideo = async (videoBlob: Blob): Promise<string[]> => {
+export const extractFramesFromVideo = async (videoBlob: Blob, onLog?: (msg: string) => void): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
         const video = document.createElement('video');
         const canvas = document.createElement('canvas');
@@ -34,6 +34,7 @@ export const extractFramesFromVideo = async (videoBlob: Blob): Promise<string[]>
             if (currentTime >= duration) {
                 // Done
                 URL.revokeObjectURL(url);
+                if (onLog) onLog(`Extracted ${frames.length} frames.`);
                 resolve(frames);
                 return;
             }
@@ -44,8 +45,6 @@ export const extractFramesFromVideo = async (videoBlob: Blob): Promise<string[]>
             // Wait for seek to complete
             await new Promise<void>((r) => {
                 video.onseeked = () => r();
-                // Safety timeout in case seek hangs
-                // setTimeout(r, 1000); 
             });
 
             // Draw

@@ -98,7 +98,7 @@ const encodeMP3 = (samples: Float32Array, sampleRate: number): Blob => {
 
 
 
-export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
+export const extractAudioFromVideo = async (videoBlob: Blob, onLog?: (msg: string) => void): Promise<Blob> => {
     try {
         const arrayBuffer = await videoBlob.arrayBuffer();
         // @ts-ignore - Web Audio API types might be missing or conflict
@@ -112,7 +112,6 @@ export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
         const originalSampleRate = audioBuffer.sampleRate;
 
         // Downsample to 16kHz (Whisper's native rate) to reduce file size
-        // This reduces size by ~2.7x for 44.1kHz source, ~3x for 48kHz source
         const TARGET_SAMPLE_RATE = 16000;
         let finalSamples: Float32Array;
         let finalSampleRate: number;
@@ -128,49 +127,47 @@ export const extractAudioFromVideo = async (videoBlob: Blob): Promise<Blob> => {
                 const srcIndexFloor = Math.floor(srcIndex);
                 const srcIndexCeil = Math.min(srcIndexFloor + 1, channelData.length - 1);
                 const t = srcIndex - srcIndexFloor;
-                // Linear interpolation for smoother downsampling
                 finalSamples[i] = channelData[srcIndexFloor] * (1 - t) + channelData[srcIndexCeil] * t;
             }
             finalSampleRate = TARGET_SAMPLE_RATE;
-            console.log(`Audio downsampled: ${originalSampleRate}Hz → ${TARGET_SAMPLE_RATE}Hz (${(channelData.length * 2 / 1024 / 1024).toFixed(1)}MB → ${(finalSamples.length * 2 / 1024 / 1024).toFixed(1)}MB)`);
+            const logMsg = `Audio downsampled: ${originalSampleRate}Hz → ${TARGET_SAMPLE_RATE}Hz (${(channelData.length * 2 / 1024 / 1024).toFixed(1)}MB → ${(finalSamples.length * 2 / 1024 / 1024).toFixed(1)}MB)`;
+            console.log(logMsg);
+            if (onLog) onLog(logMsg);
         } else {
             finalSamples = channelData;
             finalSampleRate = originalSampleRate;
         }
 
-        // 1. Try WAV first (Better quality, faster)
+        // 1. Try WAV first
         const wavBlob = encodeWAV(finalSamples, finalSampleRate);
         const MB = 1024 * 1024;
 
-        // If WAV is small enough (< 3.5MB), use it. Vercel limit is 4.5MB.
-        // Base64 overhead is ~33%, so 3.5MB -> 4.66MB (too big?).
-        // Safe limit: 3MB -> 4MB Base64.
         if (wavBlob.size < 3 * MB) {
-            console.log(`[AudioExtractor] WAV size ${(wavBlob.size / MB).toFixed(2)}MB is within limit. Using WAV.`);
+            const logMsg = `[AudioExtractor] WAV size ${(wavBlob.size / MB).toFixed(2)}MB is within limit. Using WAV.`;
+            console.log(logMsg);
+            if (onLog) onLog(logMsg);
             return wavBlob;
         }
 
-        console.log(`[AudioExtractor] WAV size ${(wavBlob.size / MB).toFixed(2)}MB too large. Encoding MP3...`);
+        const largeLog = `[AudioExtractor] WAV size ${(wavBlob.size / MB).toFixed(2)}MB too large. Encoding MP3...`;
+        console.log(largeLog);
+        if (onLog) onLog(largeLog);
 
         // 2. Fallback to MP3
         try {
             const mp3Blob = encodeMP3(finalSamples, finalSampleRate);
-            console.log(`[AudioExtractor] MP3 Encoded: ${(mp3Blob.size / MB).toFixed(2)}MB`);
+            const mp3Log = `[AudioExtractor] MP3 Encoded: ${(mp3Blob.size / MB).toFixed(2)}MB`;
+            console.log(mp3Log);
+            if (onLog) onLog(mp3Log);
             return mp3Blob;
         } catch (mp3Error) {
             console.warn("[AudioExtractor] MP3 encoding failed", mp3Error);
-            // If MP3 fails but we have WAV, return WAV anyway? 
-            // It might fail upload, but better than nothing?
-            // No, the caller logic expects optimizeAudio to work.
-            // If we return oversized WAV, sw.ts might reject it or API might reject it.
-            // But sw.ts logic uses it if present.
-            // Let's return WAV as last resort.
+            if (onLog) onLog(`⚠️ MP3 encoding failed, using oversized WAV.`);
             return wavBlob;
         }
 
     } catch (error) {
         console.error('Audio extraction error (client-side):', error);
-        // Return null if decoding fails so we don't send video bytes as audio
         return null as any;
     }
 };

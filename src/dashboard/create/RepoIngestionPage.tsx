@@ -508,6 +508,31 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
         // Generate a unique ID for this pending repo
         const pendingRepoId = `pending_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
+        const initialLogs = [`[${new Date().toLocaleTimeString()}] Initializing background ingestion pipeline...`];
+
+        // Create the pending repo entry first so we can attach logs to it immediately
+        await db.updatePendingRepo(pendingRepoId, {
+            id: pendingRepoId,
+            name: repoName || 'Untitled Repo',
+            brief: repoBrief,
+            assets: [], // Will populate below
+            jobStatus: 'idle',
+            logs: initialLogs,
+            createdAt: Date.now()
+        });
+        setSimLogs(initialLogs);
+
+        const addPersistedLog = async (msg: string) => {
+            const timestamped = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            setSimLogs(prev => [...prev, timestamped]);
+            const repo = await db.getPendingRepo(pendingRepoId);
+            if (repo) {
+                const logs = repo.logs || [];
+                logs.push(timestamped);
+                await db.updatePendingRepo(pendingRepoId, { logs });
+            }
+        };
+
         // Convert assets to AssetData format for DB
         const dbAssets: AssetData[] = await Promise.all(assets.map(async a => {
             const dbAsset = await db.getAsset(a.id);
@@ -517,24 +542,22 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             // This is crucial because Service Workers cannot use DOM/Audio APIs for extraction
             if (dbAsset?.blob && (dbAsset.type === 'video' || a.name.endsWith('.mp4') || a.name.endsWith('.mov'))) {
                 try {
-                    console.log(`[Ingest] Extracting optimized audio for ${a.name}...`);
+                    await addPersistedLog(`Extracting optimized audio for ${a.name}...`);
                     // @ts-ignore
-                    const audioBlob = await extractAudioFromVideo(dbAsset.blob);
+                    const audioBlob = await extractAudioFromVideo(dbAsset.blob, (msg) => addPersistedLog(msg));
                     if (audioBlob) {
-                        console.log(`[Ingest] Audio extracted: ${(audioBlob.size / 1024 / 1024).toFixed(2)}MB`);
                         meta = { ...meta, optimizedAudio: audioBlob };
                     }
 
-                    console.log(`[Ingest] Extracting frames for ${a.name}...`);
+                    await addPersistedLog(`Extracting frames for ${a.name}...`);
                     // Extract X frames per video for AI vision
-                    const frames = await extractFramesFromVideo(dbAsset.blob);
+                    const frames = await extractFramesFromVideo(dbAsset.blob, (msg) => addPersistedLog(msg));
                     if (frames && frames.length > 0) {
-                        console.log(`[Ingest] Extracted ${frames.length} frames.`);
                         // @ts-ignore
                         meta = { ...meta, frames };
                     }
                 } catch (e) {
-                    console.warn("[Ingest] Asset pre-processing failed, falling back to full file", e);
+                    await addPersistedLog(`⚠️ Pre-processing failed for ${a.name}: ${String(e)}`);
                 }
             }
 
@@ -552,7 +575,9 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             };
         }));
 
-        // Start background ingestion
+        // Finalize state and start background ingestion
+        await db.updatePendingRepo(pendingRepoId, { assets: dbAssets });
+
         await backgroundIngestion.startIngestion(pendingRepoId, {
             id: pendingRepoId,
             name: repoName || 'Untitled Repo',
@@ -562,12 +587,8 @@ const CreateRepoView: React.FC<CreateRepoViewProps> = ({ onNavigate, onCreateRep
             createdAt: Date.now()
         });
 
-        // Show confirmation and allow user to navigate away
-        setSimLogs(prev => [...prev,
-        `> Background ingestion started for ${assets.length} assets.`,
-            `> You can navigate away - progress will continue in the background.`,
-            `> Check the sidebar for status updates.`
-        ]);
+        await addPersistedLog(`Background ingestion started for ${assets.length} assets.`);
+        await addPersistedLog(`You can navigate away - progress will continue in the background.`);
 
         // Optionally navigate to dashboard or stay
         // Navigate to dashboard immediately

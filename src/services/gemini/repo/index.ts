@@ -32,7 +32,7 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
     }
 
     try {
-        const model = 'gemini-1.5-flash-latest';
+        const model = 'gemini-1.5-flash';
         const parts: any[] = [
             { text: "Analyze this video clip based on these keyframes. Return a short description and 3 tags. Format: JSON { \"description\": \"...\", \"tags\": [...] }" }
         ];
@@ -59,10 +59,15 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
             });
         }
 
-        const response = await ai.models.generateContent({
-            model,
-            generationConfig: {
-                responseMimeType: 'application/json'
+        const config = {
+            model: 'gemini-3-flash-preview',
+            config: {
+                thinkingConfig: {
+                    thinkingLevel: "HIGH",
+                },
+                tools: [
+                    { codeExecution: {} },
+                ]
             },
             contents: [
                 {
@@ -70,10 +75,19 @@ export const analyzeAsset = async (asset: { id: string, name: string, blob?: Blo
                     parts: parts
                 }
             ]
-        } as any);
+        };
 
-        const text = response.text || "{}";
-        return extractJSON(text);
+        const response = await ai.models.generateContentStream(config as any);
+
+        let fullText = "";
+        for await (const chunk of response) {
+            if (chunk.candidates && chunk.candidates[0] && chunk.candidates[0].content && chunk.candidates[0].content.parts) {
+                const part = chunk.candidates[0].content.parts[0];
+                if (part.text) fullText += part.text;
+                // We can also log execution results if needed, but for now we just want the final JSON
+            }
+        }
+        return extractJSON(fullText || "{}");
 
     } catch (e) {
         console.error(`Failed to analyze asset ${asset.name}`, e);
@@ -128,19 +142,25 @@ export const generateRepoStructure = async (inputs: RepoGenerationInputs) => {
         }
 
         const config = {
-            model: 'gemini-1.5-flash-latest',
-            contents: [{ role: 'user', parts }],
-            generationConfig: {
-                link_to_file: true,
+            model: 'gemini-3-pro-preview',
+            config: {
+                thinkingConfig: {
+                    thinkingLevel: "HIGH",
+                },
                 responseMimeType: 'application/json'
-            }
+            },
+            contents: [{ role: 'user', parts }]
         };
 
         // @ts-ignore
-        const response = await retryWithBackoff(() => ai.models.generateContent(config as any));
+        const response = await retryWithBackoff(() => ai.models.generateContentStream(config as any));
 
-        const text = response.text || "{}";
-        return extractJSON(text);
+        let fullText = "";
+        for await (const chunk of response) {
+            if (chunk.text) fullText += chunk.text;
+        }
+
+        return extractJSON(fullText || "{}");
 
     } catch (error) {
         console.error("Gemini Generation Error:", error);
