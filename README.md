@@ -1,139 +1,152 @@
-# Trem-AI 🎥🤖
+# Trem-AI: The Cognitive Video Engine 🧠🎥
 
-**The Intelligent Video Repository & Editing Suite**
+> **Transform raw footage into structured, searchable, and editable narratives using the power of Multimodal AI.**
 
-> *Transform raw footage into semantic, searchable, and editable repositories using AI.*
-
-Trem-AI is a cutting-edge video management and editing platform that leverages **Google Gemini 1.5 & 3.0** and **Whisper** to automatically analyze, transcribe, and structure video content. Built with a local-first philosophy, it processes heavy media pipelines in the background using Service Workers, allowing for a seamless and responsive user experience.
+Trem-AI is an advanced **Video Repository & Production Agent** designed to bridge the gap between raw media assets and finished content. By leveraging **Google Gemini 3.0** and **On-Device Processing**, it turns a folder of unrelated video clips into a semantic knowledge base, ready for programmatic editing via **Remotion**.
 
 ---
 
-## ✨ Key Features
+## 🚀 Key Capabilities
 
-### 🧠 **AI-Powered Ingestion Pipeline**
-The comprehensive ingestion engine turns chaos into order:
-- **Automatic Transcription**: Uses **OpenAI Whisper** (via Replicate) to generate frame-perfect transcripts.
-- **Visual Intelligence**: **Gemini 1.5 Flash** analyzes keyframes to detect scenes, objects, and actions.
-- **Semantic Structuring**: **Gemini 3.0 Pro (Thinking Mode)** synthesizes transcripts and visual data to generate a cohesive repository structure with chapters, summaries, and tags.
-- **Streaming Architecture**: Real-time feedback ("Thinking...") via streaming responses prevents timeouts on complex analysis tasks.
+### 1. **Intelligent Ingestion Pipeline**
+The ingestion engine is the heart of Trem-AI, capable of processing hours of footage with semantic understanding.
+- **Micro-Service Architecture in the Browser**: Uses Web Workers and Service Workers to offload 100% of processing from the UI thread.
+- **Parallel Processing**: Ingests up to **3 assets simultaneously** for maximum throughput.
+- **Streaming AI Analysis**: Utilizes **Gemini 3.0 Flash (Thinking Mode)** with response streaming to perform deep cognitive analysis without browser timeouts.
+- **Audio Intelligence**: Automatic transcription using **Whisper**, generating frame-accurate subtitles (SRT) for every clip.
+- **Visual Intelligence**: Keyframe analysis detects objects, scenes, actions, and even reads text within the video.
 
-### ⚙️ **Robust Background Processing**
-- **Service Worker Architecture**: All heavy lifting (transcription, analysis) happens off the main thread.
-- **Parallel Execution**: Processes up to **3 videos simultaneously** for maximum throughput.
-- **Resilience**: Auto-recovery from database corruption and "Cron-job" style job resumption if the tab is closed.
-- **Local-First**: All metadata and job states are persisted in **IndexedDB**.
+### 2. **Cognitive Repository Structure**
+Trem-AI doesn't just store files; it *understands* them.
+- **Automatic Scene Detection**: Identifies cuts and transitions based on visual and audio cues.
+- **Semantic Tagging**: Auto-generates consistent tags across your entire library.
+- **Narrative Synthesis**: The "Big Brain" agent reads all transcripts and visual descriptions to generate a cohesive "Story Architecture" for your repository.
 
-### 🎬 **Programmatic Video Editing**
-- **Remotion Integration**: Edit videos using React components.
-- **Timeline Editor**: Visualize scenes, trim clips, and arranging your narrative.
-- **Dynamic Rendering**: Preview changes instantly in the browser.
+### 3. **The "Space-Age" Dashboard**
+A premium, glassmorphic interface designed for pro-sumer workflow.
+- **Workspace Management**: Organize projects into distinct workspaces.
+- **Live "Thinking" Logs**: Watch the AI reasoning process in real-time as it streams thoughts to the console.
+- **Manual Commit Flow**: Review the AI's generated structure before finalizing—you are always the pilot.
 
-### 🚀 **Modern Dashboard Experience**
-- **Glassmorphic Design**: A premium, "Space-Age" UI with fluid animations.
-- **Real-Time Logs**: Watch the AI "think" and process your assets live.
-- **Workspace Management**: Organize repositories into distinct workspaces.
-
----
-
-## 🛠️ Tech Stack
-
-### Core
-- **Framework**: [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [TailwindCSS](https://tailwindcss.com/) + Custom CSS Variables.
-
-### AI & Processing
-- **LLM**: [Google Gemini 1.5 Flash](https://deepmind.google/technologies/gemini/) (Analysis) & [Gemini 3.0 Pro](https://deepmind.google/technologies/gemini/) (Synthesis).
-- **Transcription**: [Whisper](https://github.com/openai/whisper) (via Replicate).
-- **Background Tasks**: Service Workers + [Workbox](https://developer.chrome.com/docs/workbox/).
-- **Storage**: [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) (via custom wrapper).
-
-### Video Engine
-- **Editing**: [Remotion](https://www.remotion.dev/).
-- **Media Handling**: [FFmpeg.wasm](https://ffmpegwasm.netlify.app/) (experimental).
+### 4. **Programmatic Video Editing**
+Built on top of **Remotion**, allowing you to edit VIDEO as CODE.
+- **Timeline Editor**: A visual timeline to arrange your narrative.
+- **React-Based Clips**: Edit text, overlays, and effects using standard React components.
+- **Instant Preview**: Zero-render preview engine using browser-based composition.
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Technical Architecture
+
+### **The Service Worker "Backend"**
+Trem-AI runs entirely in the browser (Local-First), but acts like a full-stack app.
+- **`sw.ts`**: The "Backend" that orchestrates ingestion. It handles API calls to Gemini and Replicate to avoid CORS and thread-blocking issues.
+- **Robustness**: Implements "Cron-job" style resilience. If you close the tab, the Service Worker pauses and resumes instantly when you return.
+- **Atomic Updates**: Uses transactional logic in IndexedDB to ensure data integrity during parallel processing.
+
+### **The AI Stack**
+We use a "Mixture of Experts" approach:
+1.  **Gemini 3.0 Flash Preview**: Used for individual asset analysis. Fast, multimodal, and efficient.
+2.  **Gemini 3.0 Pro (Thinking Mode)**: Used for high-level repository synthesis. We enable "High Thinking" configuration to allow the model to reason through complex narratives.
+3.  **Whisper (via Replicate)**: Industry-leading speech-to-text.
+
+---
+
+## � Feature Walkthrough
+
+### **1. Dashboard (`src/dashboard`)**
+The command center.
+- **`CreateWorkspaceView`**: Initialize new project contexts.
+- **`RepoOverviewPage`**: A stats-heavy view of your repository (Total Duration, Asset Count, Token Usage).
+
+### **2. Ingestion Studio (`src/dashboard/create`)**
+- **File Picker**: Drag-and-drop interface supporting Video, Audio, and Image formats.
+- **Frame Extractor**: A dedicated Main-Thread process that extracts 1 FPS keyframes for visual analysis.
+- **Job Monitor**: A terminal-style live log viewer connecting directly to the Service Worker's broadcast channel.
+
+### **3. The Editor (`src/dashboard/edit`)**
+- **`RemotionEditPage`**: The integration point for Remotion.
+- **`TimelineEditorPage`**: Custom-built timeline UI supporting multi-track visualization.
+
+---
+
+## 💻 Tech Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | React 19, Vite 6 |
+| **Language** | TypeScript |
+| **Styling** | TailwindCSS, CSS Variables |
+| **State Management** | Zustand |
+| **Database** | IndexedDB (Custom wrapper) |
+| **AI Models** | Google Gemini 3.0, OpenAI Whisper |
+| **Video Engine** | Remotion |
+| **Background** | Service Workers (Workbox) |
+
+---
+
+## � Installation & Setup
 
 ### Prerequisites
-- Node.js > 18
-- NPM or Yarn
-- **Google Gemini API Key**
-- **Replicate API Key** (for Whisper)
+- Node.js (v18+)
+- Google AI Studio Key
+- Replicate API Token
 
-### Installation
+### 1. Clone & Install
+```bash
+git clone https://github.com/your-org/trem-ai.git
+cd trem-ai
+npm install
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-org/trem-ai.git
-   cd trem-ai
-   ```
+### 2. Environment Configuration
+Create `.env.local`:
+```env
+VITE_GEMINI_API_KEY="AIzaSy..."
+VITE_REPLICATE_API_TOKEN="r8_..."
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure Environment**
-   Create a `.env.local` file in the root directory:
-   ```env
-   VITE_GEMINI_API_KEY=your_gemini_key_here
-   VITE_REPLICATE_API_TOKEN=your_replicate_token_here
-   ```
-
-4. **Start the Development Server**
-   ```bash
-   npm run dev
-   ```
-
-Open [http://localhost:5173](http://localhost:5173) to view the app.
+### 3. Start Development
+```bash
+npm run dev
+```
+*Note: This will verify Service Worker registration and Database integrity on startup.*
 
 ---
 
-## 🏗️ Architecture Overview
+## 🚧 Project Structure
 
-```mermaid
-graph TD
-    User[User Uploads Video] --> MainThread[Main Thread]
-    MainThread -->|Extract Frames & Audio| JobDB[(IndexedDB - Pending Jobs)]
-    MainThread -->|Msg: START_JOB| SW[Service Worker]
-    
-    subgraph "Service Worker (Background)"
-        SW -->|Batch Read| JobDB
-        SW -->|Parallel 3x| Pipeline
-        
-        subgraph "Ingestion Pipeline"
-            Pipeline -->|Audio Blob| Whisper[Whisper API]
-            Pipeline -->|Frames| GeminiFlash[Gemini 1.5 Flash]
-            Whisper --> Transcript
-            GeminiFlash --> TagsDescription
-        end
-        
-        Pipeline -->|Aggregation| GeminiPro[Gemini 3.0 Pro Thinking]
-        GeminiPro -->|Stream "Thinking..."| UILogs[UI Logs]
-        GeminiPro --> RepoStructure[Repo JSON]
-        RepoStructure -->|Update| JobDB
-    end
-    
-    JobDB -->|Msg: READY_TO_COMMIT| MainThread
-    MainThread --> CommitUI[Commit Interaction]
+```text
+src/
+├── dashboard/           # UI Views
+│   ├── create/          # Ingestion Workflows
+│   ├── edit/            # Video Editor (Remotion)
+│   ├── repo/            # Repository Visualization
+│   └── settings/        # App Configuration
+├── services/            # Logic Layer
+│   ├── gemini/          # AI Model Integration
+│   └── whisperService.ts # Transcription Logic
+├── sw.ts                # Service Worker (The "Backend")
+├── utils/
+│   ├── db.ts            # IndexedDB Wrapper
+│   └── audioExtractor.ts # FFmpeg/Audio Logic
+└── main.tsx             # Entry Point
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+We welcome contributions! Please focus on **Performance Optimization** and **New AI Agents**.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the repo.
+2. Create your branch (`git checkout -b feature/NewAgent`).
+3. Commit your changes.
+4. Push to the branch.
+5. Create a Pull Request.
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+MIT License. Built for the Future of Video.
